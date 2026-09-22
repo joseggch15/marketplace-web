@@ -103,3 +103,21 @@ login (o el checkout) con un código estable (`email_not_verified`) para que el 
 
 **Impacto si no se cambia:** el frontend muestra el estado "correo sin verificar" en Mi cuenta y avisa de que
 se pedirá antes de comprar, pero hoy nadie lo bloquea realmente.
+
+## 7. Datos de reputación y tienda en los resultados de búsqueda — F3
+
+**Qué pasa hoy:** `SearchResponse.items` devuelve `ProductSearchItem`, que solo trae `id, title, slug, brand,
+category_id, min_price` y `thumbnail` (esta última como `object_key`, no como URL).
+
+**Por qué importa:** una grilla de marketplace sin reputación se ve pobre y engañosa: `RatingStars` existe y
+está probado en el frontend, pero **no se puede pintar** porque no hay datos (y no se inventan). Además, sin el
+nombre de la tienda no se puede mostrar "vendido por" ni filtrar por vendedor, y sin unidades vendidas no se
+puede justificar la insignia "más vendido" (`DealBadge` ya existe).
+
+**Solución recomendada:** añadir a `ProductSearchItem` los campos `rating_average: number | null`,
+`review_count: integer`, `store_name: string` y, si se quiere usar la insignia de más vendido,
+`sold_count: integer`. Es un `JOIN` con la tabla de reseñas y la de tiendas en la misma consulta que ya
+calcula `min_price`.
+
+**Impacto si no se cambia:** la grilla del catálogo muestra imagen, título, marca y precio (sin estrellas ni
+tienda) y el caso "sin reseñas" se ve igual que "no hay datos".

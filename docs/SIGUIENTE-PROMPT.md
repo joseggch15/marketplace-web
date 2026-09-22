@@ -110,6 +110,46 @@ Ningún `.env` real está en git (solo `.env.example`); `.env.local` y `.env` es
 
 ## Siguiente tarea: F3 · Catálogo y búsqueda
 
+### Contratos reales del catálogo (ya extraídos, no hay que volver a buscarlos)
+
+Del esquema generado (`src/lib/api/schema.d.ts`) y del backend (`app/modules/search/api.py` y `schemas.py`):
+
+```
+GET /api/v1/catalog/search
+    q?, category_id?, brand?, min_price?, max_price?, sort?, cursor?, limit?
+    sort: "newest" (por defecto) | "price_asc" | "price_desc" | "relevance"
+    limit: 1..100, por defecto 20   →  SearchResponse { items: ProductSearchItem[], next_cursor: string | null }
+
+ProductSearchItem { id, title, slug, brand | null, category_id, min_price: string | null, thumbnail: string | null }
+GET /api/v1/catalog/categories → CategoryOut[]
+CategoryOut { id, parent_id | null, name, slug, commission_rate | null, created_at }
+```
+
+- **`thumbnail` es un `object_key`, no una URL:** se sirve por el proxy propio `/api/media/<clave>` y hay que
+  validarla antes con `isPublicMediaKey()` (`src/lib/media/keys.ts`). Conviene un ayudante
+  `mediaUrl(objectKey)` que devuelva `null` si la clave no es pública.
+- **`min_price` y `max_price` son Decimal en el backend:** en el frontend se manejan **como texto**
+  (`min_price?: number | string`), nunca como `number`/float (regla de dinero del proyecto).
+- **Falta información en los resultados de búsqueda:** `ProductSearchItem` **no** trae reputación
+  (`rating_average`, `review_count`), ni nombre de tienda, ni unidades vendidas; `min_price` puede ser `null`
+  (producto sin variantes con precio). Consecuencia: en la grilla **no se puede mostrar `RatingStars`** (sería
+  inventar datos) y hay que cubrir el caso "precio no disponible". Está anotado en
+  `docs/PENDIENTES-BACKEND.md` (apartado 7).
+- `CategoryOut` no trae `children` ni conteo de productos: el árbol de categorías se arma en el frontend con
+  `parent_id` y `commission_rate` **no** debe mostrarse al comprador (es información del vendedor).
+- Reutilizar tal cual los componentes ya probados de `src/components/domain/`: `ProductCard` (recibe `href`,
+  `title`, `image {src, alt} | null`, `noImageLabel`, `price` como nodo, `rating` y `badges` opcionales) y
+  `ProductCardSkeleton` para el estado de carga.
+- **La búsqueda debe degradar bien sin backend:** si la API no responde, la página muestra un aviso traducido
+  (patrón ya usado en `features/health/api.ts`: resultado discriminado `{ ok: true, data } | { ok: false }`,
+  nunca una excepción) y **no** debe romper; las pruebas end-to-end se ejecutan sin backend.
+- Paginación por cursor: los cursores son **opacos y solo hacia adelante**, así que la primera entrega usa
+  "Ver más resultados" (enlace que navega con `?cursor=…`, compartible y sin JavaScript) en lugar de scroll
+  infinito, que requiere acumular páginas en el cliente.
+- Ordenación y filtros viven **en la URL** (regla del proyecto); conviene una utilidad
+  `parseCatalogQuery(searchParams)` / `toSearchParams(query)` con pruebas unitarias, porque de ahí salen
+  también el `canonical` y los enlaces.
+
 Objetivo aprobado: **catálogo y búsqueda con filtros por faceta, paginación por cursor y los filtros en la
 URL** (compartibles y con el botón "atrás" funcionando), en español e inglés.
 

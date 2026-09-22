@@ -174,5 +174,27 @@ inmediato y se corre el riesgo de leer el mismo archivo una y otra vez sin que h
 - Durante el desarrollo ejecuta solo las pruebas de lo que estás cambiando. La suite completa, el lint y
   el typecheck se ejecutan una vez al final de cada fase.
 - No repitas en tus respuestas el código que ya escribiste. Resume qué cambió.
-- Si el contexto de la tarea supera ~150k tokens, detente, actualiza `docs/PROGRESO.md` y pídeme abrir
-  una tarea nueva.
+- Si el contexto de la tarea supera **250k tokens**, detente, actualiza `docs/PROGRESO.md`, escribe
+  `docs/SIGUIENTE-PROMPT.md` (si aplica) y pídeme abrir una tarea nueva.
+
+---
+
+## VISTA PREVIA DEL DUEÑO (PUERTO 3001)
+
+- Al empezar cada tarea, comprueba si algo escucha en el **3001**. Si no, levanta en segundo plano el backend
+  (si no está encendido) y `pnpm dev -p 3001` en `E:\ecommerce-web`. **Al terminar la tarea, déjalos encendidos**
+  (el dueño los usa para mirar el resultado).
+- El **3001 es solo para la vista previa**: nunca lo uses para pruebas ni lo detengas. Las pruebas siguen usando
+  el **3000**.
+- **No borres `.next`** mientras la vista previa esté encendida. Si necesitas una compilación limpia, detén la
+  vista previa, limpia y vuelve a levantarla.
+- Cada vez que termines una pantalla o un cambio visible, **escribe la URL exacta en el 3001** para verlo.
+
+## EFICIENCIA (además de lo anterior)
+
+- Durante el desarrollo ejecuta **solo la prueba de lo que estás cambiando**; `lint`, `typecheck`, la suite
+  completa, `test:e2e` y `build` se ejecutan **una vez al final**, y otra vez solo si hubo correcciones.
+- **Sin preguntas de flujo:** si hay dos opciones razonables, elige la recomendada, regístrala en
+  `docs/decisiones/` y sigue.
+- Resumen final de máximo **25 líneas**.
+

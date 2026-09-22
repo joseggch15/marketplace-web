@@ -1,7 +1,32 @@
 # Pendientes del backend
 
 Cosas que el backend (`E:\ecommerce`) debería cambiar o exponer para que el frontend quede como se
-espera. **Nada de esto se ha tocado**: el backend es de solo lectura para este proyecto.
+espera. El backend ya **no** es de solo lectura para el frontend: hay una tarea dedicada que los resuelve y
+deja aquí el estado.
+
+## Estado de la lista (22 de septiembre de 2026)
+
+| # | Apartado | Estado |
+|---|---|---|
+| 1 | URLs de imágenes | **parcial** (las claves ya llevan el punto; sigue sin haber campo `url`) |
+| 2 | Pagos reales | **resuelto en el backend** (adaptador de Mercado Pago; ver avisos abajo) |
+| 3 | Conteos de facetas | pendiente |
+| 4 | Catálogo público de códigos de error | pendiente |
+| 5 | Envío de correos (SMTP + plantillas) | pendiente |
+| 6 | ¿Exigir correo verificado para comprar? | pendiente (decisión del dueño) |
+| 7 | Reputación y tienda en los resultados de búsqueda | pendiente |
+| 8 | Claves de imagen sin punto | **resuelto** |
+| 9 | Producto por slug | pendiente |
+| 10 | Stock y atributos en las variantes | **resuelto** |
+| 11 | Tienda pública y envío estimado | **resuelto** |
+| 12 | Paginación de las preguntas | pendiente |
+| 13 | Listado del catálogo para el sitemap | pendiente |
+| 14 | Avisos de stock y de cambio de precio en el carrito | pendiente |
+| 15 | El registro no devuelve tokens | pendiente |
+
+> Tras regenerar los tipos (`pnpm api:types`) el frontend ya puede usar: `VariantOut.stock`, `VariantOut.available`,
+> `VariantOut.attribute_values[]`, `ProductOut.total_available`, `GET /stores/{store_id}` y
+> `GET /catalog/products/{product_id}/shipping`. La F6 sigue **bloqueada hasta que el dueño la desbloquee**.
 
 ## 1. URLs de imágenes (imágenes de producto y logos de tienda) — F0
 
@@ -30,6 +55,15 @@ archivo privado quedan fuera por diseño.
 menos caché de CDN) y hay dos sitios con la lógica de "qué archivo es público".
 
 ## 2. Pagos reales (Stripe y Mercado Pago) — F6
+
+> **Resuelto en el backend (22/09/2026):** adaptador de **Mercado Pago** (Checkout Bricks / Checkout Pro) con
+> `POST /api/v1/orders/{order_id}/payments`, idempotencia derivada de la orden y del intento, webhook que
+> **verifica la firma y consulta el pago** para confirmar estado, monto y moneda antes de marcar la orden como
+> pagada. Decisión `0019-pagos-mercado-pago.md`. Configuración en `.env`: `MERCADOPAGO_ACCESS_TOKEN`,
+> `MERCADOPAGO_PUBLIC_KEY`, `MERCADOPAGO_WEBHOOK_SECRET`. **Stripe queda pendiente** (adaptador secundario).
+> ⚠️ Tres detalles del protocolo (encabezado y plantilla de firma, decimales del COP) quedaron en configuración
+> porque la documentación oficial no fue accesible desde el entorno de desarrollo: hay que confirmarlos antes de
+> cobrar de verdad.
 
 **Qué pasa hoy:** `PAYMENT_PROVIDER=sandbox` y la confirmación se hace con
 `POST /orders/{order_id}/payments` + `POST /payments/{payment_id}/simulate`.
@@ -124,6 +158,10 @@ tienda) y el caso "sin reseñas" se ve igual que "no hay datos".
 
 ## 8. Las claves de imagen se generan sin punto antes de la extensión — F3/F4
 
+> **Resuelto (22/09/2026):** `new_object_key()` genera `products/<32 hex>.png` (con el punto) y acepta prefijo
+> (`stores/` para los logos). Las claves antiguas sin punto siguen existiendo en el bucket: se pueden volver a
+> subir. Cuando no queden, el frontend puede dejar de aceptar el formato viejo.
+
 **Qué pasa hoy:** al subir una imagen, `new_object_key()` del backend genera claves como
 `products/32fea407815043478c76ab412cbd2b49png`: **32 dígitos hexadecimales seguidos de la extensión, sin el
 punto** (`...b49` + `png`). Se ve en la respuesta real de `GET /catalog/search` (`thumbnail`) y en
@@ -165,6 +203,11 @@ la ruta (`/p/[productId]` → `/p/[slug]`) más el enlace en `product-grid.tsx`.
 
 ## 10. Las variantes no traen valores de atributo ni stock — F4
 
+> **Resuelto (22/09/2026):** `VariantOut` incluye `stock`, `available` y `attribute_values[]`
+> (`attribute_id`, `name`, `value`), y `ProductOut` incluye `total_available`. Se resuelve en **dos consultas
+> por producto** (no N+1) y `available` ya descuenta las unidades reservadas. El frontend puede dejar de pedir
+> `GET /inventory/items/{variant_id}` variante por variante.
+
 **Qué pasa hoy:** `VariantOut` solo tiene `id`, `sku`, `price` y `compare_at_price`. No incluye los valores de
 atributo (`VariantValue`: color, talla, sabor…) ni el stock, y `ProductOut` tampoco trae ningún total.
 
@@ -180,6 +223,13 @@ variante y un endpoint de inventario **sin autenticación**.
 pero cada ficha necesita N peticiones extra y el inventario queda expuesto públicamente.
 
 ## 11. No hay datos públicos de la tienda ni del envío para la ficha — F4
+
+> **Resuelto (22/09/2026):** `GET /api/v1/stores/{store_id}` público (nombre, slug, descripción, `logo_url`,
+> `rating_average`, `rating_count`, `orders_delivered`) — solo tiendas aprobadas, el resto responde 404; y
+> `GET /api/v1/catalog/products/{product_id}/shipping` con la ventana de entrega estimada (días hábiles para el
+> país de destino) y el coste de envío (hoy `0`, se define en el checkout). La estimación es **configurable**
+> (`SHIPPING_*`) y lo declara en `source="configured_default"`: no es una tarifa de transportadora, así que la
+> interfaz debe presentarla como aproximada.
 
 **Qué pasa hoy:** los endpoints de tienda (`/sellers/me`, `/sellers`, `/sellers/{store_id}/approve`) son del
 vendedor o del administrador: no hay forma pública de pedir el nombre, el logo o la reputación de la tienda a

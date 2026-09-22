@@ -102,12 +102,27 @@ de las fases cerradas vive en `docs/historial/` y no hace falta leerlo para trab
 
 ### Siguiente tarea (acordada con el dueño)
 
-**La F6 (pagos) no se empieza** hasta resolver `docs/PENDIENTES-BACKEND.md` (**15 apartados**) en una tarea
-dedicada del backend. Los que más pesan en el checkout son:
+**Primero, siempre: regenerar los tipos de la API** (`pnpm api:types` con el backend encendido, o
+`pnpm api:types:offline`). El backend ya añadió campos y endpoints nuevos y `src/lib/api/schema.d.ts` está
+desactualizado hasta que se regenere.
 
-- **2.** Pagos reales (Stripe y Mercado Pago): hoy es `PAYMENT_PROVIDER=sandbox` con el simulador del backend.
-- **14.** El carrito no informa de stock ni de cambios de precio (y acepta más unidades de las que hay).
-- **4.** Catálogo público de códigos de error, para traducir los mensajes del checkout sin adivinar.
-- **15.** El registro no devuelve tokens (por eso la fusión del carrito ocurre al iniciar sesión).
+**Campos y endpoints nuevos que se pueden aprovechar ya** (apartados 8, 10 y 11 de `PENDIENTES-BACKEND.md`
+resueltos el 22/09/2026):
 
-Cuando esos pendientes estén resueltos, la F6 se entrega **en sandbox** y se retoma la integración real después.
+- `VariantOut.stock`, `VariantOut.available` y **`VariantOut.attribute_values[]`** (`attribute_id`, `name`,
+  `value`): la ficha puede mostrar «Talla: M» y el stock real **sin** pedir `GET /inventory/items/{variant_id}`
+  variante por variante (se puede borrar `fetchAvailability`); `available` ya descuenta lo reservado.
+- `ProductOut.total_available`: permite deshabilitar «agregar al carrito» sin pedir el inventario.
+- **`GET /api/v1/stores/{store_id}`** público (nombre, `logo_url`, `rating_average`, `rating_count`,
+  `orders_delivered`): se puede pintar «vendido por» y la reputación de la tienda en la ficha.
+- **`GET /api/v1/catalog/products/{product_id}/shipping`**: ventana de entrega estimada en días hábiles y coste
+  de envío. La respuesta lo declara en `source="configured_default"`: **no** es una tarifa de transportadora, así
+  que hay que presentarla como aproximada.
+- Las **claves de imagen nuevas ya llevan el punto** (`products/<32 hex>.png`), así que el proxy de medios las
+  acepta sin el apaño del formato viejo (que sigue aceptándose mientras queden imágenes antiguas).
+
+**La F6 (checkout y pagos) sigue bloqueada** hasta que el dueño la desbloquee: el backend ya tiene el adaptador
+de Mercado Pago (preferencia + webhook verificado + monto confirmado, decisión 0019 del backend), pero falta que
+el dueño configure las credenciales. **La tarea de pendientes del backend sigue en curso** (correos SMTP con
+Mailpit, conteos de facetas, producto por slug, paginación de preguntas, listado para el sitemap, avisos de
+precio y stock en el carrito): revisa el estado en `PENDIENTES-BACKEND.md` antes de decidir la siguiente fase.

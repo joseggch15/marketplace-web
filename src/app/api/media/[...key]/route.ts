@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { isPublicMediaKey } from "@/lib/media/keys";
+import { isImageContentType, isPublicMediaKey } from "@/lib/media/keys";
 import { fetchStoredObject } from "@/lib/media/s3";
 
 /**
@@ -10,12 +10,15 @@ import { fetchStoredObject } from "@/lib/media/s3";
  * pide las imágenes a nuestro propio dominio (con caché y sin exponer el almacenamiento).
  * Ver `docs/PENDIENTES-BACKEND.md` (el backend debería devolver la URL ya resuelta).
  *
- * Seguridad (requisito explícito del dueño del producto):
- * - Solo se sirven claves con prefijo público (`products/`, `stores/`).
- * - La clave se valida con `isPublicMediaKey()` antes de firmar nada: sin subcarpetas, sin `%`, `?`, `#`
- *   ni `:` y con extensión de imagen conocida.
- * - Nunca se exponen archivos privados (documentos de verificación de vendedores, facturas, respaldos).
- * - Si la clave no es válida o el objeto no existe, responde 404 sin revelar si el archivo existe.
+ * Seguridad (requisito explícito del dueño del producto), en este orden:
+ * 1. Solo se sirven claves con prefijo público (`products/`, `stores/`), sin subcarpetas y con caracteres
+ *    seguros. Cualquier otra cosa responde 404.
+ * 2. **El tipo real del archivo manda:** si el `Content-Type` que devuelve el almacenamiento no empieza por
+ *    `image/`, se responde 404 igualmente. Es la barrera que impide usar este proxy para descargar cualquier
+ *    otro archivo guardado en MinIO (facturas, documentos de verificación, respaldos), y es más fiable que
+ *    fiarse de la extensión del nombre, que el backend no siempre escribe
+ *    (ver el apartado 8 de `docs/PENDIENTES-BACKEND.md`).
+ * 3. Si el objeto no existe, responde 404 sin revelar si el archivo existe.
  */
 export const runtime = "nodejs";
 
@@ -38,10 +41,16 @@ export async function GET(
     return new NextResponse(null, { status: 404 });
   }
 
+  const contentType = stored.headers.get("content-type");
+
+  if (!isImageContentType(contentType)) {
+    return new NextResponse(null, { status: 404 });
+  }
+
   return new NextResponse(stored.body, {
     status: 200,
     headers: {
-      "content-type": stored.headers.get("content-type") ?? "application/octet-stream",
+      "content-type": contentType ?? "application/octet-stream",
       "cache-control": CACHE_CONTROL,
       "x-content-type-options": "nosniff",
     },

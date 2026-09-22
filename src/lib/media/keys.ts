@@ -35,13 +35,50 @@ export function extensionOf(key: string): string | null {
 }
 
 /**
- * Indica si la clave puede servirse por el proxy.
+ * Extensión de imagen que **declara** la clave, o `null`.
+ *
+ * Acepta las dos formas que existen hoy:
+ * - con punto: `products/<32 hex>.png` (lo documentado, y lo que debería generar el backend);
+ * - pegada: `products/<32 hex>png` (lo que genera hoy `new_object_key()`; ver el apartado 8 de
+ *   `docs/PENDIENTES-BACKEND.md`).
+ *
+ * Es solo una **pista por el nombre**: la comprobación que de verdad garantiza que el archivo es una imagen es
+ * el `Content-Type` que devuelve el almacenamiento (`isImageContentType`), y esa es la que manda.
+ */
+export function declaredImageExtension(key: string): string | null {
+  const withDot = extensionOf(key);
+
+  if (withDot !== null && (ALLOWED_MEDIA_EXTENSIONS as readonly string[]).includes(withDot)) {
+    return withDot;
+  }
+
+  const glued = /(jpg|jpeg|png|webp|avif)$/i.exec(key);
+
+  return glued === null ? null : glued[1].toLowerCase();
+}
+
+/**
+ * ¿El tipo real del archivo es una imagen?
+ *
+ * Regla del proxy: **nunca** se sirve un archivo cuyo `Content-Type` no empiece por `image/`. Es la barrera
+ * que sustituye a exigir extensión en el nombre (que el backend no siempre pone) y es más fiable, porque mira
+ * el tipo que el almacenamiento tiene registrado. Cualquier otra cosa responde 404.
+ */
+export function isImageContentType(contentType: string | null | undefined): boolean {
+  return typeof contentType === "string" && contentType.trim().toLowerCase().startsWith("image/");
+}
+
+/**
+ * Indica si la clave puede intentar servirse por el proxy.
  *
  * Reglas (todas obligatorias):
  * 1. Prefijo público conocido (`products/`, `stores/`).
  * 2. Sin subcarpetas anidadas (evita recorridos de ruta como `products/../../etc`).
  * 3. Nombre de objeto con caracteres seguros (nada de espacios, `%`, `?`, `#` ni `:`).
- * 4. Extensión dentro de la lista blanca de imágenes.
+ * 4. Extensión de imagen declarada, con punto (`x.png`) o pegada (`xhexpng`).
+ *
+ * Pasar estas comprobaciones **no** basta para servir el archivo: la ruta comprueba además que el
+ * `Content-Type` real empiece por `image/` (`isImageContentType`).
  */
 export function isPublicMediaKey(key: string): boolean {
   if (key.length === 0 || key.length > MAX_KEY_LENGTH) {
@@ -62,10 +99,5 @@ export function isPublicMediaKey(key: string): boolean {
     return false;
   }
 
-  const extension = extensionOf(objectName);
-  if (extension === null) {
-    return false;
-  }
-
-  return (ALLOWED_MEDIA_EXTENSIONS as readonly string[]).includes(extension);
+  return declaredImageExtension(objectName) !== null;
 }

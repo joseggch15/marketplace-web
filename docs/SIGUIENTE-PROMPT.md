@@ -180,6 +180,11 @@ estructurados JSON-LD (`Product`, `Offer`, `AggregateRating`, `BreadcrumbList`),
   carga, accesibilidad con axe (claro y oscuro) y JSON-LD presente.
 - La reseña y la pregunta se envían con sesión: usa `useSession()` de la F2 para decidir si se muestra el
   formulario o un enlace a `/login?next=…`.
+- **Proxy de medios (`/api/media/<clave>`):** ya acepta las claves sin punto que genera hoy el backend
+  (`products/<32 hex>png`) y, como barrera de seguridad equivalente, la ruta **solo sirve el archivo si el
+  `Content-Type` que devuelve MinIO empieza por `image/`** (`isImageContentType`); cualquier otro tipo responde
+  404. **No quites esa comprobación**: es lo que impide usar el proxy para descargar otros archivos del bucket.
+  Está probada en `src/lib/media/keys.test.ts`.
 
 ### Contratos reales del catálogo (ya extraídos, no hay que volver a buscarlos)
 

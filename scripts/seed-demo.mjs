@@ -17,6 +17,7 @@
  *
  * Requisitos: el backend en marcha y `uv` disponible (solo para ascender al administrador).
  */
+/* eslint-disable no-console -- es un script de terminal: los mensajes por consola son su salida normal */
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { deflateSync } from "node:zlib";

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { isPublicMediaKey } from "@/lib/media/keys";
+import { declaredImageExtension, isImageContentType, isPublicMediaKey } from "@/lib/media/keys";
 
 /**
  * Pruebas de la validación de claves del proxy de medios.
@@ -48,5 +48,58 @@ describe("isPublicMediaKey", () => {
     expect(isPublicMediaKey("products/foto#frag.jpg")).toBe(false);
     expect(isPublicMediaKey("products/foto:foto.jpg")).toBe(false);
     expect(isPublicMediaKey(`products/${"a".repeat(250)}.jpg`)).toBe(false);
+  });
+
+  it("acepta el formato sin punto que genera hoy el backend (products/<32 hex>png)", () => {
+    expect(isPublicMediaKey("products/32fea407815043478c76ab412cbd2b49png")).toBe(true);
+    expect(isPublicMediaKey("products/d52d65bd5a51404aa0d9c47866e54cf1jpg")).toBe(true);
+    expect(isPublicMediaKey("stores/9c1f4a2b7d8e0f1a2b3c4d5e6f708192webp")).toBe(true);
+  });
+
+  it("con extensión pegada sigue rechazando prefijos privados y nombres con truco", () => {
+    expect(isPublicMediaKey("verification/32fea407815043478c76ab412cbd2b49png")).toBe(false);
+    expect(isPublicMediaKey("invoices/factura001png")).toBe(false);
+    expect(isPublicMediaKey("products/backup.sql")).toBe(false);
+    expect(isPublicMediaKey("products/../32fea407815043478c76ab412cbd2b49png")).toBe(false);
+    expect(isPublicMediaKey("products/subcarpeta/foto.png")).toBe(false);
+  });
+
+  it("un nombre que solo termina en 'png' pasa el filtro de nombre (a propósito)", () => {
+    // La comprobación por nombre no puede saber qué contiene el archivo: por eso NO es la barrera de
+    // seguridad. Quien decide es el Content-Type real (`isImageContentType`) dentro de la ruta.
+    expect(isPublicMediaKey("products/backup_sqlpng")).toBe(true);
+  });
+
+  it("la extensión pegada solo cuenta si es de la lista blanca", () => {
+    expect(declaredImageExtension("abc123png")).toBe("png");
+    expect(declaredImageExtension("abc123.JPG")).toBe("jpg");
+    expect(declaredImageExtension("abc123.pdf")).toBeNull();
+    expect(declaredImageExtension("abc123")).toBeNull();
+  });
+});
+
+/**
+ * Regla que sustituye a exigir extensión en el nombre: **el tipo real manda**.
+ *
+ * Si el almacenamiento dice que el archivo no es una imagen, la ruta responde 404 aunque la clave parezca
+ * válida. Es lo que impide usar el proxy de imágenes para descargar cualquier otro archivo del bucket.
+ */
+describe("isImageContentType", () => {
+  it("acepta los tipos de imagen que devuelve el almacenamiento", () => {
+    expect(isImageContentType("image/png")).toBe(true);
+    expect(isImageContentType("IMAGE/JPEG; charset=binary")).toBe(true);
+    expect(isImageContentType("  image/webp  ")).toBe(true);
+    expect(isImageContentType("image/avif")).toBe(true);
+  });
+
+  it("rechaza cualquier otro tipo (la ruta responde 404)", () => {
+    expect(isImageContentType("application/pdf")).toBe(false);
+    expect(isImageContentType("text/html")).toBe(false);
+    expect(isImageContentType("application/json")).toBe(false);
+    expect(isImageContentType("application/octet-stream")).toBe(false);
+    expect(isImageContentType("image_svg+xml")).toBe(false);
+    expect(isImageContentType("")).toBe(false);
+    expect(isImageContentType(null)).toBe(false);
+    expect(isImageContentType(undefined)).toBe(false);
   });
 });

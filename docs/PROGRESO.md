@@ -234,7 +234,39 @@ b9ad5a1  docs(f1): record verified results, next-phase plan and testing setup
 Elegir el acento definitivo (**turquesa**, **coral** o **violeta**). Cambiarlo es una sola línea en
 `src/app/[locale]/layout.tsx` (`data-accent="..."`); el contraste de los tres ya está validado.
 
-## Fase 2 · Autenticación y cuenta — planificada (no iniciada)
+## Fase 2 · Autenticación y cuenta — **completada**
+
+Se construyó siguiendo el plan aprobado. Primero van los resultados reales y después el plan tal como se
+escribió antes de empezar (útil para comparar).
+
+### Resultados reales
+
+**Páginas entregadas** (bajo `[locale]`, en español e inglés, con `noindex`):
+
+| Ruta | Qué hace |
+|---|---|
+| `/login` | Entrar; acepta `?next=` para volver a donde el usuario iba |
+| `/register` | Crear cuenta (nombre, correo, contraseña y confirmación) |
+| `/forgot-password` | Pedir el enlace de recuperación |
+| `/reset-password?token=…` | Guardar la contraseña nueva |
+| `/verify-email?token=…` | Verificar el correo y, si el enlace ya no vale, pedir otro |
+| `/account` | Datos personales, preferencias y cerrar sesión (con guardia de sesión) |
+| `/account/addresses` | Libreta de direcciones: alta, edición, borrado con confirmación y predeterminada |
+
+**Rutas BFF** (el navegador nunca ve un token): `/api/auth/{register,login,logout,refresh,session,verify-email,resend-verification,forgot-password,reset-password}`
+y `/api/account/{profile,addresses,addresses/[addressId]}`.
+
+**Sesión:** cookies `mv_access` (15 minutos) y `mv_refresh` (7 días), `httpOnly` y `Secure` en producción; el
+refresh token rota en cada uso y se guarda siempre; el encabezado muestra "Mi cuenta" o "Iniciar sesión"
+según la sesión real, resuelta en el servidor (sin parpadeos). El detalle completo está en
+`docs/decisiones/0008-autenticacion-y-sesion.md`.
+
+**La interfaz no promete lo que el backend no hace:** como el backend todavía no envía correos (escribe el
+enlace en sus registros), la pantalla de recuperación lo dice abiertamente en vez de esperar un correo que no
+llega. Queda anotado en `docs/PENDIENTES-BACKEND.md` (apartado 5), junto con la duda de si el correo
+verificado debe exigirse para comprar (apartado 6).
+
+### Plan que se aprobó y se siguió
 
 ### Objetivo
 
@@ -282,6 +314,35 @@ cuando no hay sesión válida, y el `refresh` se renueva de forma transparente a
 `pnpm lint`, `pnpm typecheck`, `pnpm test` y `pnpm test:e2e` en verde; axe sin infracciones en las páginas
 nuevas; formularios usables con teclado y con mensajes claros; commit
 `feat(f2): authentication, account and addresses with BFF session cookies`.
+
+### Verificación (definición de «terminado»)
+
+| Comprobación | Resultado |
+|---|---|
+| `pnpm lint` | ✅ sin errores |
+| `pnpm typecheck` | ✅ sin errores |
+| `pnpm test` | ✅ **131 pruebas** en 12 archivos (29 nuevas de la F2) |
+| `pnpm test:e2e` | ✅ **76 pruebas en verde** contra la compilación de producción (30 nuevas) |
+| Accesibilidad (axe) | ✅ sin infracciones en `/login`, `/register` y `/forgot-password` (es/en, claro y oscuro) |
+| Seguridad | ✅ prueba automática: **sin tokens** en `localStorage` ni `sessionStorage`, y `/account` exige sesión |
+
+### Defectos reales que encontraron las pruebas y se corrigieron
+
+1. **El navegador no normalizaba el correo:** "Ana@Correo.COM" no encontraba la cuenta, mientras que el backend
+   sí guarda los correos en minúsculas. Se igualó con `toLowerCase()` y una prueba unitaria lo fija.
+2. **Enlaces dentro de una frase sin subrayar** (regla `link-in-text-block` de axe): en "¿No tienes cuenta?
+   Crea una" el enlace se distinguía **solo** por el color. Ahora los enlaces que van dentro de un texto están
+   siempre subrayados.
+3. **`setState` sincrónico dentro de un efecto** en el panel de verificación de correo, que React desaconseja
+   porque provoca renders en cascada: ahora el estado inicial ya sabe si hay token y solo se actualiza cuando
+   llega la respuesta.
+4. **Pruebas con selectores ambiguos** ("Contraseña" del campo y "Mostrar contraseña" del botón coincidían):
+   era un fallo de la prueba, no del producto; se ajustó a una coincidencia exacta.
+
+### Capturas
+
+`docs/capturas/f2/`: entrar, crear cuenta, recuperar contraseña, restablecer contraseña y verificar correo, en
+claro y oscuro y a 375 px y 1280 px (`pnpm capture`).
 
 ## Fases 3 a 10 — pendientes
 

@@ -1,9 +1,11 @@
 import { getTranslations } from "next-intl/server";
+import { User } from "lucide-react";
 
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { SearchBar } from "@/components/layout/search-bar";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { brand } from "@/config/brand";
+import { getCurrentUser } from "@/features/auth/session";
 import { Link } from "@/i18n/navigation";
 
 /**
@@ -16,7 +18,11 @@ import { Link } from "@/i18n/navigation";
  * - El logotipo es un enlace en el que se puede hacer clic con un nombre accesible claro.
  */
 export async function SiteHeader() {
-  const t = await getTranslations("Common");
+  const [t, tAuth, user] = await Promise.all([
+    getTranslations("Common"),
+    getTranslations("Auth"),
+    getCurrentUser(),
+  ]);
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/85">
@@ -40,6 +46,16 @@ export async function SiteHeader() {
         </div>
 
         <div className="flex shrink-0 items-center gap-1">
+          <Link
+            href={user === null ? "/login" : "/account"}
+            aria-label={user === null ? tAuth("actions.goToLogin") : tAuth("links.account")}
+            className="flex items-center gap-1.5 rounded-lg px-2 py-1 text-sm font-medium hover:bg-muted"
+          >
+            <User aria-hidden className="size-4" />
+            <span className="hidden sm:inline">
+              {user === null ? tAuth("actions.goToLogin") : tAuth("links.account")}
+            </span>
+          </Link>
           <ThemeToggle
             labels={{
               label: t("themeLabel"),

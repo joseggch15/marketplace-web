@@ -69,3 +69,37 @@ como "error desconocido".
 `docs/ERRORES.md` del backend) y mantenerlo al día.
 
 **Impacto si no se cambia:** el frontend usa un mensaje genérico traducido para códigos desconocidos.
+
+## 5. Envío de correos (verificación y recuperación de contraseña) — F2
+
+**Qué pasa hoy:** `AuthService.request_password_reset()` y el registro/reenvío de verificación crean el token
+en la base de datos, pero **no envían ningún correo**: el token se escribe en los registros del backend
+(`logger.info("password_reset_token_generated", email=..., token=...)`). Lo mismo con el enlace de
+verificación de correo.
+
+**Por qué importa:** el usuario no puede completar la recuperación de contraseña ni verificar su correo sin
+ayuda técnica, así que en la interfaz el flujo se entrega con un aviso honesto: "en este entorno de pruebas el
+backend todavía no envía correos: el enlace aparece en sus registros". Sin ese aviso, el usuario esperaría un
+correo que nunca llega.
+
+**Solución recomendada:** conectar un proveedor de correo (SMTP o API transaccional) y enviar dos plantillas:
+verificación de correo y restablecimiento de contraseña, con el enlace apuntando al frontend
+(`{NEXT_PUBLIC_SITE_URL}/{locale}/verify-email?token=…` y `/reset-password?token=…`). Hace falta además una
+variable de configuración para la URL pública del frontend.
+
+**Impacto si no se cambia:** los flujos de verificación y recuperación funcionan, pero solo pueden probarse
+copiando el token de los registros del backend (es lo que se hizo en la F2 para las pruebas end-to-end).
+
+## 6. ¿Debe exigirse el correo verificado para comprar? — F2
+
+**Qué pasa hoy:** `POST /auth/login` no comprueba `email_verified_at`, así que una cuenta sin verificar puede
+iniciar sesión (y por tanto comprar).
+
+**Por qué importa:** es una decisión de negocio, no técnica: si se exige verificación, hay que rechazar el
+login (o el checkout) con un código estable (`email_not_verified`) para que el frontend pueda ofrecer
+"reenviar el correo".
+
+**Solución recomendada:** decidirlo y, si se exige, devolver un `code` claro en lugar de un 401 genérico.
+
+**Impacto si no se cambia:** el frontend muestra el estado "correo sin verificar" en Mi cuenta y avisa de que
+se pedirá antes de comprar, pero hoy nadie lo bloquea realmente.

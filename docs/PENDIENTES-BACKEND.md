@@ -121,3 +121,25 @@ calcula `min_price`.
 
 **Impacto si no se cambia:** la grilla del catálogo muestra imagen, título, marca y precio (sin estrellas ni
 tienda) y el caso "sin reseñas" se ve igual que "no hay datos".
+
+## 8. Las claves de imagen se generan sin punto antes de la extensión — F3/F4
+
+**Qué pasa hoy:** al subir una imagen, `new_object_key()` del backend genera claves como
+`products/32fea407815043478c76ab412cbd2b49png`: **32 dígitos hexadecimales seguidos de la extensión, sin el
+punto** (`...b49` + `png`). Se ve en la respuesta real de `GET /catalog/search` (`thumbnail`) y en
+`UploadUrlOut.object_key`.
+
+**Por qué importa:** el proxy de imágenes del frontend (`/api/media/[...key]`) valida las claves con una lista
+blanca (`src/lib/media/keys.ts`) que exige extensión **después de un punto** — es la comprobación que impide
+servir archivos que no sean imágenes. Con el formato actual, **todas las imágenes reales se rechazan y las
+tarjetas muestran "sin imagen"**, aunque la subida y el adjuntado funcionen bien.
+
+**Solución recomendada (en el backend):** incluir el punto al construir la clave:
+`f"{prefix}/{uuid4().hex}{extension}"` con `extension` normalizada a `".png"`, `.jpg`… Es una línea y deja el
+formato igual al que se documentó (`products/<32 hex>.jpg`).
+
+**Mientras tanto (frontend):** en la F4 se aceptará también el formato sin punto (`products/<32 hex>png`),
+manteniendo la lista blanca de extensiones de imagen, y se quitará cuando el backend corrija la clave.
+
+**Solución provisional usada:** los datos de demostración (`scripts/seed-demo.mjs`) ya crean las imágenes con
+este formato, así que reproducen el problema real en local en vez de esconderlo.

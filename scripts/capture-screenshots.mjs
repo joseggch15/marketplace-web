@@ -36,11 +36,15 @@ function parseArgs(argv) {
   return values;
 }
 
-/** Nombre de archivo legible: `/es/design-system` -> `design-system`. */
+/** Nombre de archivo legible: `/es/p/abc` -> `es-p-abc`, `/es` -> `es-inicio`. */
 function slugFor(route) {
+  const match = /^\/(es|en)(?=\/|$)/.exec(route);
+  // El idioma **se queda** en el nombre: sin él, `/es/p/<id>` y `/en/p/<id>` producían el mismo archivo y la
+  // segunda captura pisaba a la primera en silencio.
+  const locale = match ? `${match[1]}-` : "";
   const withoutLocale = route.replace(/^\/(es|en)(?=\/|$)/, "");
   const cleaned = withoutLocale.replace(/^\//, "").replace(/[/?=&]+/g, "-");
-  return cleaned.length > 0 ? cleaned : "inicio";
+  return `${locale}${cleaned.length > 0 ? cleaned : "inicio"}`;
 }
 
 const args = parseArgs(process.argv.slice(2));

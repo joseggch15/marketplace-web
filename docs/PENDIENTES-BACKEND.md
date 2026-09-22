@@ -162,3 +162,55 @@ listado público). Es una consulta por índice único sobre `products.slug`.
 **Mientras tanto (frontend, F4):** la página se monta en `/p/<product_id>` con `canonical` y `hreflang` a sí
 misma, y el enlace del catálogo apunta al id. Cuando exista el endpoint por slug, el cambio es de una línea en
 la ruta (`/p/[productId]` → `/p/[slug]`) más el enlace en `product-grid.tsx`.
+
+## 10. Las variantes no traen valores de atributo ni stock — F4
+
+**Qué pasa hoy:** `VariantOut` solo tiene `id`, `sku`, `price` y `compare_at_price`. No incluye los valores de
+atributo (`VariantValue`: color, talla, sabor…) ni el stock, y `ProductOut` tampoco trae ningún total.
+
+**Por qué importa:** en una ficha de producto el comprador elige «Color: negro / Talla: M», no un código
+interno. Hoy las variantes se identifican por su **SKU** (`AUD-NEG`), que es correcto pero poco humano, y el
+stock se tiene que pedir variante por variante a `GET /inventory/items/{variant_id}`: una petición extra por
+variante y un endpoint de inventario **sin autenticación**.
+
+**Solución recomendada:** añadir a `VariantOut` `stock: int`, `available: int` y
+`attribute_values: [{ attribute_id, name, value }]`, y a `ProductOut` un `total_available`.
+
+**Impacto si no se cambia:** funciona (el frontend pide el stock al endpoint de inventario y muestra el SKU),
+pero cada ficha necesita N peticiones extra y el inventario queda expuesto públicamente.
+
+## 11. No hay datos públicos de la tienda ni del envío para la ficha — F4
+
+**Qué pasa hoy:** los endpoints de tienda (`/sellers/me`, `/sellers`, `/sellers/{store_id}/approve`) son del
+vendedor o del administrador: no hay forma pública de pedir el nombre, el logo o la reputación de la tienda a
+la que pertenece un producto. Tampoco existe una estimación de envío por producto.
+
+**Por qué importa:** el proyecto quiere mostrar «vendido por», la reputación del vendedor y la fecha estimada
+de entrega (inspiración de Mercado Libre y Amazon). En la F4 esos bloques **no se pintan** porque no hay datos,
+y no se inventan.
+
+**Solución recomendada:** `GET /api/v1/stores/{store_id}` público con `name`, `logo_object_key`,
+`rating_average`, `rating_count` y `orders_delivered`, más un cálculo de envío estimado (o
+`GET /api/v1/catalog/products/{product_id}/shipping`).
+
+## 12. Las preguntas no se pueden paginar — F4
+
+**Qué pasa hoy:** `GET /products/{product_id}/questions` devuelve `next_cursor`, pero **no acepta** el
+parámetro `cursor` (solo `limit`), y el servicio devuelve siempre `next_cursor=None`.
+
+**Por qué importa:** un producto popular acumula decenas de preguntas y el frontend solo puede mostrar la
+primera página (20). Las reseñas sí se paginan, así que el comportamiento es incoherente.
+
+**Solución recomendada:** aceptar `cursor` igual que en las reseñas y devolver el cursor real.
+
+## 13. Falta un listado público del catálogo completo (para el sitemap) — F4
+
+**Qué pasa hoy:** el único listado público de productos es `GET /catalog/search`, con `limit` máximo de 100 y
+paginación por cursor.
+
+**Por qué importa:** `sitemap.xml` debe incluir todas las URL de producto. Hoy el mapa se arma con la primera
+página del buscador (100 productos); cuando el catálogo crezca habrá que recorrer cursores y, por número de
+URL, paginar el sitemap como pide el proyecto.
+
+**Solución recomendada:** un listado público (`GET /api/v1/catalog/products?cursor=&limit=`) o un índice de
+sitemap generado en el backend.

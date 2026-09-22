@@ -1,3 +1,5 @@
+import { callBff as call, type ClientFailure, type ClientResult } from "@/lib/api/bff-client";
+
 import type { AddressValues } from "./schemas";
 import type { Address, AddressInput, AddressPatch, AuthUser, ProfileInput } from "./types";
 
@@ -5,53 +7,11 @@ import type { Address, AddressInput, AddressPatch, AuthUser, ProfileInput } from
  * Cliente del navegador para las rutas BFF.
  *
  * El navegador **solo** habla con `/api/...` de nuestro propio dominio: nunca con el backend FastAPI ni con
- * los tokens, que están en cookies httpOnly.
+ * los tokens, que están en cookies httpOnly. La llamada en sí (y el formato de los errores) vive en
+ * `src/lib/api/bff-client.ts`, compartida con la feature de producto (F4).
  */
 
-/** Fallo con el `code` estable de la API, listo para traducir. */
-export type ClientFailure = { ok: false; status: number; code: string };
-
-export type ClientResult<T> = { ok: true; data: T } | ClientFailure;
-
-type RequestOptions = {
-  method: "POST" | "PATCH" | "DELETE" | "GET";
-  path: string;
-  body?: unknown;
-};
-
-/** Hace una petición a una ruta BFF y normaliza el resultado (nunca lanza excepciones). */
-async function call<T>({ method, path, body }: RequestOptions): Promise<ClientResult<T>> {
-  try {
-    const response = await fetch(path, {
-      method,
-      headers: body === undefined ? undefined : { "content-type": "application/json" },
-      body: body === undefined ? undefined : JSON.stringify(body),
-      credentials: "same-origin",
-      cache: "no-store",
-    });
-
-    if (response.ok) {
-      const data: unknown = response.status === 204 ? {} : await response.json();
-      return { ok: true, data: data as T };
-    }
-
-    let code = "unknown";
-
-    try {
-      const problem: unknown = await response.json();
-      const candidate = (problem as { code?: unknown }).code;
-      if (typeof candidate === "string") {
-        code = candidate;
-      }
-    } catch {
-      // Sin cuerpo JSON: se queda el código genérico.
-    }
-
-    return { ok: false, status: response.status, code };
-  } catch {
-    return { ok: false, status: 0, code: "network_error" };
-  }
-}
+export type { ClientFailure, ClientResult };
 
 export function login(email: string, password: string): Promise<ClientResult<{ user: AuthUser }>> {
   return call({ method: "POST", path: "/api/auth/login", body: { email, password } });

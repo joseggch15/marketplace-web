@@ -58,6 +58,10 @@ for (const locale of LOCALES) {
       expect(response?.status()).toBe(404);
       await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
 
+      // Los 404 los sirve Next.js con su documento de error (sin `lang`) y React lo añade al hidratar: se
+      // espera a ese momento para no auditar un estado a medias (ver `e2e/product.spec.ts`).
+      await expect(page.locator("html")).toHaveAttribute("lang", /^(es|en)$/);
+
       const results = await new AxeBuilder({ page }).withTags(WCAG_TAGS).analyze();
       expect(results.violations).toEqual([]);
     });

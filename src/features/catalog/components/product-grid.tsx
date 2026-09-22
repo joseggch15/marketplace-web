@@ -39,8 +39,10 @@ export function ProductGrid({
         return (
           <li key={item.id} className="flex">
             <ProductCard
-              // La página de producto llega en la F4; hoy el enlace lleva a la página 404 traducida.
-              href={`/p/${item.slug}`}
+              // La ficha vive en `/p/<identificador>`: no hay endpoint por slug (ver el apartado 9 de
+              // docs/PENDIENTES-BACKEND.md), así que el enlace lleva el id. Cuando el backend lo añada, aquí
+              // solo cambia `item.id` por `item.slug`.
+              href={`/p/${item.id}`}
               title={item.title}
               image={src === null ? null : { src, alt: item.title }}
               noImageLabel={labels.noImage}

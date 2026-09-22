@@ -1,4 +1,4 @@
-# Historial Â· fases 0 a 3 (detalle)
+# Historial Â· fases 0 a 4 (detalle)
 
 Detalle de las fases ya cerradas, tal como se escribio en su momento. Se conserva como referencia:
 **no hace falta leerlo para trabajar en el proyecto** (por eso se movio aqui desde `docs/PROGRESO.md`).
@@ -388,4 +388,69 @@ claro y oscuro y a 375 px y 1280 px). **Regeneradas con el backend encendido y e
 sembrado** (`scripts/seed-demo.mjs`: 12 productos con variantes, precios e imÃ¡genes), asÃ­ que muestran la tienda
 real con fotos. La primera tanda se habÃ­a hecho sin backend y solo servÃ­a para revisar el estado vacÃ­o y el
 aviso de "catÃ¡logo no disponible".
+
+## Fase 4 · Página de producto — **completada**
+
+### Qué se entregó
+
+| Ruta | Qué hace |
+|---|---|
+| `/p/<identificador>` | Ficha del producto: galería, marca, nota media real, descripción, **variantes con stock real**, reseñas con paginación por cursor y preguntas con las respuestas del vendedor. Indexable, con `canonical`, `hreflang` y JSON-LD |
+| `POST /api/products/<id>/questions` | Ruta BFF que publica una pregunta con la sesión del usuario (valida el cuerpo y renueva el token si caducó) |
+
+**Piezas nuevas:** `src/features/product/` (`api.ts` server-only, `selectors.ts` y `json-ld.ts` puros y
+probados, `params.ts`, `schemas.ts`, `error-codes.ts`, `client.ts` + `hooks.ts` y
+`components/{purchase-panel,reviews-section,questions-section,question-form}`),
+`src/components/domain/{breadcrumbs,json-ld}.tsx`, `src/lib/api/bff-client.ts` (la llamada del navegador a las
+rutas BFF, compartida con la F2), `src/lib/seo/json-ld.ts`, la decisión
+`docs/decisiones/0010-pagina-de-producto.md` y el `sitemap.xml` ampliado con categorías y productos.
+
+**Reutilizado:** `ImageGallery`, `VariantSelector`, `QuantityStepper`, `Price`, `RatingStars` y `DealBadge` de
+la F1 (a `RatingStars` solo se le añadió `count` opcional para valorar una reseña suelta), el proxy de medios
+de la F0 y `listCategories` del catálogo de la F3.
+
+**Lo que se decidió no pintar (por honestidad):** no hay «vendido por» ni reputación del vendedor ni fecha de
+entrega porque la API pública no devuelve esos datos (apartados 10 y 11 de `docs/PENDIENTES-BACKEND.md`), y el
+botón «Agregar al carrito» queda **deshabilitado y explicado** hasta la F5 (el carrito). Las variantes se
+identifican por su **SKU** porque el backend todavía no expone los valores de atributo.
+
+**Stock real, no inventado:** se pide al inventario del backend (`GET /inventory/items/{variant_id}`). Si no
+se puede comprobar, la ficha lo dice y no marca nada como agotado; el selector de cantidad desaparece en lugar
+de inventar un máximo.
+
+### Verificación (definición de «terminado»)
+
+| Comprobación | Resultado |
+|---|---|
+| `pnpm lint` | ✅ sin errores |
+| `pnpm typecheck` | ✅ sin errores |
+| `pnpm test` | ✅ **231 pruebas** en 22 archivos (76 nuevas) |
+| `pnpm test:e2e` | ✅ **108 pruebas en verde** contra la compilación de producción (16 nuevas) |
+| Accesibilidad (axe) | ✅ sin infracciones en la ficha y en el 404 (es/en, claro y oscuro, 375 px y 1280 px) |
+| SEO | ✅ `canonical` y `hreflang`, Open Graph y JSON-LD `Product`/`Offer`/`AggregateRating`/`BreadcrumbList` |
+
+### Defectos reales que encontraron las pruebas y se corrigieron
+
+1. **La ficha no podía tener `loading.tsx`.** Con él, Next.js envía la página en streaming y fija el estado
+   HTTP en 200 antes de resolverse el `notFound()`: un producto inexistente respondía **200 con el texto de
+   «no encontrado»** (un *soft 404*, que Google penaliza). Lo encontró la prueba end-to-end que exige un 404 de
+   verdad; se eliminó el archivo y se documentó la decisión.
+2. **La herramienta de capturas pisaba archivos.** `slugFor()` quitaba el idioma, así que `/es/p/<id>` y
+   `/en/p/<id>` producían el mismo nombre y la segunda captura sobrescribía a la primera. Ahora el nombre
+   incluye el idioma (`es-p-…`, `en-p-…`).
+3. **Las pruebas de axe sobre un 404 medían un estado a medias.** Los 404 de una ruta dinámica los sirve el
+   documento de error de Next.js, que en el HTML inicial no lleva `lang`; React lo añade al hidratar. Las
+   pruebas ahora esperan a la hidratación antes de auditar (limitación del framework anotada en la decisión
+   0010; afecta a todos los 404 del proyecto, no solo a los de la F4).
+4. **Dos fallos propios que cazaron las pruebas unitarias:** el resumen de texto recortaba a 298 caracteres en
+   vez de 300, y la prueba de las reseñas esperaba un `href` sin el idioma que next-intl añade a los enlaces
+   internos.
+
+### Capturas
+
+`docs/capturas/f4/` (24 imágenes): la ficha de un producto con dos presentaciones y una sola imagen (es y en),
+la de un producto de una sola presentación, la página 404 y el estado «el servicio no responde» (backend
+detenido), todas en claro y oscuro y a 375 px y 1280 px. **Hechas con el backend encendido y el catálogo de
+demostración sembrado**, así que se ven precios, stock y la imagen real; el estado de error se capturó
+deteniendo el backend a propósito.
 

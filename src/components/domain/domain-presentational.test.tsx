@@ -106,6 +106,13 @@ describe("RatingStars", () => {
     expect(screen.getByText("Sin reseñas todavía")).toBeVisible();
     expect(screen.queryByRole("img")).toBeNull();
   });
+
+  it("sin cantidad de reseñas pinta solo la nota (valoración de una reseña suelta)", () => {
+    render(<RatingStars average={4} label="4 de 5 estrellas" emptyLabel="" locale={LOCALE} />);
+
+    expect(screen.getByRole("img", { name: "4 de 5 estrellas" })).toBeVisible();
+    expect(screen.queryByText(/\(\d/)).toBeNull();
+  });
 });
 
 describe("DealBadge", () => {

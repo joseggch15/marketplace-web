@@ -92,12 +92,14 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
 
   const [messages, t] = await Promise.all([getMessages(), getTranslations("Common")]);
 
-  // Al navegador solo se le envían los mensajes que necesita un componente cliente: los de error y los de
-  // la cuenta (F2). El resto de los textos se resuelven en el servidor y viajan como props (menos JavaScript).
+  // Al navegador solo se le envían los mensajes que necesita un componente cliente: los de error, los de la
+  // cuenta (F2) y los del catálogo y la ficha de producto (F3 y F4). El resto de los textos se resuelven en el
+  // servidor y viajan como props (menos JavaScript).
   const clientMessages = {
     Error: messages.Error ?? {},
     Auth: messages.Auth ?? {},
     Catalog: messages.Catalog ?? {},
+    Product: messages.Product ?? {},
   };
 
   return (

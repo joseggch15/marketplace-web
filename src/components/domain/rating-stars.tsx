@@ -16,8 +16,12 @@ import { cn } from "@/lib/utils";
 export interface RatingStarsProps {
   /** Promedio de 0 a 5. */
   average: number;
-  /** Cantidad de reseñas. Si es 0, se muestra el estado vacío. */
-  count: number;
+  /**
+   * Cantidad de reseñas. Si es 0, se muestra el estado vacío.
+   * Se puede omitir para una **valoración suelta** (una reseña concreta): entonces se pintan las estrellas y la
+   * nota, sin un contador que no significaría nada.
+   */
+  count?: number;
   /** Texto traducido para lectores de pantalla (p. ej. «4,5 de 5 estrellas, 128 reseñas»). */
   label: string;
   /** Texto traducido para cuando todavía no hay reseñas. */
@@ -42,7 +46,7 @@ export function RatingStars({
   const averageFormatter = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 });
   const countFormatter = new Intl.NumberFormat(locale);
 
-  if (count <= 0) {
+  if (count !== undefined && count <= 0) {
     return (
       <span className={cn("inline-flex items-center gap-1.5 text-muted-foreground", className)}>
         <Star aria-hidden className={cn(STAR_SIZE[size], "text-border")} />
@@ -75,9 +79,11 @@ export function RatingStars({
       <span aria-hidden className="text-xs font-medium text-foreground">
         {averageFormatter.format(average)}
       </span>
-      <span aria-hidden className="text-xs text-muted-foreground">
-        ({countFormatter.format(count)})
-      </span>
+      {count === undefined ? null : (
+        <span aria-hidden className="text-xs text-muted-foreground">
+          ({countFormatter.format(count)})
+        </span>
+      )}
     </span>
   );
 }

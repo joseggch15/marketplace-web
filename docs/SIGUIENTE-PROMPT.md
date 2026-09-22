@@ -32,45 +32,59 @@ repite aquí) y el detalle de las fases cerradas está en `docs/historial/` (**n
 
 ---
 
-## Estado: F0 a F3 cerradas · **siguiente: F4 · Página de producto**
 
-Verificado en el último cierre: `lint` 0 · `typecheck` 0 · 155 pruebas · 92 e2e · capturas reales. Repositorios
-privados y al día: `joseggch15/marketplace-web` (`master`) y `joseggch15/ecommerceBackend`.
+## Estado: F0 a F4 cerradas · **siguiente: F5 · Carrito**
 
-### Contratos ya extraídos (no hace falta volver a investigarlos)
+Verificado en el último cierre (F4): `lint` 0 · `typecheck` 0 · pruebas unitarias y end-to-end en verde ·
+capturas con datos reales en `docs/capturas/f4/`. Repositorios privados y al día:
+`joseggch15/marketplace-web` (`master`) y `joseggch15/ecommerceBackend`.
+
+### Lo que dejó hecho la F4 (reutilizar, no rehacer)
+
+- **Ficha en `/p/<product_id>`** (`src/app/[locale]/p/[productId]/page.tsx`): galería, marca, nota media real,
+  descripción, variantes con **stock real**, reseñas con paginación por cursor y preguntas con respuestas del
+  vendedor. `canonical` + `hreflang` + JSON-LD (`Product`, `Offer`, `AggregateRating`, `BreadcrumbList`).
+- **`src/features/product/`**: `api.ts` (producto, stock por variante, reseñas, preguntas), `selectors.ts`
+  (puras y probadas), `json-ld.ts`, `params.ts`, `schemas.ts`, `client.ts` + `hooks.ts` (preguntas por BFF).
+- **`src/lib/api/bff-client.ts`**: la llamada del navegador a nuestras rutas BFF (la comparten F2 y F4).
+- **`Breadcrumbs`** y **`JsonLd`** en `src/components/domain/`; `RatingStars` acepta `count` opcional para una
+  valoración suelta.
+- **La caja de compra (`PurchasePanel`) ya está en su sitio**: variantes, cantidad con el máximo **real** de
+  stock y el botón «Agregar al carrito» **deshabilitado y explicado** porque el carrito es la F5. En la F5 se
+  conecta ese botón: el `variant_id` y la cantidad ya están ahí; falta la mutación y el aviso de éxito.
+
+### Contratos del carrito (F5, ya extraídos del OpenAPI)
 
 ```
-GET  /api/v1/catalog/products/{id}      → ProductOut {id, store_id, category_id, title, slug, description,
-                                          brand, status, created_at, variants?, images?}
-GET  /api/v1/products/{id}/reviews      → ReviewListOut   {items: ReviewOut[], next_cursor}
-GET  /api/v1/products/{id}/questions    → QuestionListOut {items: QuestionOut[], next_cursor}
-POST /api/v1/products/{id}/questions    → 201 QuestionOut   (requiere sesión; cuerpo QuestionCreate {body})
-ProductImageOut {id, object_key, position, alt}   → se sirve con mediaUrl() (src/lib/media/url.ts)
+GET    /api/v1/cart                    → 200 CartOut      (usuario con sesión o invitado con X-Cart-Token)
+POST   /api/v1/cart/items              → 200 CartOut      (cuerpo CartItemAdd {variant_id, quantity=1})
+PATCH  /api/v1/cart/items/{variant_id} → 200 CartOut      (cuerpo CartItemUpdate {quantity})
+DELETE /api/v1/cart/items/{variant_id} → 200 CartOut
+DELETE /api/v1/cart                    → 200 CartOut      (vaciar)
+POST   /api/v1/cart/merge              → 200 CartOut      (requiere sesión; fusiona el carrito de invitado)
+
+CartOut     { items: CartItemOut[], total_items: number, subtotal: string, currency: string }
+CartItemOut { variant_id, sku, product_id, product_title, product_slug, store_id,
+              unit_price: string, quantity: number, subtotal: string }
 ```
 
-- **Identificador (ya comprobado):** **no existe** endpoint por slug; `slug` solo aparece como campo, y buscar
-  por `q=<slug>` no sirve (el buscador indexa título y marca). **Decisión:** la página se monta en
-  **`/p/<product_id>`** con `canonical`/`hreflang` a sí misma, y el enlace del catálogo (`product-grid.tsx`)
-  pasa al id. Cuando el backend añada `GET /catalog/products/by-slug/{slug}` (pendiente 9), el cambio son dos
-  líneas.
-- **Reutilizar de la F1** (`src/components/domain/`, ya probados y accesibles): `ImageGallery`,
-  `VariantSelector`, `QuantityStepper`, `Price`, `RatingStars` y `DealBadge`; los esqueletos ya existen.
-- **Precios nunca en float:** `Price` acepta `amount: number | string` y `compareAt`.
-- **Degradar sin backend:** patrón `{ ok: true, data } | { ok: false, reason }` (como `features/health/api.ts`),
-  así las pruebas e2e pueden correr sin backend.
-- **SEO obligatorio:** `metadata` con `canonical` y `hreflang`, más JSON-LD `Product`, `Offer`,
-  `AggregateRating` y `BreadcrumbList`.
-- **Preguntas y reseñas:** la pregunta se envía con sesión; reutiliza `useSession()` de la F2 para mostrar el
-  formulario o un enlace a `/login?next=…`. El backend puede responder `too_many_requests` (ya traducido).
-- **Proxy de medios:** tiene reglas de seguridad propias que **no se relajan** (lista exacta de tipos de imagen,
-  SVG prohibido y dos cabeceras). Están en `.clinerules` y probadas en `src/lib/media/keys.test.ts`.
+- **El carrito de invitado se identifica con la cabecera `X-Cart-Token`.** Si el invitado no la envía, la API
+  genera un token y lo **devuelve en la misma cabecera**: en el BFF eso es una cookie **httpOnly** gestionada
+  por el servidor (justo lo que pide `.clinerules`), nunca `localStorage`.
+- **Todos los endpoints devuelven el carrito completo**: el `subtotal` y el `currency` los calcula el servidor,
+  así que el navegador no hace aritmética de dinero.
+- **Stock e idempotencia**: añadir puede fallar con un `code` estable (`insufficient_stock`, `not_found`); los
+  códigos se traducen por `code` y la actualización optimista se revierte si el servidor falla.
+- `POST /cart/merge` se llama **al iniciar sesión** (la respuesta limpia el token del invitado).
 
 ### Orden sugerido de trabajo
 
-`src/features/catalog/api.ts` (`fetchProduct`, `listReviews`, `listQuestions`) → `product-grid.tsx` enlazando al
-id → ruta `/p/[productId]` con `generateMetadata`, JSON-LD y estados → galería y variantes → reseñas y preguntas
-→ traducciones es/en → pruebas unitarias y e2e → capturas con datos reales → commit y push.
+`src/features/cart/api.ts` (servidor) + rutas BFF bajo `src/app/api/cart/` (con la cookie `mv_cart`) →
+`features/cart/{client,hooks}.ts` con TanStack Query y **actualizaciones optimistas** → página `/cart` (cantidad,
+quitar, vaciar, con sus cuatro estados) → conectar el botón de `PurchasePanel` → contador en la cabecera →
+fusión del carrito al entrar → traducciones es/en → pruebas unitarias y e2e → capturas con datos reales →
+commit y push.
 
-### Después de la F4
+### Después de la F5
 
-F5 (carrito) → resolver `docs/PENDIENTES-BACKEND.md` en el backend → F6 (pagos, en sandbox).
+Resolver `docs/PENDIENTES-BACKEND.md` (13 apartados) en el backend → F6 (pagos, en sandbox).

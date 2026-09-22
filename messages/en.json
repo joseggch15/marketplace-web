@@ -330,5 +330,91 @@
       "price_asc": "Price: low to high",
       "price_desc": "Price: high to low"
     }
+  },
+  "Product": {
+    "breadcrumbLabel": "Breadcrumb",
+    "home": "Home",
+    "brand": "Brand: {brand}",
+    "sku": "Seller reference: {sku}",
+    "descriptionTitle": "Description",
+    "noDescription": "The seller has not written a description for this product yet.",
+    "priceUnavailable": "Price unavailable",
+    "meta": {
+      "description": "Buy {title}: compare prices, read reviews from real buyers and get it delivered with buyer protection."
+    },
+    "gallery": {
+      "previous": "Previous image",
+      "next": "Next image",
+      "thumbnail": "View image",
+      "noImage": "This product has no photos yet",
+      "loadError": "The image could not be loaded"
+    },
+    "rating": {
+      "label": "{average} out of 5 stars, {count} reviews",
+      "empty": "This product has no reviews yet"
+    },
+    "variant": {
+      "group": "Option",
+      "hint": "Each option is a seller reference and may have a different price: the price above is the one of the option you pick.",
+      "unavailable": "out of stock",
+      "availabilityError": "We could not check the stock right now."
+    },
+    "stock": {
+      "available": "{count, plural, one {# unit left} other {# units left}}",
+      "unknown": "We could not check the stock. Please try again in a moment.",
+      "outOfStock": "Out of stock"
+    },
+    "quantity": {
+      "label": "Quantity",
+      "decrement": "Remove one unit",
+      "increment": "Add one unit",
+      "max": "Only {max} available",
+      "min": "The minimum purchase is {min}"
+    },
+    "buy": {
+      "addToCart": "Add to cart",
+      "comingSoon": "The cart arrives in the next delivery of the project: this button will work then. The price and the stock you see are real."
+    },
+    "unavailable": {
+      "title": "We could not load this product",
+      "description": "The product service is not responding. Please try again in a few minutes.",
+      "action": "Back to home"
+    },
+    "reviews": {
+      "title": "Reviews",
+      "empty": "There are no reviews for this product yet.",
+      "unavailable": "We could not load the reviews.",
+      "verified": "Verified purchase",
+      "more": "See more reviews",
+      "reset": "Back to the newest",
+      "rating": "{rating} out of 5 stars"
+    },
+    "questions": {
+      "title": "Questions and answers",
+      "empty": "There are no questions about this product yet. You can ask the first one.",
+      "unavailable": "We could not load the questions.",
+      "sellerAnswer": "Seller's answer",
+      "formLabel": "Your question",
+      "formPlaceholder": "E.g. does it come with the seller's warranty?",
+      "formHint": "From 3 to 2000 characters. The question and its answer are public.",
+      "submit": "Post question",
+      "submitPending": "Posting…",
+      "success": "Your question is published. The seller will answer right here.",
+      "signInToAsk": "You need to sign in to ask about this product.",
+      "signIn": "Sign in"
+    },
+    "validation": {
+      "questionShort": "Write at least 3 characters.",
+      "questionLong": "The question cannot be longer than 2000 characters."
+    },
+    "errors": {
+      "unauthorized": "You need to sign in to ask a question.",
+      "validation_error": "Check your text: something does not fit.",
+      "too_many_requests": "You posted several questions in a row. Please wait a moment and try again.",
+      "not_found": "This product is no longer available.",
+      "internal_error": "Something failed on our side. Please try again in a moment.",
+      "network_error": "We could not connect. Check your connection and try again.",
+      "unknown": "We could not post your question. Please try again."
+    }
   }
 }

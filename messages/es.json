@@ -330,5 +330,91 @@
       "price_asc": "Precio: de menor a mayor",
       "price_desc": "Precio: de mayor a menor"
     }
+  },
+  "Product": {
+    "breadcrumbLabel": "Ruta de navegación",
+    "home": "Inicio",
+    "brand": "Marca: {brand}",
+    "sku": "Código del vendedor: {sku}",
+    "descriptionTitle": "Descripción",
+    "noDescription": "El vendedor todavía no escribió una descripción de este producto.",
+    "priceUnavailable": "Precio no disponible",
+    "meta": {
+      "description": "Compra {title}: compara precios, revisa las reseñas de compradores reales y recibe en tu casa con pago protegido."
+    },
+    "gallery": {
+      "previous": "Imagen anterior",
+      "next": "Imagen siguiente",
+      "thumbnail": "Ver imagen",
+      "noImage": "Este producto todavía no tiene fotos",
+      "loadError": "No se pudo cargar la imagen"
+    },
+    "rating": {
+      "label": "{average} de 5 estrellas, {count} reseñas",
+      "empty": "Este producto todavía no tiene reseñas"
+    },
+    "variant": {
+      "group": "Presentación",
+      "hint": "Cada presentación es una referencia del vendedor y puede tener un precio distinto: el precio de arriba es el de la que elijas.",
+      "unavailable": "sin stock",
+      "availabilityError": "Ahora mismo no pudimos comprobar el stock."
+    },
+    "stock": {
+      "available": "{count, plural, one {Queda # unidad} other {Quedan # unidades}}",
+      "unknown": "No pudimos comprobar el stock. Vuelve a intentarlo en un momento.",
+      "outOfStock": "Agotado"
+    },
+    "quantity": {
+      "label": "Cantidad",
+      "decrement": "Quitar una unidad",
+      "increment": "Agregar una unidad",
+      "max": "Solo hay {max} disponibles",
+      "min": "El mínimo de compra es {min}"
+    },
+    "buy": {
+      "addToCart": "Agregar al carrito",
+      "comingSoon": "El carrito llega en la siguiente entrega del proyecto: entonces este botón funcionará. El precio y el stock que ves son reales."
+    },
+    "unavailable": {
+      "title": "No pudimos cargar este producto",
+      "description": "El servicio de productos no está respondiendo. Inténtalo de nuevo en unos minutos.",
+      "action": "Volver al inicio"
+    },
+    "reviews": {
+      "title": "Reseñas",
+      "empty": "Todavía no hay reseñas de este producto.",
+      "unavailable": "No pudimos cargar las reseñas.",
+      "verified": "Compra verificada",
+      "more": "Ver más reseñas",
+      "reset": "Volver a las más recientes",
+      "rating": "{rating} de 5 estrellas"
+    },
+    "questions": {
+      "title": "Preguntas y respuestas",
+      "empty": "Todavía no hay preguntas sobre este producto. Puedes hacer la primera.",
+      "unavailable": "No pudimos cargar las preguntas.",
+      "sellerAnswer": "Respuesta del vendedor",
+      "formLabel": "Tu pregunta",
+      "formPlaceholder": "Ej.: ¿Tiene garantía del vendedor?",
+      "formHint": "De 3 a 2000 caracteres. La pregunta y su respuesta son públicas.",
+      "submit": "Publicar pregunta",
+      "submitPending": "Publicando…",
+      "success": "Tu pregunta quedó publicada. El vendedor responderá aquí mismo.",
+      "signInToAsk": "Para preguntar por este producto necesitas iniciar sesión.",
+      "signIn": "Iniciar sesión"
+    },
+    "validation": {
+      "questionShort": "Escribe al menos 3 caracteres.",
+      "questionLong": "La pregunta no puede pasar de 2000 caracteres."
+    },
+    "errors": {
+      "unauthorized": "Necesitas iniciar sesión para preguntar.",
+      "validation_error": "Revisa el texto: hay algo que no encaja.",
+      "too_many_requests": "Hiciste varias preguntas seguidas. Espera un momento y vuelve a probar.",
+      "not_found": "Este producto ya no está disponible.",
+      "internal_error": "Falló algo de nuestro lado. Inténtalo de nuevo en un momento.",
+      "network_error": "No pudimos conectar. Revisa tu conexión e inténtalo otra vez.",
+      "unknown": "No pudimos publicar tu pregunta. Inténtalo de nuevo."
+    }
   }
 }

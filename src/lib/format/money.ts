@@ -53,6 +53,60 @@ export function formatApproximateMoney(
   return formatted === null ? null : `≈ ${formatted}`;
 }
 
+/**
+ * Unidades menores exactas de un monto (céntimos), como entero.
+ *
+ * Por qué no se usa `parseFloat` para comparar dinero: el proyecto prohíbe el punto flotante para dinero, y
+ * comparar dos precios con floats puede ordenarlos mal cuando son muy parecidos. Aquí el monto se parte en
+ * parte entera y decimales y se convierte en un `BigInt`, que es exacto.
+ *
+ * Se usa **solo para comparar y ordenar** (por ejemplo, para saber cuál es la variante más barata de un
+ * producto). Los montos se siguen mostrando tal como llegan del backend.
+ *
+ * Devuelve `null` si el valor no es un monto con hasta dos decimales; preferimos no comparar antes que
+ * comparar mal.
+ */
+export function toMinorUnits(value: number | string | null | undefined): bigint | null {
+  if (value === null || value === undefined) {
+    return null;
+  }
+
+  const raw =
+    typeof value === "number" ? (Number.isFinite(value) ? String(value) : "") : value.trim();
+  const match = /^(-?)(\d+)(?:\.(\d{1,2}))?$/.exec(raw);
+
+  if (match === null) {
+    return null;
+  }
+
+  const [, sign, whole, fraction = ""] = match;
+  const units = BigInt(`${whole}${fraction.padEnd(2, "0")}`);
+
+  return sign === "-" ? -units : units;
+}
+
+/**
+ * Compara dos montos: `-1` si el primero es menor, `1` si es mayor, `0` si son iguales.
+ * `null` cuando alguno de los dos no es un monto válido (no se adivina).
+ */
+export function compareAmounts(
+  a: number | string | null | undefined,
+  b: number | string | null | undefined,
+): number | null {
+  const left = toMinorUnits(a);
+  const right = toMinorUnits(b);
+
+  if (left === null || right === null) {
+    return null;
+  }
+
+  if (left < right) {
+    return -1;
+  }
+
+  return left > right ? 1 : 0;
+}
+
 /** Calcula el porcentaje de descuento entre el precio anterior y el actual. `null` si no hay descuento. */
 export function discountPercent(
   amount: number | string,

@@ -454,3 +454,10 @@ detenido), todas en claro y oscuro y a 375 px y 1280 px. **Hechas con el backend
 demostración sembrado**, así que se ven precios, stock y la imagen real; el estado de error se capturó
 deteniendo el backend a propósito.
 
+
+### Commit de la fase
+
+`2c42056` — `feat(product): add the product page with real stock, reviews and questions`
+(70 archivos, 3.422 líneas añadidas). Incluye el código, las pruebas, las capturas y la documentación de la
+fase, ya subido a `joseggch15/marketplace-web` (`master`).
+

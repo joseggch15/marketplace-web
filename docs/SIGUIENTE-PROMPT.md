@@ -5,6 +5,38 @@ repite aquí) y el detalle de las fases cerradas está en `docs/historial/` (**n
 
 ---
 
+## CONDICIONES NUEVAS DEL DUEÑO (aplican a TODAS las tareas siguientes hasta terminar el proyecto)
+
+### ALCANCE DE PROTOTIPO
+
+Construye solo lo esencial de cada fase, bien hecho y funcionando con datos reales:
+
+- **Portada**: buscador destacado, categorías, productos destacados y más vendidos. Quita de la vista del
+  comprador el estado de la plataforma, la lista de fases y la etiqueta «Fase 0».
+- **F6 Checkout**: dirección, envío, cupón, resumen, pago de prueba (aprobar o rechazar) y confirmación.
+- **F7 Mis compras**: lista y detalle de pedidos con su estado, cancelar cuando se pueda y dejar reseña de lo
+  comprado.
+- **F8 Panel del vendedor**: crear tienda; crear y editar productos con variantes, imágenes y stock; y gestionar
+  pedidos (preparar y marcar como enviado). Métricas: solo **tres cifras simples** (ventas, pedidos y
+  productos), **sin gráficos**.
+- **F9 Panel de administración**: aprobar tiendas, moderar reseñas y preguntas, y ver usuarios. **Sin gráficos.**
+- **F10 Preparación para publicar**: auditoría final de accesibilidad, rendimiento y SEO; una prueba e2e del
+  recorrido completo (registrarse, comprar, vender y administrar); y un documento `docs\PUBLICAR.md` con
+  opciones de hosting para el frontend y el backend, costos mensuales aproximados, qué cuentas debe crear el
+  dueño y los pasos exactos. **No crear cuentas, no publicar nada y no gastar dinero**: eso lo hace el dueño.
+
+Si una funcionalidad **no** está en esta lista, se anota en `docs/IDEAS.md` y **no se construye**.
+
+### AHORRO
+
+- Pruebas e2e solo de los **flujos críticos** de cada fase; `axe` solo en las páginas nuevas.
+- Capturas solo de las páginas nuevas, a **375 px y 1280 px, solo en modo claro**.
+- **Reutiliza** los componentes existentes antes de crear otros nuevos.
+- Continúa con la siguiente fase **en la misma tarea** mientras el contexto esté por debajo de 250k tokens.
+- Al terminar la F10: detenerse y entregar el resumen final del proyecto.
+
+---
+
 ## Arranque
 
 1. Lee **`E:\ecommerce-web\.clinerules`** (reglas de trabajo, terminal, seguridad y credenciales) y este
@@ -36,8 +68,10 @@ en la decisión **`0023`** de `E:\ecommerce\docs\decisiones\` y se resume más a
 - **La F6 (checkout y pagos) está desbloqueada**: se hace con la **pasarela de prueba** del backend (sin dinero
   real). El frontend **no integra ningún SDK de pasarela**; la pantalla de pago va **marcada como «modo de
   prueba»** con botones para aprobar o rechazar el pago, y se prueban los dos caminos.
-- Se avanza solo **de la F6 a la F9**. **Hay que detenerse antes de la F10 (publicación)**: elegir hosting y
-  dominio tiene coste y lo decide el dueño.
+- Se avanza de la **F6 a la F10 en la misma tarea**, mientras el contexto esté por debajo de 250k tokens. La
+  **F10 es solo preparación**: auditoría, una prueba e2e del recorrido completo y `docs/PUBLICAR.md`. **No se
+  crea ninguna cuenta, no se publica nada y no se gasta dinero**: eso lo decide y lo hace el dueño.
+- **Al terminar la F10**: detenerse y entregar el resumen final del proyecto (máximo 25 líneas).
 - Al cerrar cada fase: `pnpm capture` a `docs/capturas/fN/`, `docs/PROGRESO.md` al día, commit y **`git push`**
   (regla de copias de seguridad).
 - Si el contexto se agota, se para en orden con todo confirmado y se deja este archivo actualizado.

@@ -14,6 +14,8 @@ import { DEFAULT_LIMIT, type CatalogQuery } from "./params";
 export type SearchResponse = components["schemas"]["SearchResponse"];
 export type ProductSearchItem = components["schemas"]["ProductSearchItem"];
 export type Category = components["schemas"]["CategoryOut"];
+export type CategoryFacet = components["schemas"]["CategoryFacetOut"];
+export type PublicProductSummary = components["schemas"]["PublicProductSummaryOut"];
 
 export type CatalogResult<T> = { ok: true; data: T } | { ok: false; reason: "unavailable" };
 
@@ -58,6 +60,40 @@ export async function searchProducts(
 export async function listCategories(): Promise<CatalogResult<Category[]>> {
   try {
     const result = await backend.GET("/api/v1/catalog/categories", noStore);
+
+    if (!result.response.ok || result.data === undefined) {
+      return { ok: false, reason: "unavailable" };
+    }
+
+    return { ok: true, data: result.data };
+  } catch {
+    return { ok: false, reason: "unavailable" };
+  }
+}
+
+/** Tamaño de página del listado público (el backend acepta hasta 500). */
+export const PUBLIC_PRODUCTS_PAGE_SIZE = 500;
+
+/**
+ * Catálogo **publicado** completo, paginado por cursor (`GET /catalog/products/public`).
+ *
+ * Es el listado que necesita el `sitemap.xml`: recorre todo el catálogo activo con su `slug` (la URL
+ * bonita) y su `updated_at` (el `lastmod`), sin depender de una búsqueda concreta.
+ */
+export async function listPublicProducts({
+  cursor,
+  limit = PUBLIC_PRODUCTS_PAGE_SIZE,
+  q,
+}: { cursor?: string | null; limit?: number; q?: string } = {}): Promise<
+  CatalogResult<components["schemas"]["PublicProductListOut"]>
+> {
+  try {
+    const result = await backend.GET("/api/v1/catalog/products/public", {
+      params: {
+        query: { cursor: cursor ?? undefined, limit, q: q !== undefined && q.length > 0 ? q : undefined },
+      },
+      ...noStore,
+    });
 
     if (!result.response.ok || result.data === undefined) {
       return { ok: false, reason: "unavailable" };

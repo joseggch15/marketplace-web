@@ -8,6 +8,7 @@ import type {
   AuthTokens,
   AuthUser,
   ProfileInput,
+  RegisterResult,
 } from "./types";
 
 /**
@@ -59,7 +60,7 @@ export function registerAccount(input: {
   email: string;
   password: string;
   full_name: string;
-}): Promise<BackendResult<AuthUser>> {
+}): Promise<BackendResult<RegisterResult>> {
   return unwrap(backend.POST("/api/v1/auth/register", { body: input, ...noStore }));
 }
 

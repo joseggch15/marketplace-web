@@ -11,8 +11,8 @@ import type { ProductVariant } from "./types";
  */
 
 const variants: ProductVariant[] = [
-  { id: "v1", sku: "AUD-NEG", price: "299900.00", compare_at_price: null },
-  { id: "v2", sku: "AUD-BLA", price: "319900.00", compare_at_price: null },
+  { id: "v1", sku: "AUD-NEG", price: "299900.00", compare_at_price: null, stock: 0, available: 0 },
+  { id: "v2", sku: "AUD-BLA", price: "319900.00", compare_at_price: null, stock: 0, available: 0 },
 ];
 
 const base = {

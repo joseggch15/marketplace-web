@@ -22,27 +22,49 @@
     "home": "Home"
   },
   "Home": {
-    "badge": "Phase 0 · Foundations",
-    "heroTitle": "Shop thousands of stores in one place",
-    "heroSubtitle": "Compare prices, check seller reputation and get delivery to your door. If something goes wrong, we back you up.",
-    "systemTitle": "Platform status",
-    "systemSubtitle": "Checked right now against the real API, with no made-up data.",
-    "statusOk": "Everything working",
-    "statusUnhealthy": "Running with problems",
-    "statusUnreachable": "Backend unavailable",
-    "statusUnreachableDetail": "There was no response at {url}.",
-    "statusUnreachableHint": "Start the backend in its own terminal (folder E:\\ecommerce): docker compose up -d and then uv run uvicorn app.main:app --reload.",
-    "statusRetry": "Check again",
-    "checksLabel": "Backend checks",
-    "checkDatabase": "PostgreSQL database",
-    "checkRedis": "Redis cache",
-    "checkOk": "OK",
-    "checkError": "Failed",
-    "roadmapTitle": "What's next",
-    "roadmapItem1": "Phase 1: design system and /design-system page",
-    "roadmapItem2": "Phase 2: account, sign-up, verification and addresses",
-    "roadmapItem3": "Phase 3: catalog, search with filters and autocomplete",
-    "roadmapNote": "This home page is temporary: Phase 0 only delivers the foundations (languages, theme, layout and error pages)."
+    "hero": {
+      "title": "Shop thousands of stores, all in one place",
+      "subtitle": "Multi-seller marketplace",
+      "searchLabel": "Search products",
+      "searchPlaceholder": "Search by product, brand or store",
+      "searchSubmit": "Search",
+      "quickLinksLabel": "Featured categories",
+      "browseAll": "See the whole catalog"
+    },
+    "categories": {
+      "title": "Categories",
+      "subtitle": "Browse for what you need",
+      "count": "{count, plural, =0 {No products} one {# product} other {# products}}"
+    },
+    "featured": {
+      "title": "Just arrived",
+      "subtitle": "The latest published by our stores",
+      "seeAll": "See more new arrivals"
+    },
+    "bestSellers": {
+      "title": "Best sellers",
+      "subtitle": "Products that sold the most units",
+      "note": "See the whole catalog",
+      "badge": "Best seller"
+    },
+    "card": {
+      "noImage": "No image",
+      "priceUnavailable": "Price unavailable",
+      "ratingLabel": "Rated {rating} out of 5 from {count} reviews",
+      "ratingEmpty": "No reviews yet",
+      "sold": "{count} sold",
+      "store": "Sold by {store}"
+    },
+    "unavailable": {
+      "title": "We could not load the catalog",
+      "description": "The store is not responding right now. Please try again in a moment.",
+      "action": "Go to search"
+    },
+    "empty": {
+      "title": "No products published yet",
+      "description": "Once stores publish their products, you will see them here.",
+      "action": "Go to search"
+    }
   },
   "Search": {
     "title": "Search",
@@ -228,7 +250,8 @@
       "goToRegister": "Create one",
       "showPassword": "Show password",
       "hidePassword": "Hide password",
-      "working": "Saving…"
+      "working": "Saving…",
+      "goShopping": "Go to the store"
     },
     "links": {
       "needAccount": "No account yet?",
@@ -254,7 +277,8 @@
       "emailNotConfigured": "In this test environment the backend does not send emails yet: the link appears in its logs.",
       "passwordChanged": "Your password has been updated. You can sign in now.",
       "saved": "We saved your changes.",
-      "redirecting": "You are already signed in. Taking you to your account…"
+      "redirecting": "You are already signed in. Taking you to your account…",
+      "registeredAndSignedIn": "All set! Your account is created and you are signed in."
     },
     "errors": {
       "invalid_credentials": "The email or the password are not correct.",
@@ -298,7 +322,11 @@
     "categoryDescription": "Shop {name}: compare prices across stores, check the seller's reputation and get it delivered.",
     "card": {
       "noImage": "No image",
-      "priceUnavailable": "Price unavailable"
+      "priceUnavailable": "Price unavailable",
+      "ratingLabel": "Rated {rating} out of 5 from {count} reviews",
+      "ratingEmpty": "No reviews yet",
+      "sold": "{count} sold",
+      "store": "Sold by {store}"
     },
     "empty": {
       "title": "We found no products",
@@ -478,5 +506,18 @@
       "network_error": "We could not connect. Check your connection and try again.",
       "unknown": "We could not update your cart. Please try again."
     }
+  },
+  "Health": {
+    "statusOk": "Everything working",
+    "statusUnhealthy": "Running with problems",
+    "statusUnreachable": "Backend unavailable",
+    "statusUnreachableDetail": "No response from {url}.",
+    "statusUnreachableHint": "Start the backend in its own terminal (folder E:\\ecommerce): docker compose up -d and then uv run uvicorn app.main:app --reload.",
+    "statusRetry": "Check again",
+    "checksLabel": "Backend checks",
+    "checkDatabase": "PostgreSQL database",
+    "checkRedis": "Redis cache",
+    "checkOk": "OK",
+    "checkError": "Failed"
   }
 }

@@ -42,6 +42,10 @@ export default async function SearchPage({ params, searchParams }: SearchPagePro
   const labels = {
     noImage: t("card.noImage"),
     priceUnavailable: t("card.priceUnavailable"),
+    ratingLabel: (rating: string, count: number) => t("card.ratingLabel", { rating, count }),
+    ratingEmpty: t("card.ratingEmpty"),
+    soldLabel: (count: number) => t("card.sold", { count }),
+    storeLabel: (store: string) => t("card.store", { store }),
   };
 
   return (

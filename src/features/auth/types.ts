@@ -6,6 +6,8 @@ import type { components } from "@/lib/api/schema";
  */
 export type AuthTokens = components["schemas"]["TokenPair"];
 export type AuthUser = components["schemas"]["UserOut"];
+/** Respuesta del registro: el usuario **y** los tokens (el backend ya deja la sesión iniciada). */
+export type RegisterResult = components["schemas"]["RegisterOut"];
 export type UserProfile = components["schemas"]["UserProfileOut"];
 export type ProfileInput = components["schemas"]["UserUpdate"];
 export type Address = components["schemas"]["AddressOut"];

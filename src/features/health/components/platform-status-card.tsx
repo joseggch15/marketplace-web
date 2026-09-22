@@ -22,7 +22,7 @@ const CHECK_LABELS: Record<string, "checkDatabase" | "checkRedis"> = {
  * No se inventa ningún dato: si el backend no responde, se dice tal cual y se explica cómo levantarlo.
  */
 export async function PlatformStatusCard() {
-  const t = await getTranslations("Home");
+  const t = await getTranslations("Health");
   const health = await fetchPlatformHealth();
 
   if (health.kind === "unreachable") {

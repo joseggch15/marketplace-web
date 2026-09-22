@@ -17,6 +17,23 @@ export function isProductId(value: string): boolean {
   return PRODUCT_ID_PATTERN.test(value);
 }
 
+/**
+ * Los productos también se pueden visitar por su **slug** (`/p/balon-de-futbol-profesional-no5`), que es la
+ * URL bonita que se usa en el sitemap y en los enlaces del catálogo. Se valida igual que el identificador:
+ * una dirección rara no tiene por qué llegar a la API.
+ */
+const PRODUCT_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+/** ¿El valor de la ruta tiene forma de slug de producto? */
+export function isProductSlug(value: string): boolean {
+  return value.length <= 160 && PRODUCT_SLUG_PATTERN.test(value);
+}
+
+/** ¿La ruta de la ficha lleva algo que podamos resolver (un identificador o un slug)? */
+export function isProductRef(value: string): boolean {
+  return isProductId(value) || isProductSlug(value);
+}
+
 /** Nombre del parámetro de URL que lleva el cursor de las reseñas. */
 export const REVIEWS_CURSOR_PARAM = "reviews_cursor";
 

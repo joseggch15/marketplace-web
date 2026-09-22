@@ -33,6 +33,8 @@ const cart: Cart = {
       unit_price: "299900.00",
       quantity: 2,
       subtotal: "599800.00",
+      available: 0,
+      price_changed: false,
     },
     {
       variant_id: "22222222-2222-4222-8222-222222222222",
@@ -44,6 +46,8 @@ const cart: Cart = {
       unit_price: "319900.00",
       quantity: 1,
       subtotal: "319900.00",
+      available: 0,
+      price_changed: false,
     },
   ],
   total_items: 3,

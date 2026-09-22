@@ -17,6 +17,7 @@ import {
   REVIEWS_PAGE_SIZE,
   fetchAvailability,
   fetchProduct,
+  fetchProductBySlug,
   fetchQuestions,
   fetchReviews,
 } from "@/features/product/api";
@@ -25,7 +26,7 @@ import { QuestionForm } from "@/features/product/components/question-form";
 import { QuestionsSection } from "@/features/product/components/questions-section";
 import { ReviewsSection } from "@/features/product/components/reviews-section";
 import { buildBreadcrumbJsonLd, buildProductJsonLd } from "@/features/product/json-ld";
-import { isProductId, parseReviewsCursor, reviewsHref } from "@/features/product/params";
+import { isProductId, isProductRef, parseReviewsCursor, reviewsHref } from "@/features/product/params";
 import {
   galleryImages,
   isOutOfStock,
@@ -38,12 +39,11 @@ import { env } from "@/lib/env";
 import { toAmount } from "@/lib/format/money";
 
 /**
- * Página de producto (`/es/p/{product_id}`).
+ * Página de producto (`/es/p/{slug}` o `/es/p/{identificador}`).
  *
- * Por qué el identificador y no el slug: **no existe** un endpoint público que resuelva un slug, y buscar por
- * `q=<slug>` no sirve (el buscador indexa título y marca). La decisión y el pendiente están en el apartado 9 de
- * `docs/PENDIENTES-BACKEND.md`; cuando el backend añada `GET /catalog/products/by-slug/{slug}`, el cambio es de
- * dos líneas (esta ruta y el enlace de `product-grid.tsx`).
+ * Las dos formas valen: el **slug** es la URL bonita que se comparte y se indexa (y la que usa el
+ * `sitemap.xml`), y el **identificador** se sigue aceptando para que ningún enlace antiguo se rompa. El
+ * `canonical` apunta siempre al slug, así que un producto tiene una sola dirección a ojos de un buscador.
  *
  * Todo lo que se ve sale de la API:
  * - El producto, sus variantes y sus imágenes (`/catalog/products/{id}`).
@@ -72,7 +72,9 @@ type ProductPageProps = {
  * El producto se pide **una sola vez por visita**: `generateMetadata` y la página comparten el resultado.
  * Sin esto, cada visita haría dos peticiones al backend para lo mismo.
  */
-const loadProduct = cache((productId: string) => fetchProduct(productId));
+const loadProduct = cache((ref: string) =>
+  isProductId(ref) ? fetchProduct(ref) : fetchProductBySlug(ref),
+);
 
 /** URL canónica de la ficha (sin el cursor de reseñas): es la misma página, no una distinta. */
 function productCanonical(locale: string, productId: string): string {
@@ -103,7 +105,7 @@ function absoluteMediaUrl(src: string): string {
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const { locale, productId } = await params;
 
-  if (!hasLocale(routing.locales, locale) || !isProductId(productId)) {
+  if (!hasLocale(routing.locales, locale) || !isProductRef(productId)) {
     return { robots: { index: false, follow: true } };
   }
 
@@ -119,7 +121,9 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   const description = product.description?.trim() ?? "";
   const summary =
     description.length > 0 ? summarizeText(description) : t("meta.description", { title: product.title });
-  const canonical = productCanonical(locale, product.id);
+  // La canónica es siempre la **URL por slug**, aunque se haya llegado por identificador: una sola dirección
+  // por producto, que es lo que evita contenido duplicado en los buscadores.
+  const canonical = productCanonical(locale, product.slug);
   const image = galleryImages(product)[0]?.src;
 
   return {
@@ -128,7 +132,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     alternates: {
       canonical,
       languages: Object.fromEntries(
-        routing.locales.map((option) => [option, productCanonical(option, product.id)]),
+        routing.locales.map((option) => [option, productCanonical(option, product.slug)]),
       ),
     },
     openGraph: {
@@ -150,8 +154,8 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
 
   setRequestLocale(locale);
 
-  // Una dirección como `/p/hola` no tiene por qué llegar al backend.
-  if (!isProductId(productId)) {
+  // Una dirección como `/p/hola` (ni identificador ni slug) no tiene por qué llegar al backend.
+  if (!isProductRef(productId)) {
     notFound();
   }
 
@@ -197,7 +201,7 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
       ? (categories.data.find((item) => item.id === product.category_id) ?? null)
       : null;
 
-  const productPath = `/p/${product.id}`;
+  const productPath = `/p/${product.slug}`;
   const productUrl = absoluteUrl(locale, productPath);
   const numberFormat = new Intl.NumberFormat(locale);
   const ratingFormat = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 });

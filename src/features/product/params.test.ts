@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 
-import { isProductId, parseReviewsCursor, reviewsHref, REVIEWS_CURSOR_PARAM } from "./params";
+import {
+  isProductId,
+  isProductRef,
+  isProductSlug,
+  parseReviewsCursor,
+  reviewsHref,
+  REVIEWS_CURSOR_PARAM,
+} from "./params";
 
 /**
  * Pruebas de los parámetros de la ficha de producto.
@@ -21,6 +28,42 @@ describe("isProductId", () => {
     expect(isProductId("11111111111111111111111111111111")).toBe(false);
     expect(isProductId("")).toBe(false);
     expect(isProductId("11111111-1111-1111-1111-11111111111z")).toBe(false);
+  });
+});
+
+describe("isProductSlug", () => {
+  it("acepta el slug que genera el backend a partir del título", () => {
+    expect(isProductSlug("balon-de-futbol-profesional-no5")).toBe(true);
+    expect(isProductSlug("mancuernas-ajustables-par-20-kg")).toBe(true);
+    expect(isProductSlug("producto")).toBe(true);
+  });
+
+  it("rechaza lo que no es un slug (mayúsculas, espacios, barras o guiones sueltos)", () => {
+    expect(isProductSlug("Producto")).toBe(false);
+    expect(isProductSlug("con espacio")).toBe(false);
+    expect(isProductSlug("con/barra")).toBe(false);
+    expect(isProductSlug("-empieza-con-guion")).toBe(false);
+    expect(isProductSlug("termina-con-guion-")).toBe(false);
+    expect(isProductSlug("")).toBe(false);
+    expect(isProductSlug("a".repeat(161))).toBe(false);
+  });
+
+  it("rechaza un intento de inyección en la ruta", () => {
+    expect(isProductSlug("../../etc/passwd")).toBe(false);
+    expect(isProductSlug("<script>")).toBe(false);
+  });
+});
+
+describe("isProductRef", () => {
+  it("deja pasar las dos formas de URL de la ficha (identificador y slug)", () => {
+    expect(isProductRef("11111111-1111-4111-8111-111111111111")).toBe(true);
+    expect(isProductRef("audifonos-inalambricos")).toBe(true);
+  });
+
+  it("deja fuera cualquier otra cosa", () => {
+    expect(isProductRef("hola")).toBe(true);
+    expect(isProductRef("HOLA")).toBe(false);
+    expect(isProductRef("")).toBe(false);
   });
 });
 

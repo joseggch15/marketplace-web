@@ -73,7 +73,14 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Register */
+        /**
+         * Register
+         * @description Crea la cuenta y **deja la sesión iniciada**.
+         *
+         *     Devuelve el usuario creado y el mismo par de tokens que `POST /auth/login` (decisión 0023): el
+         *     registro ya no obliga a iniciar sesión después. El correo de verificación se envía igual; que
+         *     sea obligatorio para vender o publicar lo decide `REQUIRE_VERIFIED_EMAIL`.
+         */
         post: operations["register_api_v1_auth_register_post"];
         delete?: never;
         options?: never;
@@ -267,6 +274,10 @@ export interface paths {
         /**
          * Create Store
          * @description Solicita la creación de la tienda (queda pendiente de aprobación del admin).
+         *
+         *     Es el primer paso para vender, así que pasa por `require_verified_email`: si el interruptor
+         *     `REQUIRE_VERIFIED_EMAIL` está encendido, hay que tener el correo verificado para solicitarla
+         *     (decisión 0023).
          */
         post: operations["create_store_api_v1_sellers_me_post"];
         delete?: never;
@@ -274,6 +285,30 @@ export interface paths {
         head?: never;
         /** Update My Store */
         patch: operations["update_my_store_api_v1_sellers_me_patch"];
+        trace?: never;
+    };
+    "/api/v1/stores/{store_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Public Store
+         * @description Datos públicos de una tienda aprobada (sin sesión).
+         *
+         *     Es lo que necesita la ficha de producto para mostrar «vendido por», su logo y su reputación
+         *     sin exponer datos internos del vendedor (`user_id`, estado de la solicitud). Una tienda no
+         *     aprobada responde 404.
+         */
+        get: operations["get_public_store_api_v1_stores__store_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/v1/sellers": {
@@ -434,6 +469,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/catalog/products/public": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Public Products
+         * @description Catálogo **publicado** completo, paginado por cursor (público, sin sesión).
+         *
+         *     Es el listado que necesita el `sitemap.xml` del frontend: recorre todos los productos activos
+         *     (los que se pueden visitar) del más reciente al más antiguo y devuelve, por cada uno, el `slug`
+         *     (la URL bonita) y `updated_at` (el `lastmod`). `GET /catalog/products` no sirve para esto porque
+         *     devuelve el catálogo **del vendedor** que hace la petición.
+         *
+         *     Va declarado **antes** de `/catalog/products/{product_id}` para que la ruta no se confunda con
+         *     un identificador, igual que `by-slug`.
+         */
+        get: operations["list_public_products_api_v1_catalog_products_public_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/catalog/products/by-slug/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Product By Slug
+         * @description Producto por su slug (público): la URL bonita y estable para compartir.
+         *
+         *     Va declarado **antes** de `/catalog/products/{product_id}` para que la ruta no se confunda con
+         *     un identificador; el slug es único y tiene índice.
+         */
+        get: operations["get_product_by_slug_api_v1_catalog_products_by_slug__slug__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/catalog/products/{product_id}": {
         parameters: {
             query?: never;
@@ -451,6 +537,31 @@ export interface paths {
         head?: never;
         /** Update Product */
         patch: operations["update_product_api_v1_catalog_products__product_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/catalog/products/{product_id}/shipping": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Product Shipping
+         * @description Estimación de entrega del producto (pública, sin sesión).
+         *
+         *     Devuelve una **ventana** de fechas en días hábiles y el coste de envío para el comprador.
+         *     Hoy el coste es 0 (el envío se define en el checkout, decisión 0012) y las fechas son una
+         *     estimación configurable: el campo `source` lo declara, para que la interfaz no la presente
+         *     como una promesa de transportadora.
+         */
+        get: operations["get_product_shipping_api_v1_catalog_products__product_id__shipping_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/v1/catalog/products/{product_id}/publish": {
@@ -1282,7 +1393,11 @@ export interface paths {
         put?: never;
         /**
          * Payment Webhook
-         * @description Webhook del proveedor: firma HMAC-SHA256 en `X-Signature` e idempotente por evento.
+         * @description Webhook del proveedor.
+         *
+         *     Los encabezados se pasan completos al adaptador, que conoce su propio protocolo de firma (el
+         *     sandbox usa `X-Signature` con HMAC-SHA256 del cuerpo; Mercado Pago usa `x-signature` +
+         *     `x-request-id`). El cuerpo **crudo** es lo que se firma, así que se lee tal cual llega.
          */
         post: operations["payment_webhook_api_v1_webhooks_payments__provider__post"];
         delete?: never;
@@ -1367,6 +1482,9 @@ export interface paths {
         /**
          * Create Review
          * @description Reseña un producto que compraste y recibiste (una reseña por producto).
+         *
+         *     Publicar una reseña pasa por `require_verified_email`: con `REQUIRE_VERIFIED_EMAIL` encendido
+         *     hace falta el correo verificado (decisión 0023). Editar y borrar la propia reseña no lo exigen.
          */
         post: operations["create_review_api_v1_reviews_post"];
         delete?: never;
@@ -1428,13 +1546,16 @@ export interface paths {
         };
         /**
          * List Product Questions
-         * @description Preguntas de un producto con las respuestas del vendedor.
+         * @description Preguntas de un producto con las respuestas del vendedor (paginación por cursor).
          */
         get: operations["list_product_questions_api_v1_products__product_id__questions_get"];
         put?: never;
         /**
          * Ask Question
          * @description Pregunta públicamente algo sobre un producto.
+         *
+         *     Publicar una pregunta pasa por `require_verified_email` (decisión 0023): las preguntas son
+         *     públicas y con el interruptor encendido solo las escribe quien verificó su correo.
          */
         post: operations["ask_question_api_v1_products__product_id__questions_post"];
         delete?: never;
@@ -1700,6 +1821,16 @@ export interface components {
          * @enum {string}
          */
         AttributeType: "text" | "number" | "select";
+        /**
+         * BrandFacetOut
+         * @description Cuántos resultados hay de una marca.
+         */
+        BrandFacetOut: {
+            /** Brand */
+            brand: string;
+            /** Count */
+            count: number;
+        };
         /** CartItemAdd */
         CartItemAdd: {
             /**
@@ -1745,6 +1876,22 @@ export interface components {
             quantity: number;
             /** Subtotal */
             subtotal: string;
+            /**
+             * Available
+             * @default 0
+             */
+            available: number;
+            /** Added Unit Price */
+            added_unit_price?: string | null;
+            /**
+             * Price Changed
+             * @default false
+             */
+            price_changed: boolean;
+            /** Thumbnail */
+            thumbnail?: string | null;
+            /** Attribute Values */
+            attribute_values?: components["schemas"]["VariantValueOut"][];
         };
         /** CartItemUpdate */
         CartItemUpdate: {
@@ -1811,6 +1958,21 @@ export interface components {
             parent_id?: string | null;
             /** Commission Rate */
             commission_rate?: number | string | null;
+        };
+        /**
+         * CategoryFacetOut
+         * @description Cuántos resultados hay en una categoría.
+         */
+        CategoryFacetOut: {
+            /**
+             * Category Id
+             * Format: uuid
+             */
+            category_id: string;
+            /** Name */
+            name: string;
+            /** Count */
+            count: number;
         };
         /** CategoryOut */
         CategoryOut: {
@@ -2313,6 +2475,18 @@ export interface components {
              */
             created_at: string;
         };
+        /**
+         * PriceFacetOut
+         * @description Precio mínimo y máximo **reales** de los resultados (para el deslizador de precio).
+         *
+         *     No se inventan tramos: el frontend decide cómo agruparlos con datos reales.
+         */
+        PriceFacetOut: {
+            /** Min */
+            min: string | null;
+            /** Max */
+            max: string | null;
+        };
         /** ProductCreate */
         ProductCreate: {
             /** Title */
@@ -2374,6 +2548,16 @@ export interface components {
              * Format: date-time
              */
             created_at: string;
+            /**
+             * Total Available
+             * @default 0
+             */
+            total_available: number;
+            /**
+             * Sold Count
+             * @default 0
+             */
+            sold_count: number;
             /** Variants */
             variants?: components["schemas"]["VariantOut"][];
             /** Images */
@@ -2404,6 +2588,14 @@ export interface components {
             min_price: string | null;
             /** Thumbnail */
             thumbnail: string | null;
+            /** Rating Average */
+            rating_average: string | null;
+            /** Review Count */
+            review_count: number;
+            /** Store Name */
+            store_name: string;
+            /** Sold Count */
+            sold_count: number;
         };
         /**
          * ProductStatus
@@ -2419,6 +2611,71 @@ export interface components {
             description?: string | null;
             /** Brand */
             brand?: string | null;
+        };
+        /**
+         * PublicProductListOut
+         * @description Página del catálogo publicado (paginación por cursor).
+         */
+        PublicProductListOut: {
+            /** Items */
+            items: components["schemas"]["PublicProductSummaryOut"][];
+            /** Next Cursor */
+            next_cursor: string | null;
+        };
+        /**
+         * PublicProductSummaryOut
+         * @description Producto publicado con lo mínimo para construir el sitemap.
+         *
+         *     `slug` es la URL bonita y `updated_at` el `lastmod`: son los dos datos que pide un sitemap para
+         *     recorrer el catálogo entero sin descargar cada ficha.
+         */
+        PublicProductSummaryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Slug */
+            slug: string;
+            /** Title */
+            title: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /**
+         * PublicStoreOut
+         * @description Datos públicos de una tienda: los que puede ver cualquier visitante, sin sesión.
+         *
+         *     No incluye `user_id` ni `status`: al comprador no le dicen nada y son datos internos.
+         */
+        PublicStoreOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Name */
+            name: string;
+            /** Slug */
+            slug: string;
+            /** Description */
+            description: string | null;
+            /** Logo Url */
+            logo_url: string | null;
+            /** Rating Average */
+            rating_average: string | null;
+            /** Rating Count */
+            rating_count: number;
+            /** Orders Delivered */
+            orders_delivered: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
         };
         /** QuestionCreate */
         QuestionCreate: {
@@ -2472,6 +2729,26 @@ export interface components {
         RefreshRequest: {
             /** Refresh Token */
             refresh_token: string;
+        };
+        /**
+         * RegisterOut
+         * @description Respuesta del registro: la cuenta creada **y** su par de tokens.
+         *
+         *     El registro deja la sesión iniciada (decisión 0023), así que devuelve los mismos tokens que el
+         *     login **más** el usuario: el cliente que empieza a usarlos (el BFF del frontend) necesita su
+         *     perfil para construir la sesión y así se ahorra una petición extra a `GET /users/me`.
+         */
+        RegisterOut: {
+            user: components["schemas"]["UserOut"];
+            /** Access Token */
+            access_token: string;
+            /** Refresh Token */
+            refresh_token: string;
+            /**
+             * Token Type
+             * @default bearer
+             */
+            token_type: string;
         };
         /** RegisterRequest */
         RegisterRequest: {
@@ -2578,12 +2855,27 @@ export interface components {
          * @enum {string}
          */
         SandboxOutcome: "succeeded" | "failed" | "refunded";
+        /**
+         * SearchFacetsOut
+         * @description Conteos para la barra de filtros.
+         *
+         *     Cada faceta se cuenta con **los demás filtros aplicados** y el suyo propio excluido: así al
+         *     usuario le sale cuántos resultados tendría al añadir esa opción.
+         */
+        SearchFacetsOut: {
+            /** Categories */
+            categories: components["schemas"]["CategoryFacetOut"][];
+            /** Brands */
+            brands: components["schemas"]["BrandFacetOut"][];
+            price: components["schemas"]["PriceFacetOut"];
+        };
         /** SearchResponse */
         SearchResponse: {
             /** Items */
             items: components["schemas"]["ProductSearchItem"][];
             /** Next Cursor */
             next_cursor: string | null;
+            facets: components["schemas"]["SearchFacetsOut"];
         };
         /** SellerOrderListOut */
         SellerOrderListOut: {
@@ -2773,6 +3065,46 @@ export interface components {
             /** Country */
             country: string;
         };
+        /**
+         * ShippingEstimateOut
+         * @description Estimación de entrega de un producto (fechas ISO y coste en la moneda del vendedor).
+         */
+        ShippingEstimateOut: {
+            /**
+             * Product Id
+             * Format: uuid
+             */
+            product_id: string;
+            /**
+             * Store Id
+             * Format: uuid
+             */
+            store_id: string;
+            /** Destination Country */
+            destination_country: string;
+            /** Handling Days */
+            handling_days: number;
+            /** Transit Days Min */
+            transit_days_min: number;
+            /** Transit Days Max */
+            transit_days_max: number;
+            /**
+             * Estimated Delivery Min
+             * Format: date
+             */
+            estimated_delivery_min: string;
+            /**
+             * Estimated Delivery Max
+             * Format: date
+             */
+            estimated_delivery_max: string;
+            /** Shipping Cost */
+            shipping_cost: string;
+            /** Free Shipping */
+            free_shipping: boolean;
+            /** Source */
+            source: string;
+        };
         /** StockAdjustRequest */
         StockAdjustRequest: {
             /** Delta */
@@ -2951,6 +3283,18 @@ export interface components {
             price: string;
             /** Compare At Price */
             compare_at_price: string | null;
+            /**
+             * Stock
+             * @default 0
+             */
+            stock: number;
+            /**
+             * Available
+             * @default 0
+             */
+            available: number;
+            /** Attribute Values */
+            attribute_values?: components["schemas"]["VariantValueOut"][];
         };
         /** VariantValueIn */
         VariantValueIn: {
@@ -2959,6 +3303,21 @@ export interface components {
              * Format: uuid
              */
             attribute_id: string;
+            /** Value */
+            value: string;
+        };
+        /**
+         * VariantValueOut
+         * @description Valor de atributo de una variante (color: negro, talla: M).
+         */
+        VariantValueOut: {
+            /**
+             * Attribute Id
+             * Format: uuid
+             */
+            attribute_id: string;
+            /** Name */
+            name: string;
             /** Value */
             value: string;
         };
@@ -3068,7 +3427,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["UserOut"];
+                    "application/json": components["schemas"]["RegisterOut"];
                 };
             };
             /** @description Validation Error */
@@ -3561,6 +3920,37 @@ export interface operations {
             };
         };
     };
+    get_public_store_api_v1_stores__store_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                store_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicStoreOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_stores_api_v1_sellers_get: {
         parameters: {
             query?: {
@@ -3973,6 +4363,72 @@ export interface operations {
             };
         };
     };
+    list_public_products_api_v1_catalog_products_public_get: {
+        parameters: {
+            query?: {
+                /** @description Filtra por título o slug (contiene). Sin valor, recorre todo el catálogo. */
+                q?: string | null;
+                /** @description Cursor de la página anterior (`next_cursor`). */
+                cursor?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicProductListOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_product_by_slug_api_v1_catalog_products_by_slug__slug__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_product_api_v1_catalog_products__product_id__get: {
         parameters: {
             query?: never;
@@ -4055,6 +4511,40 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ProductOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_product_shipping_api_v1_catalog_products__product_id__shipping_get: {
+        parameters: {
+            query?: {
+                /** @description País de destino (ISO 3166-1 alfa-2). Por defecto, el país de origen. */
+                country?: string | null;
+            };
+            header?: never;
+            path: {
+                product_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShippingEstimateOut"];
                 };
             };
             /** @description Validation Error */
@@ -5529,9 +6019,7 @@ export interface operations {
     payment_webhook_api_v1_webhooks_payments__provider__post: {
         parameters: {
             query?: never;
-            header?: {
-                "X-Signature"?: string | null;
-            };
+            header?: never;
             path: {
                 provider: string;
             };
@@ -5811,6 +6299,7 @@ export interface operations {
         parameters: {
             query?: {
                 limit?: number;
+                cursor?: string | null;
             };
             header?: never;
             path: {

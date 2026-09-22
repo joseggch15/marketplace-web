@@ -79,6 +79,21 @@ export function fetchProduct(productId: string): Promise<FetchResult<Product>> {
 }
 
 /**
+ * Producto por su slug (`GET /catalog/products/by-slug/{slug}`).
+ *
+ * Es la URL bonita y estable para compartir e indexar (`/p/<slug>`); la ruta de la ficha acepta las dos
+ * formas, así que los enlaces antiguos por identificador siguen funcionando.
+ */
+export function fetchProductBySlug(slug: string): Promise<FetchResult<Product>> {
+  return toResult(() =>
+    backend.GET("/api/v1/catalog/products/by-slug/{slug}", {
+      params: { path: { slug } },
+      ...noStore,
+    }),
+  );
+}
+
+/**
  * Stock **real** de cada variante.
  *
  * El backend expone el inventario por variante (`GET /inventory/items/{variant_id}`) y **no** incluye el

@@ -2,8 +2,9 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
 /**
- * Pruebas de la Fase 0: la portada funciona, los idiomas cambian, el 404 se ve bien y **no hay errores
- * de accesibilidad** (axe) ni en modo claro ni en modo oscuro.
+ * Pruebas de la portada: la tienda se ve, el buscador funciona, **no aparece nada de andamiaje** (el estado del
+ * backend, el plan de fases ni la etiqueta «Fase 0») y no hay errores de accesibilidad (axe) ni en modo claro ni
+ * en modo oscuro.
  */
 
 const LOCALES = ["es", "en"] as const;
@@ -13,17 +14,30 @@ const WCAG_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
 
 for (const locale of LOCALES) {
   test.describe(`portada /${locale}`, () => {
-    test("carga, muestra el estado real del backend y no tiene errores de accesibilidad", async ({
+    test("muestra el buscador protagonista y no tiene errores de accesibilidad", async ({
       page,
     }) => {
       await page.goto(`/${locale}`);
 
       await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-      // El estado del backend es contenido real (puede estar disponible o no, pero siempre se informa).
-      await expect(page.getByRole("heading", { name: /estado|status/i })).toBeVisible();
+      // El buscador de la portada (además del de la cabecera) es lo primero que se puede usar.
+      await expect(page.locator("#home-search")).toBeVisible();
 
       const results = await new AxeBuilder({ page }).withTags(WCAG_TAGS).analyze();
       expect(results.violations).toEqual([]);
+    });
+
+    test("no muestra el andamiaje del proyecto (estado del backend, fases ni «Fase 0»)", async ({
+      page,
+    }) => {
+      await page.goto(`/${locale}`);
+
+      const body = await page.locator("body").innerText();
+
+      expect(body).not.toMatch(/fase\s*0/i);
+      expect(body).not.toMatch(/roadmap|plan de fases/i);
+      // El estado técnico del backend vive en /design-system, no en la tienda.
+      await expect(page.getByRole("heading", { name: /estado|status/i })).toHaveCount(0);
     });
 
     test("no tiene errores de accesibilidad en modo oscuro", async ({ page }) => {
@@ -44,10 +58,10 @@ for (const locale of LOCALES) {
       await expect(focused).toHaveAttribute("href", "#main-content");
     });
 
-    test("la búsqueda se envía por la URL y conserva el idioma", async ({ page }) => {
+    test("la búsqueda de la portada se envía por la URL y conserva el idioma", async ({ page }) => {
       await page.goto(`/${locale}`);
-      await page.getByLabel(/buscar|search/i).first().fill("zapatos");
-      await page.getByRole("button", { name: /buscar|search/i }).first().click();
+      await page.locator("#home-search").fill("zapatos");
+      await page.locator("#home-search").press("Enter");
 
       await page.waitForURL(`**/${locale}/search?q=zapatos`);
       await expect(page).toHaveURL(new RegExp(`/${locale}/search\\?q=zapatos`));

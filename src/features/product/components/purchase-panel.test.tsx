@@ -71,12 +71,16 @@ const cheap: ProductVariant = {
   sku: "AUD-NEG",
   price: "299900.00",
   compare_at_price: "399900.00",
+  stock: 0,
+  available: 0,
 };
 const expensive: ProductVariant = {
   id: "variante-a",
   sku: "AUD-BLA",
   price: "319900.00",
   compare_at_price: null,
+  stock: 0,
+  available: 0,
 };
 
 function renderPanel(ui: ReactElement) {
@@ -106,6 +110,8 @@ beforeEach(() => {
           unit_price: "299900.00",
           quantity: 1,
           subtotal: "299900.00",
+          available: 0,
+          price_changed: false,
         },
       ],
       total_items: 1,

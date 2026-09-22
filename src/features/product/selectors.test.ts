@@ -24,12 +24,16 @@ const cheap: ProductVariant = {
   sku: "AUD-NEG",
   price: "299900.00",
   compare_at_price: "399900.00",
+  stock: 0,
+  available: 0,
 };
 const expensive: ProductVariant = {
   id: "variante-a",
   sku: "AUD-BLA",
   price: "319900.00",
   compare_at_price: null,
+  stock: 0,
+  available: 0,
 };
 /** Mismo precio que `cheap`: hace falta un desempate estable (por SKU). */
 const samePriceAsCheap: ProductVariant = {
@@ -37,6 +41,8 @@ const samePriceAsCheap: ProductVariant = {
   sku: "AUD-AAA",
   price: "299900.00",
   compare_at_price: null,
+  stock: 0,
+  available: 0,
 };
 
 describe("sortedVariants", () => {
@@ -65,12 +71,16 @@ describe("sortedVariants", () => {
       sku: "P1",
       price: "2.50",
       compare_at_price: null,
+      stock: 0,
+      available: 0,
     };
     const twoFortyNine: ProductVariant = {
       id: "p2",
       sku: "P2",
       price: "2.49",
       compare_at_price: null,
+      stock: 0,
+      available: 0,
     };
 
     expect(sortedVariants([twoFifty, twoFortyNine]).map((variant) => variant.id)).toEqual([

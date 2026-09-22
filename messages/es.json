@@ -22,27 +22,49 @@
     "home": "Inicio"
   },
   "Home": {
-    "badge": "Fase 0 · Fundamentos",
-    "heroTitle": "Compra en miles de tiendas, todo en un solo lugar",
-    "heroSubtitle": "Compara precios, revisa la reputación del vendedor y recibe en tu casa. Si algo sale mal, te acompañamos.",
-    "systemTitle": "Estado de la plataforma",
-    "systemSubtitle": "Comprobado ahora mismo contra la API real, sin datos inventados.",
-    "statusOk": "Todo funcionando",
-    "statusUnhealthy": "Funciona con problemas",
-    "statusUnreachable": "Backend no disponible",
-    "statusUnreachableDetail": "No hubo respuesta en {url}.",
-    "statusUnreachableHint": "Levanta el backend en su terminal (carpeta E:\\ecommerce): docker compose up -d y luego uv run uvicorn app.main:app --reload.",
-    "statusRetry": "Comprobar de nuevo",
-    "checksLabel": "Comprobaciones del backend",
-    "checkDatabase": "Base de datos PostgreSQL",
-    "checkRedis": "Caché Redis",
-    "checkOk": "Correcto",
-    "checkError": "Con error",
-    "roadmapTitle": "Qué sigue",
-    "roadmapItem1": "Fase 1: sistema de diseño y página /design-system",
-    "roadmapItem2": "Fase 2: cuenta, registro, verificación y direcciones",
-    "roadmapItem3": "Fase 3: catálogo, búsqueda con filtros y autocompletado",
-    "roadmapNote": "Esta portada es provisional: la Fase 0 entrega solo los fundamentos (idiomas, tema, layout y páginas de error)."
+    "hero": {
+      "title": "Compra en miles de tiendas, todo en un solo lugar",
+      "subtitle": "Marketplace multi-vendedor",
+      "searchLabel": "Buscar productos",
+      "searchPlaceholder": "Busca por producto, marca o tienda",
+      "searchSubmit": "Buscar",
+      "quickLinksLabel": "Categorías destacadas",
+      "browseAll": "Ver todo el catálogo"
+    },
+    "categories": {
+      "title": "Categorías",
+      "subtitle": "Explora por lo que necesitas",
+      "count": "{count, plural, =0 {Sin productos} one {# producto} other {# productos}}"
+    },
+    "featured": {
+      "title": "Recién llegados",
+      "subtitle": "Lo último que publicaron las tiendas",
+      "seeAll": "Ver más novedades"
+    },
+    "bestSellers": {
+      "title": "Los más vendidos",
+      "subtitle": "Productos que más unidades han vendido",
+      "note": "Ver el catálogo completo",
+      "badge": "Más vendido"
+    },
+    "card": {
+      "noImage": "Sin imagen",
+      "priceUnavailable": "Precio no disponible",
+      "ratingLabel": "Calificación {rating} de 5 con {count} reseñas",
+      "ratingEmpty": "Todavía sin reseñas",
+      "sold": "{count} vendidos",
+      "store": "Vendido por {store}"
+    },
+    "unavailable": {
+      "title": "No pudimos cargar el catálogo",
+      "description": "La tienda no está respondiendo en este momento. Vuelve a intentarlo en un momento.",
+      "action": "Ir al buscador"
+    },
+    "empty": {
+      "title": "Todavía no hay productos publicados",
+      "description": "Cuando las tiendas publiquen sus productos, los verás aquí.",
+      "action": "Ir al buscador"
+    }
   },
   "Search": {
     "title": "Búsqueda",
@@ -228,7 +250,8 @@
       "goToRegister": "Crea una",
       "showPassword": "Mostrar contraseña",
       "hidePassword": "Ocultar contraseña",
-      "working": "Guardando…"
+      "working": "Guardando…",
+      "goShopping": "Ir a la tienda"
     },
     "links": {
       "needAccount": "¿No tienes cuenta?",
@@ -254,7 +277,8 @@
       "emailNotConfigured": "En este entorno de pruebas el backend todavía no envía correos: el enlace aparece en sus registros.",
       "passwordChanged": "Tu contraseña quedó actualizada. Ya puedes iniciar sesión.",
       "saved": "Guardamos tus cambios.",
-      "redirecting": "Ya tienes la sesión abierta. Te llevamos a tu cuenta…"
+      "redirecting": "Ya tienes la sesión abierta. Te llevamos a tu cuenta…",
+      "registeredAndSignedIn": "¡Listo! Tu cuenta está creada y ya tienes la sesión iniciada."
     },
     "errors": {
       "invalid_credentials": "El correo o la contraseña no son correctos.",
@@ -298,7 +322,11 @@
     "categoryDescription": "Compra {name}: compara precios de varias tiendas, revisa la reputación del vendedor y recibe en tu casa.",
     "card": {
       "noImage": "Sin imagen",
-      "priceUnavailable": "Precio no disponible"
+      "priceUnavailable": "Precio no disponible",
+      "ratingLabel": "Calificación {rating} de 5 con {count} reseñas",
+      "ratingEmpty": "Todavía sin reseñas",
+      "sold": "{count} vendidos",
+      "store": "Vendido por {store}"
     },
     "empty": {
       "title": "No encontramos productos",
@@ -478,5 +506,18 @@
       "network_error": "No pudimos conectar. Revisa tu conexión e inténtalo otra vez.",
       "unknown": "No pudimos actualizar tu carrito. Inténtalo de nuevo."
     }
+  },
+  "Health": {
+    "statusOk": "Todo funcionando",
+    "statusUnhealthy": "Funciona con problemas",
+    "statusUnreachable": "Backend no disponible",
+    "statusUnreachableDetail": "No hubo respuesta en {url}.",
+    "statusUnreachableHint": "Levanta el backend en su terminal (carpeta E:\\ecommerce): docker compose up -d y luego uv run uvicorn app.main:app --reload.",
+    "statusRetry": "Comprobar de nuevo",
+    "checksLabel": "Comprobaciones del backend",
+    "checkDatabase": "Base de datos PostgreSQL",
+    "checkRedis": "Caché Redis",
+    "checkOk": "Correcto",
+    "checkError": "Con error"
   }
 }

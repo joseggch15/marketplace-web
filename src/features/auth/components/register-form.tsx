@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
+import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 
 import { authErrorMessageKey, type KnownAuthErrorCode } from "../error-codes";
@@ -15,8 +16,9 @@ import { FormAlert, FormSuccess, PasswordField, SubmitButton, TextField } from "
 /**
  * Formulario de registro.
  *
- * Al crear la cuenta **no** se inicia sesión: el backend no devuelve tokens en el registro, así que se invita
- * al usuario a entrar. Los datos personales, el idioma y la moneda se completan después, en /account.
+ * Al crear la cuenta ya se queda la sesión iniciada (el backend devuelve los tokens), así que el paso siguiente
+ * es **ir a la tienda**, no iniciar sesión otra vez. Los datos personales, el idioma y la moneda se completan
+ * después, en /account.
  */
 export function RegisterForm() {
   const t = useTranslations("Auth");
@@ -46,13 +48,15 @@ export function RegisterForm() {
   if (created) {
     return (
       <div className="flex flex-col gap-4">
-        <FormSuccess>{t("messages.registered")}</FormSuccess>
-        <Link
-          href="/login"
-          className="text-sm text-primary underline-offset-4 hover:underline sm:w-fit"
-        >
-          {t("actions.goToLogin")}
-        </Link>
+        <FormSuccess>{t("messages.registeredAndSignedIn")}</FormSuccess>
+        <div className="flex flex-wrap gap-3">
+          <Button asChild>
+            <Link href="/">{t("actions.goShopping")}</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/account">{t("links.account")}</Link>
+          </Button>
+        </div>
       </div>
     );
   }

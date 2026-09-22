@@ -41,6 +41,8 @@ const cart: Cart = {
       unit_price: "299900.00",
       quantity: 3,
       subtotal: "899700.00",
+      available: 0,
+      price_changed: false,
     },
   ],
   total_items: 3,

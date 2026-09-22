@@ -133,13 +133,34 @@ export async function endSession(): Promise<void> {
   await clearSessionCookies();
 }
 
-/** Crea la cuenta. No inicia sesión: el usuario entra después con sus credenciales. */
-export function createAccount(input: {
+/**
+ * Crea la cuenta **y deja la sesión iniciada**.
+ *
+ * Al registrarse, el backend devuelve `{ user, access_token, refresh_token }` (decisión `0023`), así que aquí
+ * se guardan las cookies igual que en el inicio de sesión. Después se fusiona el carrito del invitado: como ya
+ * hay sesión en el mismo paso, el carrito **no se pierde** al crear la cuenta.
+ */
+export async function createAccount(input: {
   email: string;
   password: string;
   full_name: string;
 }): Promise<BackendResult<AuthUser>> {
-  return registerAccount(input);
+  const registered = await registerAccount(input);
+
+  if (!registered.ok) {
+    return registered;
+  }
+
+  await setSessionCookies(registered.data);
+  const user = await fetchCurrentUser(registered.data.access_token);
+
+  if (user === null) {
+    // Los tokens se emitieron pero no se pudo leer el usuario: no dejamos una sesión a medias.
+    await clearSessionCookies();
+    return { ok: false, status: 502, code: null };
+  }
+
+  return { ok: true, data: user };
 }
 
 /**

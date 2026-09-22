@@ -615,6 +615,35 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/catalog/products/{product_id}/variants/{variant_id}/stock": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update Variant Stock
+         * @description Cambia el stock de una variante **propia** (valor absoluto).
+         *
+         *     `stock` es el total que el vendedor tiene en el almacén, no un incremento: el servidor
+         *     calcula el delta, lo aplica con bloqueo de fila y lo anota en el ledger de inventario.
+         *     Solo puede hacerlo el dueño de la tienda del producto (`403 forbidden` si el producto es de
+         *     otro vendedor y `403 seller_required` si quien llama no tiene tienda aprobada). Devuelve el
+         *     producto completo, con el stock y el `total_available` ya actualizados.
+         *
+         *     Nunca baja por debajo de las unidades reservadas por órdenes en curso: eso responde
+         *     `409 insufficient_stock` (esas unidades ya están vendidas).
+         */
+        patch: operations["update_variant_stock_api_v1_catalog_products__product_id__variants__variant_id__stock_patch"];
+        trace?: never;
+    };
     "/api/v1/catalog/images/upload-url": {
         parameters: {
             query?: never;
@@ -1071,6 +1100,96 @@ export interface paths {
          * @description Republica una reseña oculta.
          */
         post: operations["publish_review_api_v1_admin_reviews__review_id__publish_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Users
+         * @description Directorio de usuarios (solo administradores), paginado por cursor.
+         *
+         *     Búsqueda por correo (`q`, contiene) y filtro por rol (`role`). Cada usuario trae correo, rol,
+         *     si verificó su correo, su nombre y, si tiene tienda, su tienda y su estado (**no hay rol
+         *     «vendedor»**: es un usuario con tienda). Las cuentas borradas lógicamente no aparecen.
+         *
+         *     Nunca devuelve hashes de contraseña ni tokens: esos campos no se consultan siquiera.
+         */
+        get: operations["list_users_api_v1_admin_users_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/questions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Questions
+         * @description Preguntas de toda la plataforma para moderar (solo administradores), por cursor.
+         *
+         *     Es el equivalente del listado de reseñas para las preguntas: sin él habría que adivinar el id
+         *     para poder ocultar algo. Incluye las ocultas, con el título del producto al que pertenecen y el
+         *     número de respuestas, del más reciente al más antiguo.
+         */
+        get: operations["list_questions_api_v1_admin_questions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/questions/{question_id}/hide": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Hide Question
+         * @description Oculta una pregunta (y sus respuestas) del listado público del producto.
+         */
+        post: operations["hide_question_api_v1_admin_questions__question_id__hide_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/questions/{question_id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Publish Question
+         * @description Republica una pregunta oculta (mismo verbo que las reseñas: ocultar / publicar).
+         */
+        post: operations["publish_question_api_v1_admin_questions__question_id__publish_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1762,6 +1881,95 @@ export interface components {
             data: {
                 [key: string]: unknown;
             };
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /**
+         * AdminQuestionListOut
+         * @description Página de preguntas para moderar (paginación por cursor).
+         */
+        AdminQuestionListOut: {
+            /** Items */
+            items: components["schemas"]["AdminQuestionOut"][];
+            /** Next Cursor */
+            next_cursor: string | null;
+        };
+        /**
+         * AdminQuestionOut
+         * @description Pregunta vista por el administrador (con el producto al que pertenece).
+         */
+        AdminQuestionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Product Id
+             * Format: uuid
+             */
+            product_id: string;
+            /** Product Title */
+            product_title: string | null;
+            /**
+             * User Id
+             * Format: uuid
+             */
+            user_id: string;
+            /** Body */
+            body: string;
+            /** Is Published */
+            is_published: boolean;
+            /** Answer Count */
+            answer_count: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /**
+         * AdminUserListOut
+         * @description Página del directorio de usuarios (paginación por cursor).
+         */
+        AdminUserListOut: {
+            /** Items */
+            items: components["schemas"]["AdminUserOut"][];
+            /** Next Cursor */
+            next_cursor: string | null;
+        };
+        /**
+         * AdminUserOut
+         * @description Usuario en el listado del panel de administración.
+         *
+         *     **Nunca** sale de aquí el hash de la contraseña ni ningún token: esos datos ni siquiera se
+         *     consultan en la base de datos (`AdminUserRepository`). Los campos de tienda van en `None` si
+         *     la cuenta no tiene tienda (un comprador puro) y, si la tiene, es porque vende.
+         */
+        AdminUserOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Email
+             * Format: email
+             */
+            email: string;
+            role: components["schemas"]["UserRole"];
+            /** Email Verified */
+            email_verified: boolean;
+            /** Full Name */
+            full_name?: string | null;
+            /** Store Id */
+            store_id?: string | null;
+            /** Store Name */
+            store_name?: string | null;
+            store_status?: components["schemas"]["StoreStatus"] | null;
             /**
              * Created At
              * Format: date-time
@@ -3296,6 +3504,20 @@ export interface components {
             /** Attribute Values */
             attribute_values?: components["schemas"]["VariantValueOut"][];
         };
+        /**
+         * VariantStockUpdate
+         * @description Nuevo stock **total** de una variante (valor absoluto, no un incremento).
+         *
+         *     El vendedor escribe lo que tiene en el almacén («12 unidades») y el servidor calcula el
+         *     delta, lo aplica con bloqueo de fila y lo anota en el ledger de inventario.
+         */
+        VariantStockUpdate: {
+            /**
+             * Stock
+             * @description Unidades totales en stock (>= 0).
+             */
+            stock: number;
+        };
         /** VariantValueIn */
         VariantValueIn: {
             /**
@@ -4651,6 +4873,42 @@ export interface operations {
             };
         };
     };
+    update_variant_stock_api_v1_catalog_products__product_id__variants__variant_id__stock_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                product_id: string;
+                variant_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VariantStockUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     request_upload_url_api_v1_catalog_images_upload_url_post: {
         parameters: {
             query?: never;
@@ -5416,6 +5674,148 @@ export interface operations {
             header?: never;
             path: {
                 review_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ModerationIn"] | null;
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminActionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_users_api_v1_admin_users_get: {
+        parameters: {
+            query?: {
+                /** @description Busca por correo (contiene). Sin valor, lista todas las cuentas. */
+                q?: string | null;
+                /** @description Filtra por rol de plataforma (`customer` o `admin`). */
+                role?: components["schemas"]["UserRole"] | null;
+                /** @description Cursor de la página anterior (`next_cursor`). */
+                cursor?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUserListOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_questions_api_v1_admin_questions_get: {
+        parameters: {
+            query?: {
+                /** @description Filtra por visibilidad: `true` publicadas, `false` ocultas, sin valor todas. */
+                published?: boolean | null;
+                /** @description Cursor de la página anterior (`next_cursor`). */
+                cursor?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminQuestionListOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    hide_question_api_v1_admin_questions__question_id__hide_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                question_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ModerationIn"] | null;
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminActionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    publish_question_api_v1_admin_questions__question_id__publish_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                question_id: string;
             };
             cookie?: never;
         };

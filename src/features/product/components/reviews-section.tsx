@@ -53,13 +53,11 @@ export function ReviewsSection({
   resetHref: string | null;
 }) {
   const average = reviews === null ? null : Number.parseFloat(reviews.rating_average ?? "");
-  const hasRating = average !== null && Number.isFinite(average) && (reviews?.rating_count ?? 0) > 0;
+  const hasRating =
+    average !== null && Number.isFinite(average) && (reviews?.rating_count ?? 0) > 0;
 
   return (
-    <section
-      aria-labelledby="reviews-title"
-      className="rounded-xl border border-border p-4 sm:p-6"
-    >
+    <section aria-labelledby="reviews-title" className="rounded-xl border border-border p-4 sm:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 id="reviews-title" className="font-heading text-xl font-semibold">
           {labels.title}
@@ -107,7 +105,9 @@ export function ReviewsSection({
               ) : null}
 
               {review.body !== null && review.body.trim().length > 0 ? (
-                <p className="mt-1 text-sm whitespace-pre-line text-muted-foreground">{review.body}</p>
+                <p className="mt-1 text-sm whitespace-pre-line text-muted-foreground">
+                  {review.body}
+                </p>
               ) : null}
             </li>
           ))}

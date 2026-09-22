@@ -122,7 +122,9 @@ export function PurchasePanel({
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
           {available === 0 ? <DealBadge kind="out-of-stock" label={t("stock.outOfStock")} /> : null}
           {available !== null && available > 0 ? (
-            <p className="text-sm text-muted-foreground">{t("stock.available", { count: available })}</p>
+            <p className="text-sm text-muted-foreground">
+              {t("stock.available", { count: available })}
+            </p>
           ) : null}
           {available === null ? (
             <p className="text-sm text-muted-foreground">{t("stock.unknown")}</p>
@@ -198,7 +200,7 @@ export function PurchasePanel({
         {added ? (
           <p
             role="status"
-            className="rounded-lg border border-brand-success/40 bg-brand-success/10 px-3 py-2 text-sm"
+            className="border-brand-success/40 bg-brand-success/10 rounded-lg border px-3 py-2 text-sm"
           >
             {t("buy.added")}{" "}
             <Link href="/cart" className="text-primary underline underline-offset-4">

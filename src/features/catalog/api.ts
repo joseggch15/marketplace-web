@@ -90,7 +90,11 @@ export async function listPublicProducts({
   try {
     const result = await backend.GET("/api/v1/catalog/products/public", {
       params: {
-        query: { cursor: cursor ?? undefined, limit, q: q !== undefined && q.length > 0 ? q : undefined },
+        query: {
+          cursor: cursor ?? undefined,
+          limit,
+          q: q !== undefined && q.length > 0 ? q : undefined,
+        },
       },
       ...noStore,
     });

@@ -61,7 +61,7 @@ export function ProductCard({
   return (
     <article
       className={cn(
-        "group relative flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-card transition-shadow hover:shadow-popover focus-within:shadow-popover focus-within:ring-2 focus-within:ring-ring",
+        "group relative flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-card transition-shadow focus-within:shadow-popover focus-within:ring-2 focus-within:ring-ring hover:shadow-popover",
         className,
       )}
     >

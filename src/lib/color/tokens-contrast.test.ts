@@ -55,11 +55,7 @@ const CORAL_DARK = { ...DARK_TOKENS, ...parseDeclarations('\\.dark\\[data-accent
 const VIOLET_DARK = { ...DARK_TOKENS, ...parseDeclarations('\\.dark\\[data-accent="violeta"\\]') };
 
 /** Resuelve `var(--otro)` de forma recursiva (los tokens oscuros heredan de los claros). */
-function resolveToken(
-  name: string,
-  theme: Record<string, string>,
-  visited: string[] = [],
-): string {
+function resolveToken(name: string, theme: Record<string, string>, visited: string[] = []): string {
   if (visited.includes(name)) {
     throw new Error(`Referencia circular de tokens: ${[...visited, name].join(" → ")}`);
   }
@@ -99,8 +95,16 @@ const CASES: ContrastCase[] = [
   { foreground: "--field-placeholder", background: "--field-background", requirement: "text" },
   // Insignias y estados propios de la marca
   { foreground: "--brand-accent-text", background: "--brand-accent-surface", requirement: "text" },
-  { foreground: "--brand-success-text", background: "--brand-success-surface", requirement: "text" },
-  { foreground: "--brand-warning-text", background: "--brand-warning-surface", requirement: "text" },
+  {
+    foreground: "--brand-success-text",
+    background: "--brand-success-surface",
+    requirement: "text",
+  },
+  {
+    foreground: "--brand-warning-text",
+    background: "--brand-warning-surface",
+    requirement: "text",
+  },
   { foreground: "--brand-danger-text", background: "--brand-danger-surface", requirement: "text" },
   { foreground: "--brand-info-text", background: "--brand-info-surface", requirement: "text" },
   // Verde relleno con texto encima (pasos completados del checkout)

@@ -91,12 +91,9 @@ export function signObjectRequest(
     EMPTY_PAYLOAD_SHA256,
   ].join("\n");
 
-  const stringToSign = [
-    "AWS4-HMAC-SHA256",
-    timestamp,
-    scope,
-    sha256Hex(canonicalRequest),
-  ].join("\n");
+  const stringToSign = ["AWS4-HMAC-SHA256", timestamp, scope, sha256Hex(canonicalRequest)].join(
+    "\n",
+  );
 
   const signature = hmacSha256(signingKey(dateStamp), stringToSign).toString("hex");
 

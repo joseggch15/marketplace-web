@@ -11,7 +11,7 @@ defecto), y `GET /api/v1/catalog/categories`. Dos limitaciones reales condiciona
 
 1. **No hay conteos por faceta** (`facets`), ni total de resultados: la respuesta trae `items` y `next_cursor`.
 2. **Los resultados son pobres**: `ProductSearchItem` = `id, title, slug, brand, category_id, min_price,
-   thumbnail`. Sin reputación, sin tienda, sin moneda y con `thumbnail` como **clave de objeto**, no URL.
+thumbnail`. Sin reputación, sin tienda, sin moneda y con `thumbnail` como **clave de objeto**, no URL.
 
 Ambas están anotadas en `docs/PENDIENTES-BACKEND.md` (apartados 3 y 7).
 

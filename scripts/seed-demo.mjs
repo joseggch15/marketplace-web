@@ -26,7 +26,10 @@ const run = promisify(execFile);
 
 const args = process.argv.slice(2);
 const apiIndex = args.indexOf("--api");
-const API = (apiIndex >= 0 ? args[apiIndex + 1] : undefined) ?? process.env.SEED_API_URL ?? "http://127.0.0.1:8000";
+const API =
+  (apiIndex >= 0 ? args[apiIndex + 1] : undefined) ??
+  process.env.SEED_API_URL ??
+  "http://127.0.0.1:8000";
 const BACKEND_DIR = process.env.SEED_BACKEND_DIR ?? "E:\\ecommerce";
 
 // Correos de demostración. Ojo: no se puede usar `@demo.local` ni `@example.com`
@@ -75,7 +78,9 @@ async function ensureUser({ email, fullName }) {
   } else if (registro.status === 409) {
     console.log(`  = usuario ya existía: ${email}`);
   } else {
-    throw new Error(`No se pudo registrar ${email}: HTTP ${registro.status} ${JSON.stringify(registro.data)}`);
+    throw new Error(
+      `No se pudo registrar ${email}: HTTP ${registro.status} ${JSON.stringify(registro.data)}`,
+    );
   }
 
   return login(email);
@@ -151,10 +156,14 @@ function pngSquare(size, [red, green, blue]) {
  */
 async function promoteAdmin(email) {
   try {
-    const { stdout } = await run("uv", ["run", "python", "-m", "app.scripts.promote_admin", email], {
-      cwd: BACKEND_DIR,
-      windowsHide: true,
-    });
+    const { stdout } = await run(
+      "uv",
+      ["run", "python", "-m", "app.scripts.promote_admin", email],
+      {
+        cwd: BACKEND_DIR,
+        windowsHide: true,
+      },
+    );
     console.log(`  ${stdout.trim()}`);
   } catch (error) {
     throw new Error(
@@ -261,7 +270,9 @@ async function ensureCategories(adminToken, sellerToken) {
 const PRODUCTS = [
   {
     title: "Audífonos inalámbricos con cancelación de ruido",
-    brand: "Sonic", categoryKey: "tech", color: [40, 90, 160],
+    brand: "Sonic",
+    categoryKey: "tech",
+    color: [40, 90, 160],
     description: "Bluetooth 5.3, 30 horas de batería y estuche de carga rápida.",
     variants: [
       { sku: "AUD-NEG", price: "299900.00", compareAt: "399900.00", stock: 25 },
@@ -270,13 +281,17 @@ const PRODUCTS = [
   },
   {
     title: "Teclado mecánico compacto 65%",
-    brand: "KeyLab", categoryKey: "tech", color: [70, 70, 90],
+    brand: "KeyLab",
+    categoryKey: "tech",
+    color: [70, 70, 90],
     description: "Interruptores táctiles, doble conexión y teclas intercambiables.",
     variants: [{ sku: "TEC-65", price: "249900.00", stock: 18 }],
   },
   {
     title: "Monitor 27 pulgadas 144 Hz",
-    brand: "ViewMax", categoryKey: "tech", color: [25, 60, 120],
+    brand: "ViewMax",
+    categoryKey: "tech",
+    color: [25, 60, 120],
     description: "Panel IPS, 1 ms de respuesta y soporte ajustable en altura.",
     variants: [
       { sku: "MON-27", price: "989900.00", compareAt: "1199900.00", stock: 7 },
@@ -285,13 +300,17 @@ const PRODUCTS = [
   },
   {
     title: "Cafetera de goteo con molinillo",
-    brand: "CasaFina", categoryKey: "home", color: [150, 90, 60],
+    brand: "CasaFina",
+    categoryKey: "home",
+    color: [150, 90, 60],
     description: "Muele al momento, 12 tazas y filtro permanente lavable.",
     variants: [{ sku: "CAF-12", price: "329900.00", stock: 9 }],
   },
   {
     title: "Juego de sartenes antiadherentes (3 piezas)",
-    brand: "CasaFina", categoryKey: "home", color: [90, 100, 110],
+    brand: "CasaFina",
+    categoryKey: "home",
+    color: [90, 100, 110],
     description: "Aluminio forjado, apto para todo tipo de cocina y lavavajillas.",
     variants: [
       { sku: "SAR-3", price: "189900.00", compareAt: "249900.00", stock: 21 },
@@ -300,13 +319,17 @@ const PRODUCTS = [
   },
   {
     title: "Lámpara de escritorio LED regulable",
-    brand: "Lumio", categoryKey: "home", color: [220, 190, 90],
+    brand: "Lumio",
+    categoryKey: "home",
+    color: [220, 190, 90],
     description: "Tres temperaturas de luz, brazo articulado y puerto USB.",
     variants: [{ sku: "LAM-LED", price: "89900.00", stock: 34 }],
   },
   {
     title: "Chaqueta impermeable de montaña",
-    brand: "Ruta Andina", categoryKey: "clothes", color: [30, 110, 90],
+    brand: "Ruta Andina",
+    categoryKey: "clothes",
+    color: [30, 110, 90],
     description: "Costuras selladas, capucha ajustable y bolsillos con cierre.",
     variants: [
       { sku: "CHA-S", price: "259900.00", stock: 5 },
@@ -316,7 +339,9 @@ const PRODUCTS = [
   },
   {
     title: "Camiseta de algodón orgánico",
-    brand: "Ruta Andina", categoryKey: "clothes", color: [200, 200, 205],
+    brand: "Ruta Andina",
+    categoryKey: "clothes",
+    color: [200, 200, 205],
     description: "Algodón orgánico peinado, corte recto y cuello reforzado.",
     variants: [
       { sku: "CAM-S", price: "79900.00", stock: 40 },
@@ -325,7 +350,9 @@ const PRODUCTS = [
   },
   {
     title: "Zapatillas urbanas ligeras",
-    brand: "Paso Firme", categoryKey: "clothes", color: [180, 60, 60],
+    brand: "Paso Firme",
+    categoryKey: "clothes",
+    color: [180, 60, 60],
     description: "Malla transpirable, plantilla acolchada y suela antideslizante.",
     variants: [
       { sku: "ZAP-39", price: "219900.00", compareAt: "279900.00", stock: 14 },
@@ -335,19 +362,25 @@ const PRODUCTS = [
   },
   {
     title: "Bicicleta de montaña rin 29 (21 cambios)",
-    brand: "Altura", categoryKey: "sports", color: [45, 130, 70],
+    brand: "Altura",
+    categoryKey: "sports",
+    color: [45, 130, 70],
     description: "Cuadro de aluminio, frenos de disco y suspensión delantera.",
     variants: [{ sku: "BIC-29", price: "1899900.00", compareAt: "2199900.00", stock: 5 }],
   },
   {
     title: "Mancuernas ajustables (par, 20 kg)",
-    brand: "Altura", categoryKey: "sports", color: [60, 60, 65],
+    brand: "Altura",
+    categoryKey: "sports",
+    color: [60, 60, 65],
     description: "Discos intercambiables, agarre antideslizante y base incluida.",
     variants: [{ sku: "MAN-20", price: "459900.00", stock: 8 }],
   },
   {
     title: "Balón de fútbol profesional nº5",
-    brand: "Cancha", categoryKey: "sports", color: [230, 230, 225],
+    brand: "Cancha",
+    categoryKey: "sports",
+    color: [230, 230, 225],
     description: "Cosido a máquina, cámara de látex y acabado resistente al agua.",
     variants: [
       { sku: "BAL-5", price: "129900.00", stock: 30 },
@@ -462,7 +495,12 @@ async function main() {
 
   console.log("Productos:");
   for (const producto of PRODUCTS) {
-    const creado = await ensureProduct(sellerToken, titulos, producto, categories[producto.categoryKey]);
+    const creado = await ensureProduct(
+      sellerToken,
+      titulos,
+      producto,
+      categories[producto.categoryKey],
+    );
 
     if (creado === null) {
       continue;
@@ -496,4 +534,3 @@ main().catch((error) => {
   console.error(`\nEl sembrador falló: ${error.message}`);
   process.exitCode = 1;
 });
-

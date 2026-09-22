@@ -56,7 +56,11 @@ export function QuestionForm({ productId }: { productId: string }) {
   });
 
   return (
-    <form onSubmit={onSubmit} noValidate className="flex flex-col gap-3 border-t border-border pt-4">
+    <form
+      onSubmit={onSubmit}
+      noValidate
+      className="flex flex-col gap-3 border-t border-border pt-4"
+    >
       {failure !== null ? (
         <p
           role="alert"
@@ -69,7 +73,7 @@ export function QuestionForm({ productId }: { productId: string }) {
       {succeeded ? (
         <p
           role="status"
-          className="rounded-lg border border-brand-success/40 bg-brand-success/10 px-3 py-2 text-sm"
+          className="border-brand-success/40 bg-brand-success/10 rounded-lg border px-3 py-2 text-sm"
         >
           {t("questions.success")}
         </p>

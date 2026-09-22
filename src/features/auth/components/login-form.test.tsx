@@ -60,9 +60,7 @@ describe("LoginForm", () => {
     await user.type(screen.getByLabelText("Contraseña"), "secreta123");
     await user.click(screen.getByRole("button", { name: "Iniciar sesión" }));
 
-    expect(
-      await screen.findByText("Escribe un correo electrónico válido."),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("Escribe un correo electrónico válido.")).toBeInTheDocument();
   });
 
   it("traduce el error del servidor por su código estable", async () => {

@@ -22,8 +22,7 @@ import type {
 
 /** Resultado de una llamada: datos o el código de error de la API. */
 export type BackendResult<T> =
-  | { ok: true; data: T }
-  | { ok: false; code: string | null; status: number };
+  { ok: true; data: T } | { ok: false; code: string | null; status: number };
 
 /** Forma mínima y tipada de lo que devuelve `openapi-fetch`. */
 type Outcome<T> = { data?: T; error?: unknown; response: Response };
@@ -72,9 +71,7 @@ export function loginWithPassword(input: {
 }
 
 export function refreshTokens(refresh_token: string): Promise<BackendResult<AuthTokens>> {
-  return unwrap(
-    backend.POST("/api/v1/auth/refresh", { body: { refresh_token }, ...noStore }),
-  );
+  return unwrap(backend.POST("/api/v1/auth/refresh", { body: { refresh_token }, ...noStore }));
 }
 
 export function logoutTokens(refresh_token: string): Promise<BackendResult<null>> {
@@ -92,9 +89,7 @@ export function resendVerification(email: string): Promise<BackendResult<null>> 
 }
 
 export function requestPasswordReset(email: string): Promise<BackendResult<null>> {
-  return unwrapEmpty(
-    backend.POST("/api/v1/auth/forgot-password", { body: { email }, ...noStore }),
-  );
+  return unwrapEmpty(backend.POST("/api/v1/auth/forgot-password", { body: { email }, ...noStore }));
 }
 
 export function resetPassword(input: {

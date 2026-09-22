@@ -91,22 +91,9 @@ export function QuantityDemo({ labels }: { labels: QuantityDemoLabels }) {
 
   return (
     <div className="flex flex-col gap-6">
-      <QuantityStepper
-        value={value}
-        min={1}
-        max={5}
-        onChange={setValue}
-        labels={labels}
-      />
+      <QuantityStepper value={value} min={1} max={5} onChange={setValue} labels={labels} />
       {/* Estado deshabilitado (sin stock) */}
-      <QuantityStepper
-        value={1}
-        min={1}
-        max={1}
-        onChange={() => {}}
-        labels={labels}
-        disabled
-      />
+      <QuantityStepper value={1} min={1} max={1} onChange={() => {}} labels={labels} disabled />
       {/* Estado cargando (mientras el servidor confirma el cambio) */}
       <QuantityStepper value={2} min={1} max={5} onChange={() => {}} labels={labels} loading />
     </div>

@@ -69,9 +69,7 @@ export function RatingStars({
             key={position}
             className={cn(
               STAR_SIZE[size],
-              position <= filled
-                ? "fill-brand text-brand"
-                : "fill-transparent text-border",
+              position <= filled ? "fill-brand text-brand" : "fill-transparent text-border",
             )}
           />
         ))}

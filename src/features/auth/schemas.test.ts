@@ -56,7 +56,11 @@ describe("registerSchema", () => {
   });
 
   it("exige 8 caracteres de contraseña, igual que el backend", () => {
-    const result = registerSchema.safeParse({ ...valid, password: "corta12", confirmPassword: "corta12" });
+    const result = registerSchema.safeParse({
+      ...valid,
+      password: "corta12",
+      confirmPassword: "corta12",
+    });
     expect(result.success).toBe(false);
     expect(result.error?.issues[0]?.message).toBe("passwordShort");
   });
@@ -88,8 +92,10 @@ describe("resetPasswordSchema", () => {
 
   it("acepta una contraseña nueva válida", () => {
     expect(
-      resetPasswordSchema.safeParse({ newPassword: "nueva-clave-1", confirmPassword: "nueva-clave-1" })
-        .success,
+      resetPasswordSchema.safeParse({
+        newPassword: "nueva-clave-1",
+        confirmPassword: "nueva-clave-1",
+      }).success,
     ).toBe(true);
   });
 });

@@ -20,34 +20,34 @@
 
 ## Estado final de la lista
 
-| # | Apartado | Estado |
-|---|---|---|
-| 1 | URLs de imágenes | **descartado** para el prototipo: el proxy `/api/media/[key]` del frontend ya resuelve las imágenes y el campo `url` no se añade |
-| 2 | Pagos reales | **fuera de la lista** por decisión del dueño: el prototipo no cobra dinero real (decisión 0020 del backend); la pasarela de prueba es la que se usa |
-| 3 | Conteos de facetas | **resuelto** |
-| 4 | Catálogo público de códigos de error | **descartado** para el prototipo: los `code` estables se leen del código y no se publica un catálogo aparte |
-| 5 | Correos (SMTP + Mailpit + plantillas es/en) | **resuelto** |
-| 6 | ¿Exigir correo verificado para comprar? | **resuelto**: interruptor `REQUIRE_VERIFIED_EMAIL`, **apagado por defecto** |
-| 7 | Reputación y tienda en los resultados de búsqueda | **resuelto** (y ahora también `sold_count`) |
-| 8 | Claves de imagen sin punto | **resuelto** |
-| 9 | Producto por slug | **resuelto** |
-| 10 | Stock y atributos en las variantes | **resuelto** |
-| 11 | Tienda pública y envío estimado | **resuelto** |
-| 12 | Paginación de las preguntas | **resuelto** |
-| 13 | Listado del catálogo para el sitemap | **resuelto**: `GET /catalog/products/public` por cursor |
-| 14 | Avisos de stock y de cambio de precio en el carrito | **resuelto** |
-| 15 | El registro no devuelve tokens | **resuelto**: el registro devuelve usuario **y** tokens |
-| 16 | El vendedor no podía cambiar el stock de sus variantes | **resuelto**: `PATCH /catalog/products/{id}/variants/{id}/stock` |
-| 17 | No había listado de usuarios para la administración | **resuelto**: `GET /admin/users?q=&role=&cursor=&limit=` |
-| 18 | No había moderación de preguntas | **resuelto**: `GET /admin/questions` · `POST /admin/questions/{id}/hide` · `/publish` |
+| #   | Apartado                                               | Estado                                                                                                                                              |
+| --- | ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | URLs de imágenes                                       | **descartado** para el prototipo: el proxy `/api/media/[key]` del frontend ya resuelve las imágenes y el campo `url` no se añade                    |
+| 2   | Pagos reales                                           | **fuera de la lista** por decisión del dueño: el prototipo no cobra dinero real (decisión 0020 del backend); la pasarela de prueba es la que se usa |
+| 3   | Conteos de facetas                                     | **resuelto**                                                                                                                                        |
+| 4   | Catálogo público de códigos de error                   | **descartado** para el prototipo: los `code` estables se leen del código y no se publica un catálogo aparte                                         |
+| 5   | Correos (SMTP + Mailpit + plantillas es/en)            | **resuelto**                                                                                                                                        |
+| 6   | ¿Exigir correo verificado para comprar?                | **resuelto**: interruptor `REQUIRE_VERIFIED_EMAIL`, **apagado por defecto**                                                                         |
+| 7   | Reputación y tienda en los resultados de búsqueda      | **resuelto** (y ahora también `sold_count`)                                                                                                         |
+| 8   | Claves de imagen sin punto                             | **resuelto**                                                                                                                                        |
+| 9   | Producto por slug                                      | **resuelto**                                                                                                                                        |
+| 10  | Stock y atributos en las variantes                     | **resuelto**                                                                                                                                        |
+| 11  | Tienda pública y envío estimado                        | **resuelto**                                                                                                                                        |
+| 12  | Paginación de las preguntas                            | **resuelto**                                                                                                                                        |
+| 13  | Listado del catálogo para el sitemap                   | **resuelto**: `GET /catalog/products/public` por cursor                                                                                             |
+| 14  | Avisos de stock y de cambio de precio en el carrito    | **resuelto**                                                                                                                                        |
+| 15  | El registro no devuelve tokens                         | **resuelto**: el registro devuelve usuario **y** tokens                                                                                             |
+| 16  | El vendedor no podía cambiar el stock de sus variantes | **resuelto**: `PATCH /catalog/products/{id}/variants/{id}/stock`                                                                                    |
+| 17  | No había listado de usuarios para la administración    | **resuelto**: `GET /admin/users?q=&role=&cursor=&limit=`                                                                                            |
+| 18  | No había moderación de preguntas                       | **resuelto**: `GET /admin/questions` · `POST /admin/questions/{id}/hide` · `/publish`                                                               |
 
 ### Lagunas de la F8 y la F9 (22/09/2026) — lo que ya se puede construir
 
-| Necesidad | Endpoint |
-|---|---|
+| Necesidad                               | Endpoint                                                                                                                                                                                                |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Cambiar el stock de una variante propia | `PATCH /api/v1/catalog/products/{product_id}/variants/{variant_id}/stock` con `{"stock": 12}` (**valor absoluto**) → devuelve el `ProductOut` completo, con `stock` y `total_available` ya actualizados |
-| Ver usuarios (buscar y filtrar) | `GET /api/v1/admin/users?q=&role=customer|admin&cursor=&limit=` → `AdminUserListOut` (`id`, `email`, `role`, `email_verified`, `full_name`, `store_id`, `store_name`, `store_status`, `created_at`); **nunca** hashes ni tokens |
-| Moderar preguntas | `GET /api/v1/admin/questions?published=&cursor=&limit=` (`product_title`, `answer_count`, `is_published`) · `POST /api/v1/admin/questions/{id}/hide` · `POST /api/v1/admin/questions/{id}/publish` |
+| Ver usuarios (buscar y filtrar)         | `GET /api/v1/admin/users?q=&role=customer                                                                                                                                                               | admin&cursor=&limit=`→`AdminUserListOut` (`id`, `email`, `role`, `email_verified`, `full_name`, `store_id`, `store_name`, `store_status`, `created_at`); **nunca** hashes ni tokens |
+| Moderar preguntas                       | `GET /api/v1/admin/questions?published=&cursor=&limit=` (`product_title`, `answer_count`, `is_published`) · `POST /api/v1/admin/questions/{id}/hide` · `POST /api/v1/admin/questions/{id}/publish`      |
 
 Notas de uso para el frontend:
 
@@ -91,7 +91,6 @@ para lo anterior).
 > (`source="configured_default"`: presentarla como aproximada). **La F6 ya no está bloqueada**: se hace con la
 > pasarela de prueba (ver `docs/SIGUIENTE-PROMPT.md`).
 
-
 ## 1. URLs de imágenes (imágenes de producto y logos de tienda) — F0
 
 > **Descartado para el prototipo (22/09/2026, decisión 0023 del backend):** el proxy `/api/media/[key]` del
@@ -112,6 +111,7 @@ para logos) y un formato estricto, y luego transmite el archivo con cabeceras de
 archivo privado quedan fuera por diseño.
 
 **Solución recomendada en el backend (elegir una):**
+
 - Devolver en la respuesta un campo `url` ya resuelto (público o presignado con caducidad corta), o
 - Exponer un endpoint `GET /api/v1/media/{key}` con la misma validación de prefijos, o
 - Definir política de lectura pública **solo** para el prefijo `products/` del bucket y devolver la URL
@@ -393,7 +393,6 @@ fusiona «al registrarse» como pide el producto, y no hay forma de hacerlo desd
 crear la cuenta). El día que lo haga, `mergeGuestCartIfSignedIn()` empieza a funcionar en el registro **sin
 cambiar una línea del frontend**.
 
-
 ## 16. El vendedor no podía cambiar el stock de sus variantes — F8
 
 > **Resuelto (22/09/2026, decisión 0024 del backend):** `PATCH /api/v1/catalog/products/{product_id}/variants/{variant_id}/stock`
@@ -452,4 +451,3 @@ de las reseñas) y se ven en la ficha del producto: es el sitio con más probabi
 
 **Solución recomendada (ya implementada):** el mismo trío de endpoints que las reseñas —listar, ocultar y
 republicar— para no tener dos maneras distintas de moderar lo mismo.
-

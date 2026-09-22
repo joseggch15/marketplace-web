@@ -162,9 +162,7 @@ export function AddressBook() {
                   </p>
                   <p className="text-sm text-muted-foreground">
                     {address.recipient_name} · {address.line1}
-                    {address.line2 !== null && address.line2.length > 0
-                      ? `, ${address.line2}`
-                      : ""}
+                    {address.line2 !== null && address.line2.length > 0 ? `, ${address.line2}` : ""}
                   </p>
                   <p className="text-sm text-muted-foreground">
                     {address.city}
@@ -178,12 +176,7 @@ export function AddressBook() {
               </div>
 
               <div className="flex shrink-0 flex-wrap items-center gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => openEdit(address)}
-                >
+                <Button type="button" variant="outline" size="sm" onClick={() => openEdit(address)}>
                   <Pencil aria-hidden />
                   {t("actions.editAddress")}
                 </Button>

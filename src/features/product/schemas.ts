@@ -23,9 +23,7 @@ export type QuestionValidationKey = (typeof QUESTION_VALIDATION_KEYS)[number];
  * Convierte el mensaje que devuelve Zod en una clave de traducción **verificada**; si no es una clave
  * conocida, devuelve `undefined` y el campo muestra su mensaje genérico en lugar de un texto raro.
  */
-export function asQuestionValidationKey(
-  message?: string,
-): QuestionValidationKey | undefined {
+export function asQuestionValidationKey(message?: string): QuestionValidationKey | undefined {
   return message !== undefined && (QUESTION_VALIDATION_KEYS as readonly string[]).includes(message)
     ? (message as QuestionValidationKey)
     : undefined;

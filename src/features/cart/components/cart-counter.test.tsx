@@ -23,7 +23,8 @@ vi.mock("../client", async (importOriginal) => {
 const messages = {
   Cart: {
     counter: {
-      label: "{count, plural, =0 {Carrito, vacío} one {Carrito, # producto} other {Carrito, # productos}}",
+      label:
+        "{count, plural, =0 {Carrito, vacío} one {Carrito, # producto} other {Carrito, # productos}}",
       text: "Carrito",
     },
   },

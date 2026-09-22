@@ -58,9 +58,9 @@ describe("QuestionsSection", () => {
     expect(screen.getByText("Respuesta del vendedor")).toBeVisible();
     expect(screen.getByText("Sí, un año de garantía directa con la tienda.")).toBeVisible();
     // Las dos fechas van en elementos `time` con la fecha ISO original en el atributo.
-    expect(screen.getByText("¿Tiene garantía del vendedor?").closest("li")?.querySelectorAll("time")).toHaveLength(
-      2,
-    );
+    expect(
+      screen.getByText("¿Tiene garantía del vendedor?").closest("li")?.querySelectorAll("time"),
+    ).toHaveLength(2);
   });
 
   it("no muestra el nombre de quien pregunta (la API no lo devuelve)", () => {

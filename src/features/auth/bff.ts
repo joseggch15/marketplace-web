@@ -18,7 +18,11 @@ export function problemResponse(status: number, code: string, detail: string): N
 /** Traduce un fallo del backend en una respuesta para el navegador. */
 export function backendProblem(result: { status: number; code: string | null }): NextResponse {
   const status = result.status >= 400 && result.status <= 599 ? result.status : 502;
-  return problemResponse(status, result.code ?? "internal_error", "The backend rejected the request.");
+  return problemResponse(
+    status,
+    result.code ?? "internal_error",
+    "The backend rejected the request.",
+  );
 }
 
 /** Falta de sesión válida. */

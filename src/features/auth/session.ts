@@ -103,7 +103,10 @@ export async function refreshSession(): Promise<AuthUser | null> {
 }
 
 /** Inicia sesión contra el backend y deja la sesión guardada en cookies. */
-export async function startSession(email: string, password: string): Promise<BackendResult<AuthUser>> {
+export async function startSession(
+  email: string,
+  password: string,
+): Promise<BackendResult<AuthUser>> {
   const tokens = await loginWithPassword({ email, password });
 
   if (!tokens.ok) {

@@ -132,10 +132,7 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
                 key={token.name}
                 className="flex flex-col gap-2 rounded-lg border border-border bg-background p-3"
               >
-                <span
-                  aria-hidden
-                  className={`h-10 w-full rounded-md border ${token.className}`}
-                />
+                <span aria-hidden className={`h-10 w-full rounded-md border ${token.className}`} />
                 <code className="text-xs text-muted-foreground">{token.name}</code>
               </li>
             ))}
@@ -210,7 +207,10 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
 
             <Case label={tCase("loading")}>
               <Button disabled>
-                <LoaderCircle aria-hidden className="size-4 animate-spin motion-reduce:animate-none" />
+                <LoaderCircle
+                  aria-hidden
+                  className="size-4 animate-spin motion-reduce:animate-none"
+                />
                 {tDemo("loading")}
               </Button>
             </Case>
@@ -587,10 +587,6 @@ export default async function DesignSystemPage({ params }: DesignSystemPageProps
             </div>
           </div>
         </Section>
-
-
-
-
       </div>
     </div>
   );

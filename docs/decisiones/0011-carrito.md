@@ -27,7 +27,7 @@ Cuatro hechos del backend condicionan el diseño:
    dato de sesión: guardarlo en el navegador va contra la regla de la casa.
 2. **Al fusionar, la API responde con la cabecera `X-Cart-Token` vacía**, que es su forma de decir «el carrito de
    invitado ya no existe».
-3. **El carrito no informa de stock ni de cambios de precio**: `CartItemOut` trae el precio *actual* de la
+3. **El carrito no informa de stock ni de cambios de precio**: `CartItemOut` trae el precio _actual_ de la
    variante y nada más, y `POST /cart/items` acepta hasta 100 unidades sin comprobar el inventario. Apartado 14
    de `docs/PENDIENTES-BACKEND.md`.
 4. **El registro no devuelve tokens** (`POST /auth/register` responde `UserOut`), así que al crear la cuenta

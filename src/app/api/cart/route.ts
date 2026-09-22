@@ -17,7 +17,9 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET(): Promise<NextResponse> {
-  return cartJson(await runCartOperation((accessToken, guestToken) => getCart(accessToken, guestToken)));
+  return cartJson(
+    await runCartOperation((accessToken, guestToken) => getCart(accessToken, guestToken)),
+  );
 }
 
 export async function DELETE(): Promise<NextResponse> {

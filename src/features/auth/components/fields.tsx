@@ -201,7 +201,7 @@ export function FormSuccess({ children }: { children: React.ReactNode }) {
   return (
     <p
       role="status"
-      className="rounded-lg border border-brand-success/40 bg-brand-success/10 px-3 py-2 text-sm"
+      className="border-brand-success/40 bg-brand-success/10 rounded-lg border px-3 py-2 text-sm"
     >
       {children}
     </p>

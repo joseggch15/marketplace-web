@@ -26,7 +26,12 @@ import { QuestionForm } from "@/features/product/components/question-form";
 import { QuestionsSection } from "@/features/product/components/questions-section";
 import { ReviewsSection } from "@/features/product/components/reviews-section";
 import { buildBreadcrumbJsonLd, buildProductJsonLd } from "@/features/product/json-ld";
-import { isProductId, isProductRef, parseReviewsCursor, reviewsHref } from "@/features/product/params";
+import {
+  isProductId,
+  isProductRef,
+  parseReviewsCursor,
+  reviewsHref,
+} from "@/features/product/params";
 import {
   galleryImages,
   isOutOfStock,
@@ -120,7 +125,9 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   const t = await getTranslations({ locale, namespace: "Product" });
   const description = product.description?.trim() ?? "";
   const summary =
-    description.length > 0 ? summarizeText(description) : t("meta.description", { title: product.title });
+    description.length > 0
+      ? summarizeText(description)
+      : t("meta.description", { title: product.title });
   // La canónica es siempre la **URL por slug**, aunque se haya llegado por identificador: una sola dirección
   // por producto, que es lo que evita contenido duplicado en los buscadores.
   const canonical = productCanonical(locale, product.slug);
@@ -196,10 +203,9 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
   const reviewData = reviews.ok ? reviews.data : null;
   const average = reviewData === null ? null : toAmount(reviewData.rating_average);
   const hasReviews = average !== null && reviewData !== null && reviewData.rating_count > 0;
-  const category =
-    categories.ok
-      ? (categories.data.find((item) => item.id === product.category_id) ?? null)
-      : null;
+  const category = categories.ok
+    ? (categories.data.find((item) => item.id === product.category_id) ?? null)
+    : null;
 
   const productPath = `/p/${product.slug}`;
   const productUrl = absoluteUrl(locale, productPath);
@@ -246,7 +252,9 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
 
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
               {product.brand !== null && product.brand.trim().length > 0 ? (
-                <p className="text-sm text-muted-foreground">{t("brand", { brand: product.brand })}</p>
+                <p className="text-sm text-muted-foreground">
+                  {t("brand", { brand: product.brand })}
+                </p>
               ) : null}
               {isOutOfStock(variants, availability.ok ? availability.data : null) ? (
                 <DealBadge kind="out-of-stock" label={labels.outOfStock} />
@@ -298,7 +306,8 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
           empty: t("reviews.empty"),
           unavailable: t("reviews.unavailable"),
           verified: t("reviews.verified"),
-          ratingOf: (rating: number) => t("reviews.rating", { rating: numberFormat.format(rating) }),
+          ratingOf: (rating: number) =>
+            t("reviews.rating", { rating: numberFormat.format(rating) }),
           more: t("reviews.more"),
           reset: t("reviews.reset"),
         }}
@@ -357,7 +366,10 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
         data={buildBreadcrumbJsonLd(
           breadcrumbItems.map((item) => ({
             name: item.label,
-            url: new URL(`/${locale}${item.href ?? productPath}`, env.NEXT_PUBLIC_SITE_URL).toString(),
+            url: new URL(
+              `/${locale}${item.href ?? productPath}`,
+              env.NEXT_PUBLIC_SITE_URL,
+            ).toString(),
           })),
         )}
       />

@@ -60,9 +60,7 @@ export function resendVerification(email: string): Promise<ClientResult<Record<s
   return call({ method: "POST", path: "/api/auth/resend-verification", body: { email } });
 }
 
-export function updateProfile(
-  body: ProfileInput,
-): Promise<ClientResult<{ user: AuthUser }>> {
+export function updateProfile(body: ProfileInput): Promise<ClientResult<{ user: AuthUser }>> {
   return call({ method: "PATCH", path: "/api/account/profile", body });
 }
 

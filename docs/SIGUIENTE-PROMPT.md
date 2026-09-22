@@ -46,7 +46,7 @@ Si una funcionalidad **no** está en esta lista, se anota en `docs/IDEAS.md` y *
    React Hook Form + Zod + next-intl + Vitest + Playwright). El backend vive en **`E:\ecommerce`**: su código es
    de **solo lectura**, pero **se puede encender y apagar**.
 3. Si el catálogo estuviera vacío: `node scripts/seed-demo.mjs`. Capturas: `pnpm capture --out=docs/capturas/fN
-   --route=/es/...`.
+--route=/es/...`.
 4. Cuenta de demostración que crea la semilla: `vendedor@tienda-demo.com` / `demo-marketplace-2026`.
 
 ## Estado: F0–F5 cerradas · portada hecha · F6 y F7 con el código hecho
@@ -77,18 +77,18 @@ totales) → `/es/orders` (200, el pedido aparece). Guion de aquella sesión: `%
 
 ### 2. F8 · Panel del vendedor (código nuevo)
 
-| Acción | Endpoint | Nota |
-|---|---|---|
-| Mi tienda | `GET/POST/PATCH /api/v1/sellers/me` | `POST` crea la solicitud (`name`, `description`); queda `pending` hasta que un admin la apruebe |
-| Mis productos | `GET /api/v1/catalog/products` | Devuelve **los de mi tienda** (exige tienda aprobada) |
-| Crear producto | `POST /api/v1/catalog/products` | `title`, `description`, `brand`, `category_id`, `variants[]` (`sku`, `price`, `compare_at_price`, `stock`, `attribute_values[]`) |
-| Editar producto | `PATCH /api/v1/catalog/products/{id}` | **Solo** `title`, `description`, `brand` |
-| **Cambiar stock de una variante** | `PATCH /api/v1/catalog/products/{id}/variants/{variant_id}/stock` con `{"stock": 12}` | **Valor absoluto** (no un incremento). Devuelve el `ProductOut` completo, con `stock` y `total_available` ya actualizados. Solo el dueño de la tienda (`403 forbidden` con otro vendedor, `403 seller_required` sin tienda, `401` sin sesión). Por debajo de lo reservado por órdenes en curso: **409 `insufficient_stock`**; stock negativo: 422. El stock ya **no** va en solo lectura |
-| Estado | `POST /api/v1/catalog/products/{id}/publish` · `/pause` · `/close` | |
-| Imágenes | `POST /api/v1/catalog/images/upload-url` → `PUT` a MinIO → `POST /api/v1/catalog/products/{id}/images` (`object_key`, `alt`, `position`) · `DELETE …/images/{image_id}` | Subir **desde el servidor** (ruta BFF) para no depender del CORS de MinIO; validar el tipo contra la lista blanca (`image/jpeg`, `image/png`, `image/webp`, `image/avif`, `image/gif`) y **rechazar SVG** |
-| Ventas | `GET /api/v1/seller/orders` (`limit`, `cursor`) | `SellerOrderListOut`: `subtotal`, `commission_amount`, `payout_amount`, `status`; **sin líneas** |
-| Estado de la venta | `PATCH /api/v1/seller/orders/{id}/status?status=…` | `pending→processing/cancelled`, `processing→shipped/cancelled`, `shipped→delivered` |
-| Envío | `POST/PATCH/GET /api/v1/seller/orders/{id}/shipment`, `POST …/shipment/status?status=&description=` | `carrier`, `tracking_number`, `tracking_url`, `cost`, `notes` |
+| Acción                            | Endpoint                                                                                                                                                                | Nota                                                                                                                                                                                                                                                                                                                                                                                     |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Mi tienda                         | `GET/POST/PATCH /api/v1/sellers/me`                                                                                                                                     | `POST` crea la solicitud (`name`, `description`); queda `pending` hasta que un admin la apruebe                                                                                                                                                                                                                                                                                          |
+| Mis productos                     | `GET /api/v1/catalog/products`                                                                                                                                          | Devuelve **los de mi tienda** (exige tienda aprobada)                                                                                                                                                                                                                                                                                                                                    |
+| Crear producto                    | `POST /api/v1/catalog/products`                                                                                                                                         | `title`, `description`, `brand`, `category_id`, `variants[]` (`sku`, `price`, `compare_at_price`, `stock`, `attribute_values[]`)                                                                                                                                                                                                                                                         |
+| Editar producto                   | `PATCH /api/v1/catalog/products/{id}`                                                                                                                                   | **Solo** `title`, `description`, `brand`                                                                                                                                                                                                                                                                                                                                                 |
+| **Cambiar stock de una variante** | `PATCH /api/v1/catalog/products/{id}/variants/{variant_id}/stock` con `{"stock": 12}`                                                                                   | **Valor absoluto** (no un incremento). Devuelve el `ProductOut` completo, con `stock` y `total_available` ya actualizados. Solo el dueño de la tienda (`403 forbidden` con otro vendedor, `403 seller_required` sin tienda, `401` sin sesión). Por debajo de lo reservado por órdenes en curso: **409 `insufficient_stock`**; stock negativo: 422. El stock ya **no** va en solo lectura |
+| Estado                            | `POST /api/v1/catalog/products/{id}/publish` · `/pause` · `/close`                                                                                                      |                                                                                                                                                                                                                                                                                                                                                                                          |
+| Imágenes                          | `POST /api/v1/catalog/images/upload-url` → `PUT` a MinIO → `POST /api/v1/catalog/products/{id}/images` (`object_key`, `alt`, `position`) · `DELETE …/images/{image_id}` | Subir **desde el servidor** (ruta BFF) para no depender del CORS de MinIO; validar el tipo contra la lista blanca (`image/jpeg`, `image/png`, `image/webp`, `image/avif`, `image/gif`) y **rechazar SVG**                                                                                                                                                                                |
+| Ventas                            | `GET /api/v1/seller/orders` (`limit`, `cursor`)                                                                                                                         | `SellerOrderListOut`: `subtotal`, `commission_amount`, `payout_amount`, `status`; **sin líneas**                                                                                                                                                                                                                                                                                         |
+| Estado de la venta                | `PATCH /api/v1/seller/orders/{id}/status?status=…`                                                                                                                      | `pending→processing/cancelled`, `processing→shipped/cancelled`, `shipped→delivered`                                                                                                                                                                                                                                                                                                      |
+| Envío                             | `POST/PATCH/GET /api/v1/seller/orders/{id}/shipment`, `POST …/shipment/status?status=&description=`                                                                     | `carrier`, `tracking_number`, `tracking_url`, `cost`, `notes`                                                                                                                                                                                                                                                                                                                            |
 
 **Tres cifras, sin gráficos**: ventas (suma de `payout_amount` o `subtotal` de las sub-órdenes, calculada en el
 servidor), pedidos (número de sub-órdenes) y productos. La API **no da totales**: se pagina por cursor con un tope
@@ -102,17 +102,17 @@ mostrarlo en solo lectura. Detalle: apartado 16 de `docs/PENDIENTES-BACKEND.md` 
 
 ### 3. F9 · Panel de administración
 
-| Acción | Endpoint |
-|---|---|
-| Tiendas por estado | `GET /api/v1/sellers?status_filter=pending|approved|rejected|suspended` |
-| Aprobar / rechazar | `POST /api/v1/sellers/{id}/approve` · `/reject` |
-| Suspender / reactivar | `POST /api/v1/admin/stores/{id}/suspend` · `/restore` |
-| Ocultar / publicar reseña | `POST /api/v1/admin/reviews/{id}/hide` · `/publish` |
-| **Usuarios** | `GET /api/v1/admin/users?q=&role=customer|admin&cursor=&limit=` → `AdminUserListOut`: `id`, `email`, `role`, `email_verified`, `full_name`, `store_id`, `store_name`, `store_status`, `created_at` |
-| **Preguntas (moderar)** | `GET /api/v1/admin/questions?published=&cursor=&limit=` → `AdminQuestionListOut`: `body`, `product_title`, `answer_count`, `is_published` · `POST /api/v1/admin/questions/{id}/hide` · `/publish` |
-| Métricas | `GET /api/v1/admin/metrics` (GMV, comisión, órdenes por estado, top vendedores y contadores) |
-| Auditoría | `GET /api/v1/admin/actions?limit=` |
-| Reseñas de un producto | `GET /api/v1/products/{id}/reviews` (público): para moderar hay que **buscar el producto** antes |
+| Acción                    | Endpoint                                                                                                                                                                                          |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tiendas por estado        | `GET /api/v1/sellers?status_filter=pending                                                                                                                                                        | approved                                                                                                                                               | rejected | suspended` |
+| Aprobar / rechazar        | `POST /api/v1/sellers/{id}/approve` · `/reject`                                                                                                                                                   |
+| Suspender / reactivar     | `POST /api/v1/admin/stores/{id}/suspend` · `/restore`                                                                                                                                             |
+| Ocultar / publicar reseña | `POST /api/v1/admin/reviews/{id}/hide` · `/publish`                                                                                                                                               |
+| **Usuarios**              | `GET /api/v1/admin/users?q=&role=customer                                                                                                                                                         | admin&cursor=&limit=`→`AdminUserListOut`: `id`, `email`, `role`, `email_verified`, `full_name`, `store_id`, `store_name`, `store_status`, `created_at` |
+| **Preguntas (moderar)**   | `GET /api/v1/admin/questions?published=&cursor=&limit=` → `AdminQuestionListOut`: `body`, `product_title`, `answer_count`, `is_published` · `POST /api/v1/admin/questions/{id}/hide` · `/publish` |
+| Métricas                  | `GET /api/v1/admin/metrics` (GMV, comisión, órdenes por estado, top vendedores y contadores)                                                                                                      |
+| Auditoría                 | `GET /api/v1/admin/actions?limit=`                                                                                                                                                                |
+| Reseñas de un producto    | `GET /api/v1/products/{id}/reviews` (público): para moderar hay que **buscar el producto** antes                                                                                                  |
 
 **Usuarios y preguntas (lagunas cerradas el 22/09/2026)**: la pantalla «ver usuarios» ya se puede construir —búsqueda
 por correo (`q`, contiene), filtro por rol y paginación por cursor— y **nunca** recibe hashes ni tokens. No hay rol
@@ -132,4 +132,3 @@ Detalle: apartados 17 y 18 de `docs/PENDIENTES-BACKEND.md` y decisión 0024 del 
   administrar hace falta una cuenta admin: se promueve con el script del backend
   (`uv run python -m app.scripts.promote_admin <email>`); si no hay credenciales en el entorno, esa parte se
   **omite** con un mensaje claro (el patrón que ya usan las e2e del carrito).
-

@@ -100,7 +100,13 @@ describe("RatingStars", () => {
 
   it("tiene un estado vacío cuando no hay reseñas", () => {
     render(
-      <RatingStars average={0} count={0} label="" emptyLabel="Sin reseñas todavía" locale={LOCALE} />,
+      <RatingStars
+        average={0}
+        count={0}
+        label=""
+        emptyLabel="Sin reseñas todavía"
+        locale={LOCALE}
+      />,
     );
 
     expect(screen.getByText("Sin reseñas todavía")).toBeVisible();

@@ -24,17 +24,17 @@ Abre http://localhost:3000 (te redirige a `/es` o `/en` según tu navegador).
 
 ## Comandos
 
-| Comando | Para qué |
-|---|---|
-| `pnpm dev` | Servidor de desarrollo |
-| `pnpm build` / `pnpm start` | Compilación y servidor de producción |
-| `pnpm lint` | ESLint |
-| `pnpm typecheck` | TypeScript en modo estricto |
-| `pnpm test` | Pruebas de componentes y utilidades (Vitest) |
-| `pnpm test:e2e` | Pruebas end-to-end con accesibilidad (Playwright + axe) |
-| `pnpm format` | Prettier |
-| `pnpm api:types` | **Regenera los tipos de la API** desde el OpenAPI del backend |
-| `pnpm api:types:offline` | Igual, pero sin levantar el backend (lee su código) |
+| Comando                     | Para qué                                                      |
+| --------------------------- | ------------------------------------------------------------- |
+| `pnpm dev`                  | Servidor de desarrollo                                        |
+| `pnpm build` / `pnpm start` | Compilación y servidor de producción                          |
+| `pnpm lint`                 | ESLint                                                        |
+| `pnpm typecheck`            | TypeScript en modo estricto                                   |
+| `pnpm test`                 | Pruebas de componentes y utilidades (Vitest)                  |
+| `pnpm test:e2e`             | Pruebas end-to-end con accesibilidad (Playwright + axe)       |
+| `pnpm format`               | Prettier                                                      |
+| `pnpm api:types`            | **Regenera los tipos de la API** desde el OpenAPI del backend |
+| `pnpm api:types:offline`    | Igual, pero sin levantar el backend (lee su código)           |
 
 Antes de la primera ejecución de `pnpm test:e2e` hay que instalar el navegador de Playwright:
 
@@ -58,4 +58,3 @@ pnpm exec playwright install chromium
   validada; nunca expone archivos privados.
 - Sin errores de axe en las páginas nuevas, contraste WCAG AA (con prueba automática de los tokens), foco
   visible y navegación completa con teclado.
-

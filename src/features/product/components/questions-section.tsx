@@ -51,7 +51,10 @@ export function QuestionsSection({
       ) : (
         <ul className="flex flex-col gap-4">
           {questions.items.map((question) => (
-            <li key={question.id} className="border-t border-border pt-4 first:border-t-0 first:pt-0">
+            <li
+              key={question.id}
+              className="border-t border-border pt-4 first:border-t-0 first:pt-0"
+            >
               <p className="text-sm whitespace-pre-line text-foreground">{question.body}</p>
               <p className="mt-1 text-xs text-muted-foreground">
                 <time dateTime={question.created_at}>

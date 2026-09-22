@@ -18,7 +18,9 @@ const WCAG_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
 
 for (const locale of LOCALES) {
   test.describe(`catálogo /${locale}`, () => {
-    test("la búsqueda carga, tiene filtros y no tiene errores de accesibilidad", async ({ page }) => {
+    test("la búsqueda carga, tiene filtros y no tiene errores de accesibilidad", async ({
+      page,
+    }) => {
       await page.goto(`/${locale}/search`);
 
       await expect(page.getByRole("heading", { level: 1 })).toBeVisible();

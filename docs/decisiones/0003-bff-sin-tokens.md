@@ -4,7 +4,7 @@
 
 ## Decisión
 
-Todo el tráfico hacia el backend sale del **servidor de Next.js** (patrón *backend for frontend*):
+Todo el tráfico hacia el backend sale del **servidor de Next.js** (patrón _backend for frontend_):
 
 - El navegador habla solo con `http://localhost:3000`.
 - El inicio de sesión (F2) se hará en una ruta BFF (`src/app/api/auth/...`), que guardará el

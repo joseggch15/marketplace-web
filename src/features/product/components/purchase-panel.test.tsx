@@ -182,7 +182,12 @@ describe("PurchasePanel", () => {
 
   it("avisa cuando el stock no se pudo comprobar y no inventa un límite", () => {
     renderPanel(
-      <PurchasePanel variants={[cheap, expensive]} availability={null} currency="COP" locale="es-CO" />,
+      <PurchasePanel
+        variants={[cheap, expensive]}
+        availability={null}
+        currency="COP"
+        locale="es-CO"
+      />,
     );
 
     expect(screen.getByText("No pudimos comprobar el stock.")).toBeVisible();

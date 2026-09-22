@@ -58,7 +58,11 @@ export function VariantSelector({
     <fieldset className={cn("flex flex-col gap-2", className)}>
       <legend className="text-sm font-medium text-foreground">{groupLabel}</legend>
 
-      <RadioGroup value={value ?? ""} onValueChange={onChange} className="flex flex-wrap gap-x-4 gap-y-2">
+      <RadioGroup
+        value={value ?? ""}
+        onValueChange={onChange}
+        className="flex flex-wrap gap-x-4 gap-y-2"
+      >
         {options.map((option) => {
           const optionId = `${baseId}-${option.value}`;
 

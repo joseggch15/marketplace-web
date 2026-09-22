@@ -140,7 +140,12 @@ describe("buildBreadcrumbJsonLd", () => {
         name: "Tecnología",
         item: "http://localhost:3000/es/c/tecnologia",
       },
-      { "@type": "ListItem", position: 3, name: "Audífonos", item: "http://localhost:3000/es/p/v1" },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: "Audífonos",
+        item: "http://localhost:3000/es/p/v1",
+      },
     ]);
   });
 });

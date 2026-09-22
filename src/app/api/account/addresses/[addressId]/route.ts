@@ -29,10 +29,7 @@ export async function PATCH(request: Request, context: RouteContext): Promise<Ne
     return result.status === 401 ? unauthorizedResponse() : backendProblem(result);
   }
 
-  return NextResponse.json(
-    { address: result.data },
-    { headers: { "cache-control": "no-store" } },
-  );
+  return NextResponse.json({ address: result.data }, { headers: { "cache-control": "no-store" } });
 }
 
 export async function DELETE(_request: Request, context: RouteContext): Promise<NextResponse> {

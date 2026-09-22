@@ -11,11 +11,13 @@
 export function serializeJsonLd(value: unknown): string {
   const json = JSON.stringify(value ?? null);
 
-  return json
-    .replace(/</g, "\\u003c")
-    .replace(/>/g, "\\u003e")
-    .replace(/&/g, "\\u0026")
-    // Separadores de línea de Unicode: rompen el script en algunos analizadores.
-    .replace(/\u2028/g, "\\u2028")
-    .replace(/\u2029/g, "\\u2029");
+  return (
+    json
+      .replace(/</g, "\\u003c")
+      .replace(/>/g, "\\u003e")
+      .replace(/&/g, "\\u0026")
+      // Separadores de línea de Unicode: rompen el script en algunos analizadores.
+      .replace(/\u2028/g, "\\u2028")
+      .replace(/\u2029/g, "\\u2029")
+  );
 }

@@ -138,12 +138,12 @@ describe("hasActiveFilters y priceRangeIsInvalid", () => {
   });
 
   it("avisa cuando el mínimo supera al máximo", () => {
-    expect(
-      priceRangeIsInvalid({ ...EMPTY_CATALOG_QUERY, minPrice: "900", maxPrice: "100" }),
-    ).toBe(true);
-    expect(
-      priceRangeIsInvalid({ ...EMPTY_CATALOG_QUERY, minPrice: "100", maxPrice: "900" }),
-    ).toBe(false);
+    expect(priceRangeIsInvalid({ ...EMPTY_CATALOG_QUERY, minPrice: "900", maxPrice: "100" })).toBe(
+      true,
+    );
+    expect(priceRangeIsInvalid({ ...EMPTY_CATALOG_QUERY, minPrice: "100", maxPrice: "900" })).toBe(
+      false,
+    );
     expect(priceRangeIsInvalid({ ...EMPTY_CATALOG_QUERY, minPrice: "100" })).toBe(false);
   });
 });

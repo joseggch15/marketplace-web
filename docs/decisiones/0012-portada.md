@@ -9,7 +9,7 @@
      `/design-system`) y sus textos se movieron del namespace `Home` a un namespace propio, `Health`.
 2. **Buscador en el héroe** con formulario `GET` (`?q=…`): funciona sin JavaScript y la búsqueda queda en la URL,
    así que se puede compartir y el botón «atrás» funciona.
-3. **Categorías con conteo real** desde las *facets* de `/catalog/search`, cruzadas con `/catalog/categories`
+3. **Categorías con conteo real** desde las _facets_ de `/catalog/search`, cruzadas con `/catalog/categories`
    para obtener el slug de la URL bonita. Una categoría sin productos publicados no aparece (nunca un «(0)»).
 4. **«Los más vendidos» sin orden inventado.** La API **no tiene** un orden `best_selling`, así que se pide una
    página amplia (24 por relevancia) y se ordena por `sold_count` (unidades realmente vendidas en órdenes

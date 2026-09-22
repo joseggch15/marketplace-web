@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  useIsMutating,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useIsMutating, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import type { ClientResult } from "@/lib/api/bff-client";
 

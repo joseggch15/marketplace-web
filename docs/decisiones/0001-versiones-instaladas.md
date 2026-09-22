@@ -9,22 +9,22 @@ funciona en la versión instalada». Para poder hacerlo, las versiones reales ti
 
 ## Versiones (comprobadas al crear el proyecto)
 
-| Herramienta | Versión |
-|---|---|
-| Node.js | v24.19.0 (LTS) |
-| pnpm | 12.5.1 |
-| Next.js | 16.3.5 |
-| React / React DOM | 19.2.8 |
-| TypeScript | 5.9.3 |
-| Tailwind CSS | 4.3.3 (con `@tailwindcss/postcss`) |
-| next-intl | 4.14.x |
-| next-themes | 0.4.6 |
-| TanStack Query | 5.103.2 |
-| openapi-fetch / openapi-typescript | 0.17.0 / 7.13.0 |
-| Vitest | 5.0.1 (con jsdom 30 y Testing Library 16) |
-| Playwright + axe | 1.63.x / 4.13.x |
-| ESLint / Prettier | 9 (flat config) / 3.9.8 |
-| shadcn/ui (CLI) | 4.21.x, estilo `radix-nova`, base `radix` |
+| Herramienta                        | Versión                                   |
+| ---------------------------------- | ----------------------------------------- |
+| Node.js                            | v24.19.0 (LTS)                            |
+| pnpm                               | 12.5.1                                    |
+| Next.js                            | 16.3.5                                    |
+| React / React DOM                  | 19.2.8                                    |
+| TypeScript                         | 5.9.3                                     |
+| Tailwind CSS                       | 4.3.3 (con `@tailwindcss/postcss`)        |
+| next-intl                          | 4.14.x                                    |
+| next-themes                        | 0.4.6                                     |
+| TanStack Query                     | 5.103.2                                   |
+| openapi-fetch / openapi-typescript | 0.17.0 / 7.13.0                           |
+| Vitest                             | 5.0.1 (con jsdom 30 y Testing Library 16) |
+| Playwright + axe                   | 1.63.x / 4.13.x                           |
+| ESLint / Prettier                  | 9 (flat config) / 3.9.8                   |
+| shadcn/ui (CLI)                    | 4.21.x, estilo `radix-nova`, base `radix` |
 
 ## Consecuencias
 

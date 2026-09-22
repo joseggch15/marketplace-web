@@ -57,9 +57,7 @@ export function defaultVariantId(variants: ProductVariant[]): string | null {
 }
 
 /** Rango de precios de las variantes, como texto (tal cual llega del backend). `null` si no hay ninguna. */
-export function variantPriceRange(
-  variants: ProductVariant[],
-): { min: string; max: string } | null {
+export function variantPriceRange(variants: ProductVariant[]): { min: string; max: string } | null {
   const ordered = sortedVariants(variants);
   const cheapest = ordered[0];
 

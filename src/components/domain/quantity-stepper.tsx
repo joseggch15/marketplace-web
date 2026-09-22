@@ -57,7 +57,8 @@ export function QuantityStepper({
   const blocked = disabled || loading;
   const canDecrease = !blocked && value > min;
   const canIncrease = !blocked && value < max;
-  const errorMessage = errorKey === "max" ? labels.maxMessage : errorKey === "min" ? labels.minMessage : null;
+  const errorMessage =
+    errorKey === "max" ? labels.maxMessage : errorKey === "min" ? labels.minMessage : null;
 
   /** Ajusta el valor dentro de los límites y avisa si el usuario se pasó. */
   function commit(next: number) {

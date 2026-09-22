@@ -25,13 +25,10 @@ import type {
  */
 
 export type FetchResult<T> =
-  | { ok: true; data: T }
-  | { ok: false; reason: "not_found" }
-  | { ok: false; reason: "unavailable" };
+  { ok: true; data: T } | { ok: false; reason: "not_found" } | { ok: false; reason: "unavailable" };
 
 export type AvailabilityResult =
-  | { ok: true; data: Availability }
-  | { ok: false; reason: "unavailable" };
+  { ok: true; data: Availability } | { ok: false; reason: "unavailable" };
 
 /** Reseñas por página. El backend acepta de 1 a 100; 10 es una lista legible en un móvil. */
 export const REVIEWS_PAGE_SIZE = 10;
@@ -179,12 +176,15 @@ export async function askQuestion(
   body: string,
 ): Promise<BackendResult<ProductQuestion>> {
   try {
-    const { data, error, response } = await backend.POST("/api/v1/products/{product_id}/questions", {
-      params: { path: { product_id: productId } },
-      body: { body },
-      headers: { authorization: `Bearer ${accessToken}` },
-      ...noStore,
-    });
+    const { data, error, response } = await backend.POST(
+      "/api/v1/products/{product_id}/questions",
+      {
+        params: { path: { product_id: productId } },
+        body: { body },
+        headers: { authorization: `Bearer ${accessToken}` },
+        ...noStore,
+      },
+    );
 
     if (response.ok && data !== undefined) {
       return { ok: true, data };

@@ -134,7 +134,9 @@ export function CartView() {
 
         <dl className="flex flex-col gap-2 text-sm">
           <div className="flex items-center justify-between gap-4">
-            <dt className="text-muted-foreground">{t("summary.items", { count: cart.total_items })}</dt>
+            <dt className="text-muted-foreground">
+              {t("summary.items", { count: cart.total_items })}
+            </dt>
             <dd className="font-medium">{cart.currency}</dd>
           </div>
           <div className="flex items-baseline justify-between gap-4">

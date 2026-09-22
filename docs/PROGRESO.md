@@ -14,20 +14,20 @@ está en `docs/historial/` y no hace falta leerlo para trabajar.
 
 ## Estado actual
 
-| Fase | Estado |
-|---|---|
-| F0 · Fundamentos | cerrada |
-| F1 · Sistema de diseño | cerrada |
-| F2 · Cuenta y sesión | cerrada |
-| F3 · Catálogo y búsqueda | cerrada |
-| F4 · Página de producto | cerrada |
-| F5 · Carrito | cerrada |
-| **Portada real** | **hecha** (`docs/decisiones/0012-portada.md`) |
-| **F6 · Checkout y pagos** | **código hecho y probado a mano contra el backend** (`docs/decisiones/0013-checkout.md`); faltan las e2e y las capturas |
-| **F7 · Mis compras** | **código hecho** (lista, detalle, cancelar y reseñar); faltan e2e, capturas y los enlaces de entrada |
-| F8 · Panel del vendedor | pendiente (el plan y los endpoints exactos están en `docs/SIGUIENTE-PROMPT.md`) |
-| F9 · Panel de administración | pendiente (la API no tiene listado de usuarios ni moderación de preguntas) |
-| F10 · Preparación para publicar | pendiente (auditoría + `docs/PUBLICAR.md`) |
+| Fase                            | Estado                                                                                                                  |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| F0 · Fundamentos                | cerrada                                                                                                                 |
+| F1 · Sistema de diseño          | cerrada                                                                                                                 |
+| F2 · Cuenta y sesión            | cerrada                                                                                                                 |
+| F3 · Catálogo y búsqueda        | cerrada                                                                                                                 |
+| F4 · Página de producto         | cerrada                                                                                                                 |
+| F5 · Carrito                    | cerrada                                                                                                                 |
+| **Portada real**                | **hecha** (`docs/decisiones/0012-portada.md`)                                                                           |
+| **F6 · Checkout y pagos**       | **código hecho y probado a mano contra el backend** (`docs/decisiones/0013-checkout.md`); faltan las e2e y las capturas |
+| **F7 · Mis compras**            | **código hecho** (lista, detalle, cancelar y reseñar); faltan e2e, capturas y los enlaces de entrada                    |
+| F8 · Panel del vendedor         | pendiente (el plan y los endpoints exactos están en `docs/SIGUIENTE-PROMPT.md`)                                         |
+| F9 · Panel de administración    | pendiente (la API no tiene listado de usuarios ni moderación de preguntas)                                              |
+| F10 · Preparación para publicar | pendiente (auditoría + `docs/PUBLICAR.md`)                                                                              |
 
 Verificación de esta tanda: `lint` 0 · `typecheck` 0 · **283 pruebas unitarias** (264 + 19 nuevas de pedidos). Las
 pruebas e2e y el `build` se ejecutan al cerrar F6/F7 (es lo primero de la próxima tarea).
@@ -54,4 +54,3 @@ medios · 0006 tipos de la API · 0007 sistema de diseño · 0008 autenticación
 Backend en `E:\ecommerce` (se enciende y se apaga cuando hace falta; PostgreSQL en 5433 y Redis en 6379) ·
 datos de demostración con `node scripts/seed-demo.mjs` · capturas con `pnpm capture --out=docs/capturas/fN
 --route=/es/...` · vista previa del dueño en el 3001.
-

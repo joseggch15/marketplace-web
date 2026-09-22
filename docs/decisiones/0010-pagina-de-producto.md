@@ -54,10 +54,10 @@ Tres limitaciones reales condicionan el diseño (anotadas en `docs/PENDIENTES-BA
    `<`, `>`, `&` y los separadores Unicode en escapes `\u…`. El título de un producto lo escribe un vendedor:
    sin ese escape, un `</script>` dentro del título cerraría la etiqueta y permitiría inyectar HTML.
 10. **El 404 real manda sobre el esqueleto de carga.** La ruta **no** tiene `loading.tsx`. Con él, Next.js
-   envía la página en streaming y fija el estado HTTP en **200 antes** de que se resuelva el `notFound()`: un
-   producto que no existe respondería 200 con el texto de «no encontrado» (un *soft 404*, que Google marca como
-   error). Se descubrió con la prueba end-to-end que exige un 404 de verdad, y se prefirió el estado HTTP
-   correcto: la ficha es dinámica y tarda milisegundos en pintarse.
+    envía la página en streaming y fija el estado HTTP en **200 antes** de que se resuelva el `notFound()`: un
+    producto que no existe respondería 200 con el texto de «no encontrado» (un _soft 404_, que Google marca como
+    error). Se descubrió con la prueba end-to-end que exige un 404 de verdad, y se prefirió el estado HTTP
+    correcto: la ficha es dinámica y tarda milisegundos en pintarse.
 
 ## Alternativas descartadas
 
@@ -76,7 +76,7 @@ Tres limitaciones reales condicionan el diseño (anotadas en `docs/PENDIENTES-BA
   una explicación visible.
 - **`loading.tsx` con esqueletos en la ruta del producto.** Descartada (al principio se implementó y la prueba
   end-to-end la tumbó): activa el streaming de Next.js y el estado HTTP queda en 200 antes de resolverse el
-  `notFound()`, así que los productos inexistentes pasaban a ser *soft 404*. Los esqueletos siguen existiendo
+  `notFound()`, así que los productos inexistentes pasaban a ser _soft 404_. Los esqueletos siguen existiendo
   como componentes (`ImageGallerySkeleton`, `VariantSelectorSkeleton`, `PriceSkeleton`) para las pantallas que
   sí puedan usarlos sin romper el estado HTTP.
 

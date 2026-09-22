@@ -33,7 +33,9 @@ async function waitForDocumentLanguage(page: Page): Promise<void> {
 
 for (const locale of LOCALES) {
   test.describe(`producto /${locale}`, () => {
-    test("una dirección que no es un identificador responde 404 y es accesible", async ({ page }) => {
+    test("una dirección que no es un identificador responde 404 y es accesible", async ({
+      page,
+    }) => {
       const response = await page.goto(`/${locale}/p/no-es-un-identificador`);
 
       expect(response?.status()).toBe(404);

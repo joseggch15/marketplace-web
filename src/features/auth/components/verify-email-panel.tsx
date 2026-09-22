@@ -57,7 +57,7 @@ export function VerifyEmailPanel({ token }: { token: string }) {
     return (
       <div className="flex flex-col gap-4">
         <p role="status" className="flex items-center gap-2 text-sm">
-          <CheckCircle2 aria-hidden className="size-5 text-brand-success-strong" />
+          <CheckCircle2 aria-hidden className="text-brand-success-strong size-5" />
           {t("verifySuccess")}
         </p>
         <Link

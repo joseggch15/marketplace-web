@@ -15,7 +15,12 @@ export async function SearchBar() {
   const [t, locale] = await Promise.all([getTranslations("Common"), getLocale()]);
 
   return (
-    <form action={`/${locale}/search`} method="get" role="search" className="flex w-full items-center gap-2">
+    <form
+      action={`/${locale}/search`}
+      method="get"
+      role="search"
+      className="flex w-full items-center gap-2"
+    >
       <div className="relative w-full">
         <label htmlFor="site-search" className="sr-only">
           {t("searchLabel")}

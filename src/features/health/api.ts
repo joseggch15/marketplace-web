@@ -45,9 +45,7 @@ export async function fetchPlatformHealth(): Promise<PlatformHealth> {
     const payload: unknown = result.response.ok ? result.data : result.error;
 
     if (isHealthResponse(payload)) {
-      return result.response.ok
-        ? { kind: "ok", payload }
-        : { kind: "unhealthy", payload };
+      return result.response.ok ? { kind: "ok", payload } : { kind: "unhealthy", payload };
     }
 
     return {

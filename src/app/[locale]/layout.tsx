@@ -113,7 +113,12 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
       data-scroll-behavior="smooth"
     >
       <body className="flex min-h-dvh flex-col antialiased">
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
           <NextIntlClientProvider messages={clientMessages}>
             <QueryProvider>
               <a

@@ -49,10 +49,7 @@ type DemoProduct = { productId: string; productTitle: string };
  * Se pregunta a la API pública (búsqueda + ficha + inventario), que es exactamente lo que hace el frontend: así
  * el stock que usa la prueba es el real, no uno supuesto.
  */
-async function findDemoProduct(
-  request: APIRequestContext,
-  minAvailable = 2,
-): Promise<DemoProduct> {
+async function findDemoProduct(request: APIRequestContext, minAvailable = 2): Promise<DemoProduct> {
   const health = await request.get(`${BACKEND_URL}/api/v1/health`);
   test.skip(!health.ok(), MISSING_ENVIRONMENT);
 
@@ -78,7 +75,10 @@ async function findDemoProduct(
     }
   }
 
-  test.skip(true, `${MISSING_ENVIRONMENT} Ninguna variante del catálogo tiene ${minAvailable} unidades.`);
+  test.skip(
+    true,
+    `${MISSING_ENVIRONMENT} Ninguna variante del catálogo tiene ${minAvailable} unidades.`,
+  );
 
   throw new Error("test.skip no detuvo la prueba: falta el catálogo de demostración.");
 }
@@ -114,7 +114,6 @@ async function addToCartFromProduct(page: Page, product: DemoProduct): Promise<v
   await expect(page.getByText(/agregado a tu carrito/i)).toBeVisible();
 }
 
-
 /**
  * Pulsa un botón y espera a la **respuesta** del servidor.
  *
@@ -146,7 +145,11 @@ async function clickAndWaitForResponse(
  * El envío se repite una vez porque, si el primer clic se perdió, el segundo ya encuentra la página hidratada;
  * en cada intento se vuelven a rellenar los campos, porque un envío nativo recarga la página y los vacía.
  */
-async function submitLoginForm(page: Page, email: string, password: string): Promise<number | null> {
+async function submitLoginForm(
+  page: Page,
+  email: string,
+  password: string,
+): Promise<number | null> {
   const button = page.getByRole("button", { name: /iniciar sesión/i });
 
   for (let intento = 1; intento <= 2; intento += 1) {

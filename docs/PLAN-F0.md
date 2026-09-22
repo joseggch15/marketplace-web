@@ -38,7 +38,6 @@ Vitest + Testing Library, Playwright + @axe-core/playwright, ESLint + Prettier, 
 **Código:** nombres en inglés, comentarios y explicaciones en español, componentes pequeños,
 **prohibido `any`**.
 
-
 ## e) Estructura de carpetas y dependencias
 
 ```
@@ -84,24 +83,24 @@ obliga a leer medio proyecto, y lo compartido queda separado en `components/ui`.
 
 ### Dependencias (una línea cada una)
 
-| Paquete | Para qué |
-|---|---|
-| `next`, `react`, `react-dom` | El framework y React. App Router: cada carpeta es una URL y las páginas se renderizan en el servidor. |
-| `typescript`, `@types/*` | Tipado estricto: errores antes de ejecutar, no en producción. |
-| `tailwindcss` | Estilos con clases utilitarias, sin inventar nombres de CSS. |
-| `shadcn/ui` (CLI) | Copia componentes accesibles al repo: son código propio, no una caja negra. |
-| `radix-ui/*` (los instala shadcn) | Primitivos accesibles (diálogos, menús, tabs) con teclado y ARIA ya resueltos. |
-| `class-variance-authority`, `clsx`, `tailwind-merge` | Variantes de componentes y unión segura de clases CSS. |
-| `lucide-react` | Iconos ligeros y consistentes. |
-| `@tanstack/react-query` | Datos del servidor en componentes cliente: caché, reintentos y actualizaciones optimistas. |
-| `react-hook-form`, `zod`, `@hookform/resolvers` | Formularios y validación con un esquema compartido. |
-| `next-intl` | Español e inglés con rutas por idioma, listo para añadir más. |
-| `openapi-typescript` (dev) + `openapi-fetch` | Generan los tipos desde `/openapi.json` y llaman a la API con esos tipos. |
-| `vitest`, `jsdom`, Testing Library | Pruebas de componentes simulando a una persona real. |
-| `@playwright/test`, `@axe-core/playwright` | Pruebas end-to-end en navegador real + auditoría de accesibilidad. |
-| `eslint`, `eslint-config-next`, `prettier`, `prettier-plugin-tailwindcss`, `eslint-config-prettier` | Calidad y formato automáticos. |
-| `@stripe/react-stripe-js`, `@stripe/stripe-js`, `@mercadopago/sdk-react` | Pago con los componentes oficiales (F6; se evalúan cuando se necesiten). |
-| **Descartado por ahora** | Librerías de UI pesadas, moment.js, lodash completo, etc. |
+| Paquete                                                                                             | Para qué                                                                                              |
+| --------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `next`, `react`, `react-dom`                                                                        | El framework y React. App Router: cada carpeta es una URL y las páginas se renderizan en el servidor. |
+| `typescript`, `@types/*`                                                                            | Tipado estricto: errores antes de ejecutar, no en producción.                                         |
+| `tailwindcss`                                                                                       | Estilos con clases utilitarias, sin inventar nombres de CSS.                                          |
+| `shadcn/ui` (CLI)                                                                                   | Copia componentes accesibles al repo: son código propio, no una caja negra.                           |
+| `radix-ui/*` (los instala shadcn)                                                                   | Primitivos accesibles (diálogos, menús, tabs) con teclado y ARIA ya resueltos.                        |
+| `class-variance-authority`, `clsx`, `tailwind-merge`                                                | Variantes de componentes y unión segura de clases CSS.                                                |
+| `lucide-react`                                                                                      | Iconos ligeros y consistentes.                                                                        |
+| `@tanstack/react-query`                                                                             | Datos del servidor en componentes cliente: caché, reintentos y actualizaciones optimistas.            |
+| `react-hook-form`, `zod`, `@hookform/resolvers`                                                     | Formularios y validación con un esquema compartido.                                                   |
+| `next-intl`                                                                                         | Español e inglés con rutas por idioma, listo para añadir más.                                         |
+| `openapi-typescript` (dev) + `openapi-fetch`                                                        | Generan los tipos desde `/openapi.json` y llaman a la API con esos tipos.                             |
+| `vitest`, `jsdom`, Testing Library                                                                  | Pruebas de componentes simulando a una persona real.                                                  |
+| `@playwright/test`, `@axe-core/playwright`                                                          | Pruebas end-to-end en navegador real + auditoría de accesibilidad.                                    |
+| `eslint`, `eslint-config-next`, `prettier`, `prettier-plugin-tailwindcss`, `eslint-config-prettier` | Calidad y formato automáticos.                                                                        |
+| `@stripe/react-stripe-js`, `@stripe/stripe-js`, `@mercadopago/sdk-react`                            | Pago con los componentes oficiales (F6; se evalúan cuando se necesiten).                              |
+| **Descartado por ahora**                                                                            | Librerías de UI pesadas, moment.js, lodash completo, etc.                                             |
 
 **Nota de honestidad:** no se fijan números de versión "a mano" en el plan: se instala la **última
 estable** y se **lee la documentación de lo instalado** antes de usar sus APIs. Las versiones reales

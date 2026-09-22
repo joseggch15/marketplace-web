@@ -25,7 +25,9 @@ El acento vive en `src/styles/tokens.css` en un bloque único (`--brand-accent*`
 con `data-accent` en el `<html>`:
 
 ```html
-<html data-accent="coral">   <!-- o data-accent="violeta" -->
+<html data-accent="coral">
+  <!-- o data-accent="violeta" -->
+</html>
 ```
 
 Ventajas: cambiar el acento de todo el sitio es editar **una línea** en el layout, y `/design-system` puede
@@ -51,13 +53,13 @@ Correcciones que salieron de esta validación:
 El proyecto pide seis estados por componente, pero no todos tienen sentido en todos ellos. Para no inventar
 estados falsos, cada componente implementa los que aplican y lo documenta:
 
-| Componente | Estados |
-|---|---|
-| `Price`, `RatingStars`, `DealBadge`, `CheckoutSteps`, `OrderTimeline` | normal · cargando (esqueleto) · vacío/sin dato · error |
-| `ProductCard` | normal · hover · foco · agotado · sin imagen · cargando |
-| `VariantSelector` | normal · hover · foco · seleccionado · deshabilitado (sin stock) · error · cargando |
-| `QuantityStepper` | normal · hover · foco · deshabilitado · cargando · error (límite superado) |
-| `ImageGallery` | normal · hover · foco · miniatura activa · sin imágenes · error de carga · cargando |
+| Componente                                                            | Estados                                                                             |
+| --------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `Price`, `RatingStars`, `DealBadge`, `CheckoutSteps`, `OrderTimeline` | normal · cargando (esqueleto) · vacío/sin dato · error                              |
+| `ProductCard`                                                         | normal · hover · foco · agotado · sin imagen · cargando                             |
+| `VariantSelector`                                                     | normal · hover · foco · seleccionado · deshabilitado (sin stock) · error · cargando |
+| `QuantityStepper`                                                     | normal · hover · foco · deshabilitado · cargando · error (límite superado)          |
+| `ImageGallery`                                                        | normal · hover · foco · miniatura activa · sin imágenes · error de carga · cargando |
 
 ### 5. Decisiones de producto que protegen al usuario
 

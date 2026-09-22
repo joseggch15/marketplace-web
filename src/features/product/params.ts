@@ -57,5 +57,7 @@ export function parseReviewsCursor(raw: Record<string, RawParam>): string | null
  * página con otra página de reseñas, y no interesa que Google la indexe por separado.
  */
 export function reviewsHref(productPath: string, cursor: string | null): string {
-  return cursor === null ? productPath : `${productPath}?${REVIEWS_CURSOR_PARAM}=${encodeURIComponent(cursor)}`;
+  return cursor === null
+    ? productPath
+    : `${productPath}?${REVIEWS_CURSOR_PARAM}=${encodeURIComponent(cursor)}`;
 }

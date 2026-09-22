@@ -21,9 +21,7 @@ export type CartItem = components["schemas"]["CartItemOut"];
  * - `set`: viene con un token → es nuevo (se acaba de generar) o rotado → se guarda en la cookie.
  */
 export type GuestTokenHeader =
-  | { kind: "absent" }
-  | { kind: "clear" }
-  | { kind: "set"; token: string };
+  { kind: "absent" } | { kind: "clear" } | { kind: "set"; token: string };
 
 /** Resultado de una llamada al carrito: el carrito completo y qué hacer con la cookie del invitado. */
 export type CartSnapshot = { cart: Cart; guestToken: GuestTokenHeader };

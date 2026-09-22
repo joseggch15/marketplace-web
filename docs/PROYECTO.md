@@ -29,7 +29,6 @@ Construir el frontend web del marketplace multi-vendedor cuyo backend ya existe:
   lugar del amarillo para no parecerse a Mercado Libre).
 - Idiomas iniciales: **español e inglés**, con la arquitectura lista para añadir más.
 
-
 ## Stack (no se cambia sin justificarlo y pedir permiso)
 
 - Next.js con App Router (última versión estable) y React

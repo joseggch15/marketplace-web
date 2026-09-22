@@ -99,7 +99,13 @@ reales** que devuelve el backend.
 7. Datos de marca: mientras el nombre no esté decidido se usa el placeholder de `src/config/brand.ts`.
 8. Dirección visual elegida: **«Mercado Vivo»** (azul de confianza), **sin el amarillo de acento** para no
    parecerse a Mercado Libre. En la F1 se proponen 2 alternativas de acento y se valida el contraste AA.
-9. El backend corre en la terminal del dueño: **no lo inicies ni lo detengas**.
+9. **El backend (`E:\ecommerce`) es de solo lectura en su código, pero sí puedes encenderlo y apagarlo.** Levántalo
+   en segundo plano cuando lo necesites para pruebas o capturas (`docker compose up -d` y luego
+   `uvicorn app.main:app` en `E:\ecommerce`) y deténlo al terminar. Lo que **no** puedes es **modificar sus
+   archivos**: si hace falta un cambio allí, se anota en `docs/PENDIENTES-BACKEND.md`.
+10. **Datos de prueba en local:** si el catálogo está vacío, usa `scripts/seed-demo.mjs` (crea un vendedor,
+    categorías y al menos 12 productos con variantes, precios, stock e imágenes generadas **localmente** por el
+    propio script: nunca descargues imágenes de internet). Es solo para local; no se usa en producción.
 
 ---
 

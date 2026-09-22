@@ -65,6 +65,38 @@ proyecto.
   Ambos deben ser **privados**.
 - Comprobación rápida de que todo está subido:
   `git rev-list --count '@{u}..HEAD'` debe devolver `0`.
+- **Estado (actualizado):** los dos repositorios existen y son **privados**:
+  `joseggch15/marketplace-web` (rama `master`, todo subido) y `joseggch15/ecommerceBackend` (rama `main`).
+- **`gh` no tiene sesión en este equipo**, pero **git sí tiene las credenciales guardadas** en el gestor de
+  Windows (usuario `joseggch15`): para las operaciones de API se puede usar el token que ya está guardado
+  (`git credential fill`) sin volver a iniciar sesión, y **nunca escribirlo en un archivo ni en un registro**.
+- **Trampa que ya nos costó dos intentos:** el cuerpo JSON enviado a la API debe escribirse **sin BOM**
+  (`[System.IO.File]::WriteAllText($ruta, $json, (New-Object System.Text.UTF8Encoding($false)))`).
+  `Out-File -Encoding utf8` añade BOM en PowerShell 5.1 y la API responde `400 Problems parsing JSON`.
+
+---
+
+## Backend y datos de prueba (aclaraciones del dueño)
+
+- **El código del backend (`E:\ecommerce`) es de solo lectura, pero el servidor sí se puede encender y apagar.**
+  Levántalo en segundo plano cuando lo necesites para pruebas o capturas:
+  `Set-Location E:\ecommerce; docker compose up -d` y después
+  `uv run uvicorn app.main:app --host 127.0.0.1 --port 8000` (en segundo plano, con la salida a un archivo de
+  `%TEMP%`). Comprueba con `curl.exe -s http://127.0.0.1:8000/api/v1/health` y deténlo al terminar.
+  **Nunca** modifiques archivos de `E:\ecommerce`: si hace falta un cambio allí, se anota en
+  `docs/PENDIENTES-BACKEND.md`.
+- **Datos de prueba:** si el catálogo está vacío, se crean **con la API del backend** (nunca tocando su código ni
+  la base de datos a mano) desde `scripts/seed-demo.mjs`:
+  - registra un vendedor y crea sus categorías y al menos **12 productos con variantes** (`price`,
+    `compare_at_price`, `stock`), algunos con varias variantes y distintos rangos de precio;
+  - genera las **imágenes localmente** (PNG simples construidos en el propio script, sin descargar nada de
+    internet) y las sube por el flujo `POST /api/v1/catalog/images/upload-url` + `PUT` al almacenamiento;
+  - publica los productos (`POST /api/v1/catalog/products/{id}/publish`) para que aparezcan en la búsqueda;
+  - debe ser **idempotente** (ejecutarlo dos veces no duplica el catálogo) y solo se usa en local.
+  - Si hace falta un usuario con rol de vendedor/administrador, **busca primero si el backend ya trae un script o
+    comando de administración** y úsalo tal cual; no inventes un atajo que después no exista en producción.
+- **Con el backend encendido y datos reales, rehaz las capturas de la F3** (`pnpm capture` con las rutas de la
+  búsqueda y de una categoría real) para que muestren productos de verdad.
 
 ---
 

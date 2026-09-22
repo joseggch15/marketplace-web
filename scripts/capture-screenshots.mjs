@@ -7,10 +7,17 @@
  * Uso:
  *   node scripts/capture-screenshots.mjs --out=docs/capturas/f1 --route=/es --route=/es/design-system
  *
+ * Para fotografiar el carrito **con líneas reales** (F5) se le pasa una variante del catálogo de demostración:
+ *   node scripts/capture-screenshots.mjs --out=docs/capturas/f5 --route=/es/cart \
+ *     --cart-variant=<uuid de la variante> --cart-quantity=2
+ *
  * Notas de implementación:
  * - El tema se fija con `emulateMedia` **y** con `localStorage.theme`, que es la clave que usa `next-themes`.
  *   Así la captura no depende del sistema operativo de la máquina que las tome.
  * - `reducedMotion: "reduce"` evita que una animación se capture a medias.
+ * - `--cart-variant` rellena el carrito del invitado con la petición del propio contexto del navegador (comparte
+ *   las cookies, así que el servidor guarda el carrito en su cookie httpOnly como haría un comprador). Cada
+ *   contexto es nuevo, por eso se rellena antes de cada captura.
  */
 import { mkdir, stat } from "node:fs/promises";
 import path from "node:path";
@@ -24,7 +31,7 @@ const VIEWPORTS = [
 
 /** Lee `--clave=valor` repetible de la línea de comandos. */
 function parseArgs(argv) {
-  const values = { routes: [], out: null, baseUrl: null };
+  const values = { routes: [], out: null, baseUrl: null, cartVariant: null, cartQuantity: 1 };
   for (const arg of argv) {
     const match = /^--([a-zA-Z-]+)=(.*)$/.exec(arg);
     if (!match) continue;
@@ -32,6 +39,8 @@ function parseArgs(argv) {
     if (key === "route") values.routes.push(value);
     else if (key === "out") values.out = value;
     else if (key === "base-url") values.baseUrl = value;
+    else if (key === "cart-variant") values.cartVariant = value;
+    else if (key === "cart-quantity") values.cartQuantity = Number.parseInt(value, 10) || 1;
   }
   return values;
 }
@@ -82,6 +91,14 @@ for (const route of routes) {
       const file = path.join(outputDir, `${slugFor(route)}-${theme}-${viewport.label}.png`);
 
       try {
+        // Carrito de invitado con líneas reales (opcional): la petición la hace el propio contexto, así que el
+        // servidor guarda el carrito en la cookie httpOnly igual que si se hubiera agregado desde la página.
+        if (args.cartVariant) {
+          await context.request.post(`${baseUrl}/api/cart/items`, {
+            data: { variant_id: args.cartVariant, quantity: args.cartQuantity },
+          });
+        }
+
         await page.goto(route, { waitUntil: "load" });
         await page.waitForLoadState("networkidle");
         // Espera a las tipografías propias: sin esto la captura puede salir con la fuente de reserva.

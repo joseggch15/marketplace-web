@@ -33,11 +33,11 @@ repite aquí) y el detalle de las fases cerradas está en `docs/historial/` (**n
 ---
 
 
-## Estado: F0 a F4 cerradas · **siguiente: F5 · Carrito**
+## Estado: F0 a F5 cerradas · **siguiente: resolver los pendientes del backend**
 
-Verificado en el último cierre (F4): `lint` 0 · `typecheck` 0 · pruebas unitarias y end-to-end en verde ·
-capturas con datos reales en `docs/capturas/f4/`. Repositorios privados y al día:
-`joseggch15/marketplace-web` (`master`) y `joseggch15/ecommerceBackend`.
+Verificado en el último cierre (F5): `lint` 0 · `typecheck` 0 · **253 pruebas unitarias** · **116 e2e** (115 en
+verde y 1 omitida a propósito) · `build` 0 · capturas con datos reales en `docs/capturas/f5/`. Repositorios
+privados y al día: `joseggch15/marketplace-web` (`master`) y `joseggch15/ecommerceBackend`.
 
 ### Lo que dejó hecho la F4 (reutilizar, no rehacer)
 
@@ -53,7 +53,25 @@ capturas con datos reales en `docs/capturas/f4/`. Repositorios privados y al dí
   stock y el botón «Agregar al carrito» **deshabilitado y explicado** porque el carrito es la F5. En la F5 se
   conecta ese botón: el `variant_id` y la cantidad ya están ahí; falta la mutación y el aviso de éxito.
 
-### Contratos del carrito (F5, ya extraídos del OpenAPI)
+### Lo que dejó hecho la F5 (reutilizar, no rehacer)
+
+- **`src/features/cart/`**: `api.ts` (servidor: llamadas a la API + lectura de la cabecera `X-Cart-Token`),
+  `session.ts` (cookie httpOnly `mv_cart`, operaciones con sesión o como invitado y **fusión del carrito**),
+  `bff.ts`, `schemas.ts`, `error-codes.ts`, `selectors.ts` (puros, sin aritmética de dinero), `client.ts` y
+  `hooks.ts` (TanStack Query con actualizaciones optimistas y reversión).
+- **Rutas BFF nuevas**: `GET|DELETE /api/cart`, `POST /api/cart/items`, `PATCH|DELETE /api/cart/items/{variantId}`.
+- **La fusión del carrito de invitado ocurre en el servidor** dentro de `POST /api/auth/login` (y está llamada en
+  el registro, donde hoy no hay sesión: apartado 15 de los pendientes). No depende del navegador.
+- **Pantalla `/cart`** con sus cuatro estados, contador en la cabecera y el botón «Agregar al carrito» de la
+  ficha ya funcionando. El botón «Continuar con el pago» está deshabilitado y explicado: el pago es la F6.
+- **Las pruebas e2e del carrito son las primeras que necesitan el backend encendido y los datos de
+  demostración** (`node scripts/seed-demo.mjs`); si falta el entorno, se omiten con un mensaje que lo explica. La
+  fusión se comprueba **una sola vez por corrida** porque el backend limita los intentos de entrada a 5 por
+  minuto y por IP.
+- **Capturas del carrito con líneas reales**: `pnpm capture --out=docs/capturas/f5 --route=/es/cart --cart-variant=<uuid>`,
+  donde `<uuid>` es una variante con stock del catálogo de demostración.
+
+### Contratos del carrito (implementados en la F5, extraídos del OpenAPI)
 
 ```
 GET    /api/v1/cart                    → 200 CartOut      (usuario con sesión o invitado con X-Cart-Token)
@@ -85,6 +103,14 @@ quitar, vaciar, con sus cuatro estados) → conectar el botón de `PurchasePanel
 fusión del carrito al entrar → traducciones es/en → pruebas unitarias y e2e → capturas con datos reales →
 commit y push.
 
-### Después de la F5
+### Siguiente tarea (acordada con el dueño)
 
-Resolver `docs/PENDIENTES-BACKEND.md` (13 apartados) en el backend → F6 (pagos, en sandbox).
+**La F6 (pagos) no se empieza** hasta resolver `docs/PENDIENTES-BACKEND.md` (**15 apartados**) en una tarea
+dedicada del backend. Los que más pesan en el checkout son:
+
+- **2.** Pagos reales (Stripe y Mercado Pago): hoy es `PAYMENT_PROVIDER=sandbox` con el simulador del backend.
+- **14.** El carrito no informa de stock ni de cambios de precio (y acepta más unidades de las que hay).
+- **4.** Catálogo público de códigos de error, para traducir los mensajes del checkout sin adivinar.
+- **15.** El registro no devuelve tokens (por eso la fusión del carrito ocurre al iniciar sesión).
+
+Cuando esos pendientes estén resueltos, la F6 se entrega **en sandbox** y se retoma la integración real después.

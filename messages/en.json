@@ -373,7 +373,10 @@
     },
     "buy": {
       "addToCart": "Add to cart",
-      "comingSoon": "The cart arrives in the next delivery of the project: this button will work then. The price and the stock you see are real."
+      "adding": "Adding…",
+      "added": "Added to your cart.",
+      "viewCart": "View the cart",
+      "outOfStockHint": "This option has no units available right now."
     },
     "unavailable": {
       "title": "We could not load this product",
@@ -415,6 +418,65 @@
       "internal_error": "Something failed on our side. Please try again in a moment.",
       "network_error": "We could not connect. Check your connection and try again.",
       "unknown": "We could not post your question. Please try again."
+    }
+  },
+  "Cart": {
+    "title": "Your cart",
+    "subtitle": "Review what you have, change quantities and remove what you do not want. Amounts are calculated by the store.",
+    "metaDescription": "Review the items in your cart, change quantities and remove what you do not want before paying.",
+    "loading": "Loading your cart…",
+    "counter": {
+      "label": "{count, plural, =0 {Cart, empty} one {Cart, # item} other {Cart, # items}}",
+      "text": "Cart"
+    },
+    "empty": {
+      "title": "Your cart is empty",
+      "description": "When you add something, you will see it here.",
+      "action": "Browse the catalog"
+    },
+    "failure": {
+      "title": "We could not load your cart",
+      "description": "The cart service is not responding. Your cart is still saved: please try again in a moment.",
+      "retry": "Try again"
+    },
+    "item": {
+      "sku": "Seller code: {sku}",
+      "priceUnavailable": "Price unavailable",
+      "quantityLabel": "Quantity",
+      "quantityDecrement": "Remove one unit",
+      "quantityIncrement": "Add one unit",
+      "quantityMax": "The maximum per product is {max}",
+      "quantityMin": "The minimum is {min}",
+      "lineTotal": "Subtotal",
+      "remove": "Remove",
+      "removeLabel": "Remove {title} from the cart",
+      "pending": "Updating…"
+    },
+    "summary": {
+      "title": "Summary",
+      "items": "{count, plural, one {# item} other {# items}}",
+      "subtotal": "Subtotal",
+      "updating": "Updating…",
+      "note": "The subtotal is calculated by the store with the current price of each product. The final amount is confirmed at payment.",
+      "clear": "Empty the cart",
+      "checkout": "Continue to payment",
+      "checkoutComingSoon": "Payment arrives in the next delivery of the project: the button will work then. Your cart and its prices are real.",
+      "continueShopping": "Keep shopping"
+    },
+    "errors": {
+      "cart_token_required": "We could not identify your cart. Please try again.",
+      "cart_item_not_found": "That product is no longer in your cart. Refresh the page to see it up to date.",
+      "variant_not_found": "The option you chose no longer exists. Look for it again on the product page.",
+      "quantity_limit_exceeded": "The maximum per product is 100 units.",
+      "insufficient_stock": "There are not enough units available. Please reduce the quantity.",
+      "unauthorized": "Your session expired. Please sign in again.",
+      "validation_error": "Check the quantity: something does not fit.",
+      "too_many_requests": "You made several changes in a row. Please wait a moment and try again.",
+      "not_found": "That product is no longer available.",
+      "forbidden": "You cannot make that change in your cart.",
+      "internal_error": "Something failed on our side. Please try again in a moment.",
+      "network_error": "We could not connect. Check your connection and try again.",
+      "unknown": "We could not update your cart. Please try again."
     }
   }
 }

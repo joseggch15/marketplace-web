@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { cartKey } from "@/features/cart/client";
 import { useRouter } from "@/i18n/navigation";
 
 import * as api from "./client";
@@ -46,6 +47,9 @@ export function useLogin() {
     mutationFn: (values: LoginValues) => api.login(values.email, values.password),
     onSuccess: async (result) => {
       if (result.ok) {
+        // Al entrar, el servidor fusiona el carrito de invitado con el del usuario (F5): el carrito guardado en
+        // la caché ya no es el bueno, así que se pide de nuevo (el contador de la cabecera lo comparte).
+        await queryClient.invalidateQueries({ queryKey: cartKey });
         await queryClient.invalidateQueries({ queryKey: sessionKey });
         // Los datos que pinta el servidor (encabezado, /account) se vuelven a pedir con la sesión nueva.
         router.refresh();

@@ -373,7 +373,10 @@
     },
     "buy": {
       "addToCart": "Agregar al carrito",
-      "comingSoon": "El carrito llega en la siguiente entrega del proyecto: entonces este botón funcionará. El precio y el stock que ves son reales."
+      "adding": "Agregando…",
+      "added": "Agregado a tu carrito.",
+      "viewCart": "Ver el carrito",
+      "outOfStockHint": "Esta presentación no tiene unidades disponibles ahora mismo."
     },
     "unavailable": {
       "title": "No pudimos cargar este producto",
@@ -415,6 +418,65 @@
       "internal_error": "Falló algo de nuestro lado. Inténtalo de nuevo en un momento.",
       "network_error": "No pudimos conectar. Revisa tu conexión e inténtalo otra vez.",
       "unknown": "No pudimos publicar tu pregunta. Inténtalo de nuevo."
+    }
+  },
+  "Cart": {
+    "title": "Tu carrito",
+    "subtitle": "Revisa lo que llevas, cambia cantidades y quita lo que no quieras. Los importes los calcula la tienda.",
+    "metaDescription": "Revisa los productos de tu carrito, cambia cantidades y quita lo que no quieras antes de pagar.",
+    "loading": "Cargando tu carrito…",
+    "counter": {
+      "label": "{count, plural, =0 {Carrito, vacío} one {Carrito, # producto} other {Carrito, # productos}}",
+      "text": "Carrito"
+    },
+    "empty": {
+      "title": "Tu carrito está vacío",
+      "description": "Cuando agregues algo, lo verás aquí.",
+      "action": "Explorar el catálogo"
+    },
+    "failure": {
+      "title": "No pudimos cargar tu carrito",
+      "description": "El servicio de carrito no está respondiendo. Tu carrito sigue guardado: inténtalo otra vez en un momento.",
+      "retry": "Intentar de nuevo"
+    },
+    "item": {
+      "sku": "Código del vendedor: {sku}",
+      "priceUnavailable": "Precio no disponible",
+      "quantityLabel": "Cantidad",
+      "quantityDecrement": "Quitar una unidad",
+      "quantityIncrement": "Agregar una unidad",
+      "quantityMax": "El máximo por producto es {max}",
+      "quantityMin": "El mínimo es {min}",
+      "lineTotal": "Subtotal",
+      "remove": "Quitar",
+      "removeLabel": "Quitar {title} del carrito",
+      "pending": "Actualizando…"
+    },
+    "summary": {
+      "title": "Resumen",
+      "items": "{count, plural, one {# producto} other {# productos}}",
+      "subtotal": "Subtotal",
+      "updating": "Actualizando…",
+      "note": "El subtotal lo calcula la tienda con el precio actual de cada producto. El monto final se confirma al pagar.",
+      "clear": "Vaciar carrito",
+      "checkout": "Continuar con el pago",
+      "checkoutComingSoon": "El pago llega en la siguiente entrega del proyecto: entonces este botón funcionará. Tu carrito y sus precios son reales.",
+      "continueShopping": "Seguir comprando"
+    },
+    "errors": {
+      "cart_token_required": "No pudimos identificar tu carrito. Vuelve a intentarlo, por favor.",
+      "cart_item_not_found": "Ese producto ya no está en tu carrito. Actualiza la página para verlo al día.",
+      "variant_not_found": "La presentación que elegiste ya no existe. Búscala otra vez en la ficha del producto.",
+      "quantity_limit_exceeded": "El máximo por producto es 100 unidades.",
+      "insufficient_stock": "No hay suficientes unidades disponibles. Reduce la cantidad.",
+      "unauthorized": "Tu sesión caducó. Vuelve a iniciar sesión.",
+      "validation_error": "Revisa la cantidad: hay algo que no encaja.",
+      "too_many_requests": "Hiciste varios cambios seguidos. Espera un momento y vuelve a probar.",
+      "not_found": "Ese producto ya no está disponible.",
+      "forbidden": "No puedes hacer ese cambio en tu carrito.",
+      "internal_error": "Falló algo de nuestro lado. Inténtalo de nuevo en un momento.",
+      "network_error": "No pudimos conectar. Revisa tu conexión e inténtalo otra vez.",
+      "unknown": "No pudimos actualizar tu carrito. Inténtalo de nuevo."
     }
   }
 }

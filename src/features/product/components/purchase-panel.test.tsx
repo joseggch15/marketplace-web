@@ -1,8 +1,12 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { NextIntlClientProvider } from "next-intl";
 import type { ReactElement } from "react";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+import * as cartApi from "@/features/cart/client";
+import type * as cartClient from "@/features/cart/client";
 
 import type { ProductVariant } from "../types";
 import { PurchasePanel } from "./purchase-panel";
@@ -11,9 +15,16 @@ import { PurchasePanel } from "./purchase-panel";
  * Pruebas de la caja de compra.
  *
  * Lo que se protege: que el precio mostrado sea el de la presentación elegida, que **nunca** se pueda pedir más
- * de lo que hay, y que cuando el stock no se pudo comprobar la interfaz lo diga en lugar de inventar un límite
- * o marcar el producto como agotado.
+ * de lo que hay, que cuando el stock no se pudo comprobar la interfaz lo diga en lugar de inventar un límite o
+ * marcar el producto como agotado, y (F5) que «Agregar al carrito» llame al servidor con la variante y la
+ * cantidad elegidas y traduzca el error por su `code` estable.
  */
+
+// El botón pasa por las rutas BFF: en la prueba se sustituye la llamada al servidor por una respuesta fija.
+vi.mock("@/features/cart/client", async (importOriginal) => {
+  const actual = await importOriginal<typeof cartClient>();
+  return { ...actual, addCartItem: vi.fn() };
+});
 
 const messages = {
   Product: {
@@ -37,9 +48,23 @@ const messages = {
       max: "Solo hay {max} disponibles",
       min: "El mínimo de compra es {min}",
     },
-    buy: { addToCart: "Agregar al carrito", comingSoon: "El carrito llega después." },
+    buy: {
+      addToCart: "Agregar al carrito",
+      adding: "Agregando…",
+      added: "Agregado a tu carrito.",
+      viewCart: "Ver el carrito",
+      outOfStockHint: "Esta presentación no tiene unidades disponibles ahora mismo.",
+    },
+  },
+  Cart: {
+    errors: {
+      insufficient_stock: "No hay suficientes unidades disponibles.",
+      unknown: "No pudimos actualizar tu carrito.",
+    },
   },
 };
+
+const CHEAP_VARIANT = "variante-b";
 
 const cheap: ProductVariant = {
   id: "variante-b",
@@ -55,12 +80,40 @@ const expensive: ProductVariant = {
 };
 
 function renderPanel(ui: ReactElement) {
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+  });
+
   return render(
     <NextIntlClientProvider locale="es" messages={messages}>
-      {ui}
+      <QueryClientProvider client={client}>{ui}</QueryClientProvider>
     </NextIntlClientProvider>,
   );
 }
+
+beforeEach(() => {
+  vi.mocked(cartApi.addCartItem).mockResolvedValue({
+    ok: true,
+    data: {
+      items: [
+        {
+          variant_id: CHEAP_VARIANT,
+          sku: "AUD-NEG",
+          product_id: "p1",
+          product_title: "Audífonos",
+          product_slug: "audifonos",
+          store_id: "s1",
+          unit_price: "299900.00",
+          quantity: 1,
+          subtotal: "299900.00",
+        },
+      ],
+      total_items: 1,
+      subtotal: "299900.00",
+      currency: "COP",
+    },
+  });
+});
 
 describe("PurchasePanel", () => {
   it("parte de la presentación más barata y muestra las unidades reales", () => {
@@ -151,7 +204,9 @@ describe("PurchasePanel", () => {
     expect(screen.getByText("Agotado")).toBeVisible();
   });
 
-  it("deja claro que agregar al carrito llega en la siguiente entrega", () => {
+  it("agrega al carrito por el servidor y ofrece verlo", async () => {
+    const user = userEvent.setup();
+
     renderPanel(
       <PurchasePanel
         variants={[cheap]}
@@ -161,8 +216,51 @@ describe("PurchasePanel", () => {
       />,
     );
 
+    await user.click(screen.getByRole("button", { name: /Agregar al carrito/ }));
+
+    expect(cartApi.addCartItem).toHaveBeenCalledWith(CHEAP_VARIANT, 1);
+    expect(await screen.findByText("Agregado a tu carrito.")).toBeVisible();
+    expect(screen.getByRole("link", { name: "Ver el carrito" })).toBeVisible();
+  });
+
+  it("traduce el error del servidor cuando no se puede agregar", async () => {
+    const user = userEvent.setup();
+    vi.mocked(cartApi.addCartItem).mockResolvedValue({
+      ok: false,
+      status: 400,
+      code: "insufficient_stock",
+    });
+
+    renderPanel(
+      <PurchasePanel
+        variants={[cheap]}
+        availability={{ "variante-b": 1 }}
+        currency="COP"
+        locale="es-CO"
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: /Agregar al carrito/ }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "No hay suficientes unidades disponibles.",
+    );
+  });
+
+  it("deshabilita el botón cuando la presentación elegida está agotada", () => {
+    renderPanel(
+      <PurchasePanel
+        variants={[cheap]}
+        availability={{ "variante-b": 0 }}
+        currency="COP"
+        locale="es-CO"
+      />,
+    );
+
     expect(screen.getByRole("button", { name: /Agregar al carrito/ })).toBeDisabled();
-    expect(screen.getByText("El carrito llega después.")).toBeVisible();
+    expect(
+      screen.getByText("Esta presentación no tiene unidades disponibles ahora mismo."),
+    ).toBeVisible();
   });
 
   it("no pinta nada si el producto no tiene variantes", () => {

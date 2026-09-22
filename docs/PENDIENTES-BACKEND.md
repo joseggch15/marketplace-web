@@ -212,5 +212,41 @@ paginación por cursor.
 página del buscador (100 productos); cuando el catálogo crezca habrá que recorrer cursores y, por número de
 URL, paginar el sitemap como pide el proyecto.
 
-**Solución recomendada:** un listado público (`GET /api/v1/catalog/products?cursor=&limit=`) o un índice de
-sitemap generado en el backend.
+## 14. El carrito no informa de stock ni de cambios de precio — F5
+
+**Qué pasa hoy:** `CartItemOut` trae `unit_price` con el precio **actual** de la variante, pero nada más:
+
+- **No dice si el precio cambió** desde que se agregó el producto (no hay precio de cuando se agregó ni un aviso
+  de cambio), así que la interfaz no puede avisar «el precio cambió desde que lo agregaste».
+- **No informa de la disponibilidad**: no hay `available` ni ningún estado por línea. Además `POST /cart/items`
+  y `PATCH /cart/items/{variant_id}` aceptan hasta **100 unidades sin comprobar el inventario**, así que se puede
+  dejar en el carrito más de lo que existe.
+- **No trae imagen ni atributos de la variante** (`thumbnail`, color/talla): la línea del carrito solo puede
+  mostrar el nombre, el SKU y el precio.
+
+**Por qué importa:** un carrito que no avisa de que algo ya no hay (o de que subió de precio) es la antesala de
+un pago que falla o de una sorpresa desagradable al pagar, y el proyecto prohíbe explícitamente cualquier aviso
+inventado: o el dato es real, o no se muestra.
+
+**Mientras tanto (frontend, F5):** la línea muestra el SKU, el precio actual y el subtotal **calculados por el
+servidor**, y no se pinta ningún aviso de stock ni de cambio de precio. Los importes se marcan como
+«pendientes» mientras hay una operación en vuelo, en vez de recalcularlos en el navegador.
+
+**Solución recomendada:** añadir a `CartItemOut` `available: int` y `price_changed: bool` (o
+`added_unit_price: Decimal`), y devolver `insufficient_stock` en `POST`/`PATCH` cuando la cantidad pedida supere
+lo disponible. Con eso la interfaz podrá marcar la línea y ofrecer «ajustar a lo disponible» sin inventar nada.
+
+## 15. El registro no devuelve tokens, así que no se puede fusionar el carrito ahí — F5
+
+**Qué pasa hoy:** `POST /api/v1/auth/register` responde `UserOut` (201) **sin** par de tokens. El frontend llama
+a la fusión del carrito también al registrarse (la llamada está puesta en `src/app/api/auth/register/route.ts`),
+pero sin sesión no hay carrito de usuario al que fusionar: la fusión termina en no hacer nada y el carrito del
+invitado se conserva en su cookie httpOnly hasta el inicio de sesión, que es el paso siguiente del flujo.
+
+**Por qué importa:** hoy no se pierde nada (registrarse y entrar deja el carrito intacto), pero el carrito no se
+fusiona «al registrarse» como pide el producto, y no hay forma de hacerlo desde el servidor sin iniciar sesión.
+
+**Solución recomendada:** que `register` devuelva `TokenPair` (o acepte un parámetro para iniciar sesión al
+crear la cuenta). El día que lo haga, `mergeGuestCartIfSignedIn()` empieza a funcionar en el registro **sin
+cambiar una línea del frontend**.
+

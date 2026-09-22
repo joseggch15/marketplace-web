@@ -10,24 +10,36 @@ deja aquí el estado.
 |---|---|---|
 | 1 | URLs de imágenes | **parcial** (las claves ya llevan el punto; sigue sin haber campo `url`) |
 | 2 | Pagos reales | **fuera de la lista** por decisión del dueño: el prototipo no cobra dinero real (decisión 0020 del backend); la pasarela de prueba es la que se usa |
-| 3 | Conteos de facetas | **prioridad** |
+| 3 | Conteos de facetas | **resuelto** |
 | 4 | Catálogo público de códigos de error | solo si sobra contexto |
 | 5 | Correos (SMTP + Mailpit + plantillas es/en) | **resuelto** |
 | 6 | ¿Exigir correo verificado para comprar? | pendiente (decisión del dueño) |
-| 7 | Reputación y tienda en los resultados de búsqueda | **prioridad** |
+| 7 | Reputación y tienda en los resultados de búsqueda | **resuelto** |
 | 8 | Claves de imagen sin punto | **resuelto** |
-| 9 | Producto por slug | **prioridad** |
+| 9 | Producto por slug | **resuelto** |
 | 10 | Stock y atributos en las variantes | **resuelto** |
 | 11 | Tienda pública y envío estimado | **resuelto** |
-| 12 | Paginación de las preguntas | **prioridad** |
+| 12 | Paginación de las preguntas | **resuelto** |
 | 13 | Listado del catálogo para el sitemap | solo si sobra contexto |
-| 14 | Avisos de stock y de cambio de precio en el carrito | **prioridad** |
+| 14 | Avisos de stock y de cambio de precio en el carrito | **resuelto** |
 | 15 | El registro no devuelve tokens | pendiente |
 
 > Tras regenerar los tipos (`pnpm api:types`) el frontend ya puede usar: `VariantOut.stock`, `VariantOut.available`,
 > `VariantOut.attribute_values[]`, `ProductOut.total_available`, `GET /stores/{store_id}` y
 > `GET /catalog/products/{product_id}/shipping`. **La F6 ya no está bloqueada**: se hace con la pasarela de
 > prueba (ver `docs/SIGUIENTE-PROMPT.md`).
+
+> **Resueltos el 22/09/2026 (segunda tanda): apartados 3, 7, 9, 12 y 14.**
+> - **`/catalog/search`** devuelve además `facets` (`categories` con `category_id`+`name`+`count`, `brands` con
+>   `count` y `price.min`/`price.max` reales: **no hay tramos predefinidos**) y, en cada item, `rating_average`,
+>   `review_count`, `store_name`.
+> - **`GET /catalog/products/by-slug/{slug}`** (público): la URL bonita para compartir.
+> - **`GET /products/{id}/questions?cursor=…`**: acepta cursor y devuelve un `next_cursor` real.
+> - **Carrito**: cada línea trae `available`, `added_unit_price`, `price_changed`, `thumbnail` y
+>   `attribute_values[]`, y `POST/PATCH /cart/items` responde **409 `insufficient_stock`** si la cantidad supera
+>   lo disponible. `price_changed` solo es `true` cuando hay precio de referencia (líneas antiguas sin él no
+>   avisan de nada).
+> - Detalle de las decisiones: `0022-facetas-carrito-y-producto-por-slug.md` del backend.
 
 ## 1. URLs de imágenes (imágenes de producto y logos de tienda) — F0
 

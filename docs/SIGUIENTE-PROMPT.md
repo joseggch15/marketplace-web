@@ -132,3 +132,43 @@ Detalle: apartados 17 y 18 de `docs/PENDIENTES-BACKEND.md` y decisión 0024 del 
   administrar hace falta una cuenta admin: se promueve con el script del backend
   (`uv run python -m app.scripts.promote_admin <email>`); si no hay credenciales en el entorno, esa parte se
   **omite** con un mensaje claro (el patrón que ya usan las e2e del carrito).
+
+---
+
+## Plan concreto de la F8 (empezada el 22/09/2026)
+
+**Ya hecho** (commit `feat(seller)`): la base del panel, sin pantallas todavía.
+
+| Archivo                              | Qué aporta                                                                                                                                            |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/features/seller/types.ts`       | Tipos del esquema generado + `SELLER_FLOW`, `PRODUCT_STATUSES`, `UPLOADABLE_IMAGE_TYPES` (sin SVG), `MAX_IMAGE_BYTES`                                 |
+| `src/features/seller/variants.ts`    | `parseValues`, `countCombinations`, `skuFor`, `buildVariants` (producto cartesiano), `variantLabel`, `totalAvailable`, `canPublish/canPause/canClose` |
+| `src/features/seller/metrics.ts`     | `sumAmounts` (céntimos con `BigInt`, **no** `number`) y `summarizeSales` (las tres cifras + si el total es completo)                                  |
+| `src/features/seller/error-codes.ts` | `sellerErrorKey`: los códigos reales del backend → claves de mensaje                                                                                  |
+| `src/features/seller/schemas.ts`     | Zod de tienda, producto, stock, publicación y envío + `toVariants` y `toShipmentBody`                                                                 |
+
+**Falta** (con los contratos ya verificados en `src/lib/api/schema.d.ts`):
+
+1. **Rutas BFF** (`src/app/api/seller/…`), todas finas y con `withAccessToken`:
+   `store` (POST), `products` (POST), `products/[productId]` (PATCH), `products/[productId]/publication` (POST con
+   `{action: "publish"|"pause"|"close"}`), `products/[productId]/variants/[variantId]/stock` (PATCH),
+   `products/[productId]/images` (POST con `FormData`: pide la URL firmada, sube los bytes **desde el servidor** y
+   adjunta la imagen), `products/[productId]/images/[imageId]` (DELETE), `orders/[sellerOrderId]/status` (PATCH,
+   `status` va como **query**, no en el cuerpo) y `orders/[sellerOrderId]/shipment` (POST).
+2. **Pantallas** en `src/app/[locale]/seller/`: `layout.tsx` (guardia de sesión + navegación + estado de la tienda),
+   `page.tsx` (crear tienda si no la hay; si la hay, las **tres cifras** y el estado), `products/page.tsx` (mis
+   productos), `products/new/page.tsx` (crear con variantes), `products/[productId]/page.tsx` (editar: título,
+   descripción, marca, publicar/pausar/cerrar, stock por variante e imágenes) y `orders/page.tsx` (preparar,
+   enviar, entregar). Enlace de entrada desde `/account` (misma lista de `Auth.links`).
+3. **Mensajes** `Seller` en `messages/es.json` y `en.json` **y añadir `Seller` a la lista blanca de mensajes
+   cliente del layout** (`src/app/[locale]/layout.tsx`): si falta ahí, la pantalla falla con `MISSING_MESSAGE`.
+4. **e2e** `e2e/seller.spec.ts` (la sesión de demostración **es la vendedora**): crear un producto con dos
+   variantes, publicarlo, cambiar el stock de una variante, y gestionar un pedido (crear uno pagado con los ayudantes
+   de `e2e/support/demo.ts` → preparar → enviar con transportadora y guía → entregar). `axe` en las páginas nuevas.
+5. **Capturas** `pnpm capture --out=docs/capturas/f8 --route=/es/seller --route=/es/seller/products
+--session=demo` y la nota `docs/decisiones/0016-panel-del-vendedor.md`.
+
+**Decisiones ya tomadas** (no volver a preguntarlas): la edición de un producto permite título, descripción y
+marca (la API **no** admite cambiar precio ni variantes: para el precio habría que crear una variante nueva, así que
+el precio se muestra en solo lectura con una nota); el stock sí es editable (endpoint dedicado); el costo del envío
+puede ser `0.00`; el panel **no** tiene gráficos.

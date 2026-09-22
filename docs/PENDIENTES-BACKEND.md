@@ -143,3 +143,22 @@ manteniendo la lista blanca de extensiones de imagen, y se quitará cuando el ba
 
 **Solución provisional usada:** los datos de demostración (`scripts/seed-demo.mjs`) ya crean las imágenes con
 este formato, así que reproducen el problema real en local en vez de esconderlo.
+
+## 9. Falta poder pedir un producto por su slug — F4
+
+**Qué pasa hoy:** `ProductOut` y los resultados de búsqueda traen `slug`, pero **todos** los endpoints de
+producto son por identificador: `GET /api/v1/catalog/products/{product_id}`, `.../reviews`, `.../questions`.
+Revisado el esquema completo: `slug` **nunca** aparece como parámetro de ruta (solo como campo).
+
+**Por qué importa:** el proyecto exige **URLs con slug** para el SEO (`Product`, `canonical`, `hreflang`), y el
+catálogo ya enlaza a `/p/<slug>`. Sin una forma de resolver `slug → producto`, la página de producto tiene que
+usar el UUID en la dirección pública, que es ilegible y peor para posicionar. Buscar por `q=<slug>` **no sirve**:
+el buscador indexa título y marca, no el slug (`balon-de-futbol-profesional-no5` no encuentra "Balón de fútbol
+profesional nº5").
+
+**Solución recomendada:** `GET /api/v1/catalog/products/by-slug/{slug}` → `ProductOut` (o aceptar `?slug=` en el
+listado público). Es una consulta por índice único sobre `products.slug`.
+
+**Mientras tanto (frontend, F4):** la página se monta en `/p/<product_id>` con `canonical` y `hreflang` a sí
+misma, y el enlace del catálogo apunta al id. Cuando exista el endpoint por slug, el cambio es de una línea en
+la ruta (`/p/[productId]` → `/p/[slug]`) más el enlace en `product-grid.tsx`.

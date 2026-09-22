@@ -173,6 +173,17 @@ estructurados JSON-LD (`Product`, `Offer`, `AggregateRating`, `BreadcrumbList`),
   F3 ya enlaza ahí y hoy se ve la página 404). Comprueba en `schema.d.ts` si existe búsqueda por slug; si no la
   hay, resuélvelo con `GET /catalog/search?q=<slug>` o anótalo en `docs/PENDIENTES-BACKEND.md` antes de
   inventar nada.
+- **YA COMPROBADO (no hace falta volver a investigarlo):** **no existe** ningún endpoint por slug; `slug` solo
+  aparece como campo. El catálogo por `q=<slug>` tampoco sirve (el buscador indexa título y marca). Decisión
+  tomada: la página se monta en **`/p/<product_id>`** con `canonical`/`hreflang` a sí misma y el enlace del
+  catálogo pasa al id; cuando el backend añada el endpoint por slug (apartado 9 de `PENDIENTES-BACKEND.md`) el
+  cambio es de una línea en la ruta y otra en `product-grid.tsx`.
+- **Contratos ya extraídos para la F4:** `GET /catalog/products/{id}` → `ProductOut`
+  (`{id, store_id, category_id, title, slug, description, brand, status, created_at, variants?, images?}`);
+  `GET /products/{id}/reviews` → `ReviewListOut {items: ReviewOut[], next_cursor}`;
+  `GET /products/{id}/questions` → `QuestionListOut {items: QuestionOut[], next_cursor}`;
+  `POST /products/{id}/questions` (con sesión, cuerpo `QuestionCreate {body}`) → 201 `QuestionOut`.
+  `ProductImageOut {id, object_key, position, alt}` — el `object_key` se sirve con `mediaUrl()`.
 - Reutilizar de la F1 (ya probados y accesibles): `ImageGallery`, `VariantSelector`, `QuantityStepper`, `Price`,
   `RatingStars` y `DealBadge`; los esqueletos de carga ya existen.
 - Precios: **nunca** float. `Price` ya acepta `amount: number | string` y `compareAt`.

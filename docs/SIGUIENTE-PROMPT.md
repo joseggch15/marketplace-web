@@ -39,7 +39,7 @@ Verificado en el último cierre (F5): `lint` 0 · `typecheck` 0 · **253 pruebas
 verde y 1 omitida a propósito) · `build` 0 · capturas con datos reales en `docs/capturas/f5/`. Repositorios
 privados y al día: `joseggch15/marketplace-web` (`master`) y `joseggch15/ecommerceBackend`.
 
-### Lo que dejó hecho la F4 (reutilizar, no rehacer)
+### Lo que dejó hecho la F4 (histórico)
 
 - **Ficha en `/p/<product_id>`** (`src/app/[locale]/p/[productId]/page.tsx`): galería, marca, nota media real,
   descripción, variantes con **stock real**, reseñas con paginación por cursor y preguntas con respuestas del
@@ -95,13 +95,10 @@ CartItemOut { variant_id, sku, product_id, product_title, product_slug, store_id
   códigos se traducen por `code` y la actualización optimista se revierte si el servidor falla.
 - `POST /cart/merge` se llama **al iniciar sesión** (la respuesta limpia el token del invitado).
 
-### Orden sugerido de trabajo
+### Antes de tocar código
 
-`src/features/cart/api.ts` (servidor) + rutas BFF bajo `src/app/api/cart/` (con la cookie `mv_cart`) →
-`features/cart/{client,hooks}.ts` con TanStack Query y **actualizaciones optimistas** → página `/cart` (cantidad,
-quitar, vaciar, con sus cuatro estados) → conectar el botón de `PurchasePanel` → contador en la cabecera →
-fusión del carrito al entrar → traducciones es/en → pruebas unitarias y e2e → capturas con datos reales →
-commit y push.
+Lee `docs/PROGRESO.md` (es corto) y la nota de decisiones de la fase que toque en `docs/decisiones/`. El detalle
+de las fases cerradas vive en `docs/historial/` y no hace falta leerlo para trabajar.
 
 ### Siguiente tarea (acordada con el dueño)
 

@@ -19,8 +19,11 @@ repite aquí) y el detalle de las fases cerradas está en `docs/historial/` (**n
 
 - Trabajo 100 % solo; no hace falta mostrar el plan de cada fase si el contexto está por debajo de 100k tokens
   al empezarla.
-- **F5 (carrito) está aprobada. La F6 (pagos) NO se empieza**: antes hay que resolver los pendientes del
-  backend en una tarea dedicada.
+- **La F6 (checkout y pagos) está desbloqueada**: se hace con la **pasarela de prueba** del backend (sin dinero
+  real). El frontend **no integra ningún SDK de pasarela**; la pantalla de pago va **marcada como «modo de
+  prueba»** con botones para aprobar o rechazar el pago, y se prueban los dos caminos.
+- Se avanza solo **de la F6 a la F9**. **Hay que detenerse antes de la F10 (publicación)**: elegir hosting y
+  dominio tiene coste y lo decide el dueño.
 - Al cerrar cada fase: `pnpm capture` a `docs/capturas/fN/`, `docs/PROGRESO.md` al día, commit y **`git push`**
   (regla de copias de seguridad).
 - Si el contexto se agota, se para en orden con todo confirmado y se deja este archivo actualizado.
@@ -121,8 +124,15 @@ resueltos el 22/09/2026):
 - Las **claves de imagen nuevas ya llevan el punto** (`products/<32 hex>.png`), así que el proxy de medios las
   acepta sin el apaño del formato viejo (que sigue aceptándose mientras queden imágenes antiguas).
 
-**La F6 (checkout y pagos) sigue bloqueada** hasta que el dueño la desbloquee: el backend ya tiene el adaptador
-de Mercado Pago (preferencia + webhook verificado + monto confirmado, decisión 0019 del backend), pero falta que
-el dueño configure las credenciales. **La tarea de pendientes del backend sigue en curso** (correos SMTP con
-Mailpit, conteos de facetas, producto por slug, paginación de preguntas, listado para el sitemap, avisos de
-precio y stock en el carrito): revisa el estado en `PENDIENTES-BACKEND.md` antes de decidir la siguiente fase.
+**La F6 (checkout y pagos) está DESBLOQUEADA**: se hace con la **pasarela de prueba** del backend (no se cobra
+dinero real y no hay que crear credenciales ni integrar ningún SDK). El backend expone
+`POST /api/v1/orders` (checkout: dirección, envío y cupones), `POST /api/v1/orders/{order_id}/payments` (crea el
+intento de pago con el sandbox y devuelve una `checkout_url`) y
+`POST /api/v1/payments/{payment_id}/simulate?outcome=succeeded|failed` (aprueba o rechaza el pago). El checkout
+debe verse y comportarse como uno real —direcciones, envío, cupones, resumen y confirmación— y la pantalla de
+pago tiene que estar **claramente marcada como «modo de prueba»**, con botones para aprobar o rechazar el pago,
+para poder probar los dos caminos. Decisión del dueño: `0020-prototipo-sin-pagos-reales.md` del backend.
+
+**La tarea de pendientes del backend sigue en curso** (correos SMTP con Mailpit, producto por slug, reputación y
+tienda en la búsqueda, conteos de facetas, avisos de precio y stock en el carrito, paginación de preguntas):
+revisa el estado en `PENDIENTES-BACKEND.md` antes de empezar la fase.

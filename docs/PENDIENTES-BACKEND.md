@@ -9,24 +9,25 @@ deja aquí el estado.
 | # | Apartado | Estado |
 |---|---|---|
 | 1 | URLs de imágenes | **parcial** (las claves ya llevan el punto; sigue sin haber campo `url`) |
-| 2 | Pagos reales | **resuelto en el backend** (adaptador de Mercado Pago; ver avisos abajo) |
-| 3 | Conteos de facetas | pendiente |
-| 4 | Catálogo público de códigos de error | pendiente |
-| 5 | Envío de correos (SMTP + plantillas) | pendiente |
+| 2 | Pagos reales | **fuera de la lista** por decisión del dueño: el prototipo no cobra dinero real (decisión 0020 del backend); la pasarela de prueba es la que se usa |
+| 3 | Conteos de facetas | **prioridad** |
+| 4 | Catálogo público de códigos de error | solo si sobra contexto |
+| 5 | Correos (SMTP + Mailpit + plantillas es/en) | **prioridad 1** |
 | 6 | ¿Exigir correo verificado para comprar? | pendiente (decisión del dueño) |
-| 7 | Reputación y tienda en los resultados de búsqueda | pendiente |
+| 7 | Reputación y tienda en los resultados de búsqueda | **prioridad** |
 | 8 | Claves de imagen sin punto | **resuelto** |
-| 9 | Producto por slug | pendiente |
+| 9 | Producto por slug | **prioridad** |
 | 10 | Stock y atributos en las variantes | **resuelto** |
 | 11 | Tienda pública y envío estimado | **resuelto** |
-| 12 | Paginación de las preguntas | pendiente |
-| 13 | Listado del catálogo para el sitemap | pendiente |
-| 14 | Avisos de stock y de cambio de precio en el carrito | pendiente |
+| 12 | Paginación de las preguntas | **prioridad** |
+| 13 | Listado del catálogo para el sitemap | solo si sobra contexto |
+| 14 | Avisos de stock y de cambio de precio en el carrito | **prioridad** |
 | 15 | El registro no devuelve tokens | pendiente |
 
 > Tras regenerar los tipos (`pnpm api:types`) el frontend ya puede usar: `VariantOut.stock`, `VariantOut.available`,
 > `VariantOut.attribute_values[]`, `ProductOut.total_available`, `GET /stores/{store_id}` y
-> `GET /catalog/products/{product_id}/shipping`. La F6 sigue **bloqueada hasta que el dueño la desbloquee**.
+> `GET /catalog/products/{product_id}/shipping`. **La F6 ya no está bloqueada**: se hace con la pasarela de
+> prueba (ver `docs/SIGUIENTE-PROMPT.md`).
 
 ## 1. URLs de imágenes (imágenes de producto y logos de tienda) — F0
 
@@ -56,14 +57,12 @@ menos caché de CDN) y hay dos sitios con la lógica de "qué archivo es públic
 
 ## 2. Pagos reales (Stripe y Mercado Pago) — F6
 
-> **Resuelto en el backend (22/09/2026):** adaptador de **Mercado Pago** (Checkout Bricks / Checkout Pro) con
-> `POST /api/v1/orders/{order_id}/payments`, idempotencia derivada de la orden y del intento, webhook que
-> **verifica la firma y consulta el pago** para confirmar estado, monto y moneda antes de marcar la orden como
-> pagada. Decisión `0019-pagos-mercado-pago.md`. Configuración en `.env`: `MERCADOPAGO_ACCESS_TOKEN`,
-> `MERCADOPAGO_PUBLIC_KEY`, `MERCADOPAGO_WEBHOOK_SECRET`. **Stripe queda pendiente** (adaptador secundario).
-> ⚠️ Tres detalles del protocolo (encabezado y plantilla de firma, decimales del COP) quedaron en configuración
-> porque la documentación oficial no fue accesible desde el entorno de desarrollo: hay que confirmarlos antes de
-> cobrar de verdad.
+> **Fuera de la lista por decisión del dueño (22/09/2026):** este proyecto es un **prototipo realista y por
+> ahora no cobra dinero real**. El adaptador de Mercado Pago queda como pieza **opcional, apagada y sin
+> configurar** (no hay que crear credenciales), **no se implementa Stripe** y no se sigue afinando nada de
+> pagos. La pasarela que se usa es la de **prueba** (`PAYMENT_PROVIDER=sandbox`). Cuando algún día se cobre de
+> verdad, se conecta una pieza nueva sin rehacer la tienda (el dominio habla con `PaymentProvider`).
+> Decisión: `0020-prototipo-sin-pagos-reales.md` del backend (y la 0019 para el día que se integre de verdad).
 
 **Qué pasa hoy:** `PAYMENT_PROVIDER=sandbox` y la confirmación se hace con
 `POST /orders/{order_id}/payments` + `POST /payments/{payment_id}/simulate`.

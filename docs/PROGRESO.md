@@ -13,8 +13,9 @@ está en `docs/historial/` y no hace falta leerlo para trabajar.
 | F3 · Catálogo y búsqueda | cerrada |
 | F4 · Página de producto | cerrada |
 | **F5 · Carrito** | **cerrada** |
-| F6 · Checkout y pagos | bloqueada: antes hay que resolver los pendientes del backend |
-| F7 a F10 | pendientes |
+| F6 · Checkout y pagos | **desbloqueada**: se hace con la pasarela de prueba (sin dinero real) |
+| F7 a F9 | pendientes (se avanza sin detenerse) |
+| **F10 · Publicación** | **requiere al dueño**: elegir hosting y dominio tiene coste |
 
 Último cierre verificado (F5): `lint` 0 · `typecheck` 0 · **253 pruebas unitarias** · **116 e2e** (115 en verde y
 1 **omitida a propósito**: la fusión del carrito se comprueba una sola vez por corrida porque el backend limita

@@ -133,6 +133,11 @@ debe verse y comportarse como uno real —direcciones, envío, cupones, resumen 
 pago tiene que estar **claramente marcada como «modo de prueba»**, con botones para aprobar o rechazar el pago,
 para poder probar los dos caminos. Decisión del dueño: `0020-prototipo-sin-pagos-reales.md` del backend.
 
-**La tarea de pendientes del backend sigue en curso** (correos SMTP con Mailpit, producto por slug, reputación y
-tienda en la búsqueda, conteos de facetas, avisos de precio y stock en el carrito, paginación de preguntas):
-revisa el estado en `PENDIENTES-BACKEND.md` antes de empezar la fase.
+**La tarea de pendientes del backend sigue en curso** (producto por slug, reputación y tienda en la búsqueda,
+conteos de facetas, avisos de precio y stock en el carrito, paginación de preguntas): revisa el estado en
+`PENDIENTES-BACKEND.md` antes de empezar la fase.
+
+**Los correos ya funcionan** (apartado 5 de `PENDIENTES-BACKEND.md`, resuelto el 22/09/2026): el backend envía de
+verdad por SMTP (Mailpit en desarrollo, **http://localhost:8025**) y el enlace del correo apunta a esta app
+(`http://localhost:3001/{idioma}/verify-email?token=…` y `.../reset-password?token=…`), así que el aviso de «en
+este entorno el enlace aparece en los registros del backend» se puede quitar de la interfaz.

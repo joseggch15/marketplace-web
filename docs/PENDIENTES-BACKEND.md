@@ -12,7 +12,7 @@ deja aquí el estado.
 | 2 | Pagos reales | **fuera de la lista** por decisión del dueño: el prototipo no cobra dinero real (decisión 0020 del backend); la pasarela de prueba es la que se usa |
 | 3 | Conteos de facetas | **prioridad** |
 | 4 | Catálogo público de códigos de error | solo si sobra contexto |
-| 5 | Correos (SMTP + Mailpit + plantillas es/en) | **prioridad 1** |
+| 5 | Correos (SMTP + Mailpit + plantillas es/en) | **resuelto** |
 | 6 | ¿Exigir correo verificado para comprar? | pendiente (decisión del dueño) |
 | 7 | Reputación y tienda en los resultados de búsqueda | **prioridad** |
 | 8 | Claves de imagen sin punto | **resuelto** |
@@ -105,23 +105,25 @@ como "error desconocido".
 
 ## 5. Envío de correos (verificación y recuperación de contraseña) — F2
 
-**Qué pasa hoy:** `AuthService.request_password_reset()` y el registro/reenvío de verificación crean el token
-en la base de datos, pero **no envían ningún correo**: el token se escribe en los registros del backend
+> **Resuelto (22/09/2026):** el backend ya envía correos de verdad. Remitente SMTP con `aiosmtplib`
+> (`EMAIL_SENDER=smtp`; por defecto sigue siendo `logging`), plantillas en español e inglés según el
+> `preferred_language` del perfil y **Mailpit** en `docker-compose.yml` para verlos en desarrollo
+> (**http://localhost:8025**, SMTP en 1025). Los enlaces apuntan al frontend:
+> `{FRONTEND_URL}/{idioma}/verify-email?token=…` y `.../reset-password?token=…` (`FRONTEND_URL` es una variable
+> nueva, por defecto `http://localhost:3000`). El correo sale por la cola de notificaciones que ya existía: con
+> `NOTIFICATION_WORKER_ENABLED=true` (así está el `.env` de desarrollo) sale solo en unos segundos, sin llamar a
+> `POST /admin/notifications/process`. **Nada más que hacer en el frontend**: el aviso de «el enlace aparece en
+> los registros» ya no es cierto y se puede quitar. Detalle: `docs/decisiones/0021-correos-smtp-plantillas-y-mailpit.md`
+> del backend.
+
+**Qué pasaba antes:** `AuthService.request_password_reset()` y el registro/reenvío de verificación creaban el
+token en la base de datos, pero **no enviaban ningún correo**: el token se escribía en los registros del backend
 (`logger.info("password_reset_token_generated", email=..., token=...)`). Lo mismo con el enlace de
 verificación de correo.
 
-**Por qué importa:** el usuario no puede completar la recuperación de contraseña ni verificar su correo sin
-ayuda técnica, así que en la interfaz el flujo se entrega con un aviso honesto: "en este entorno de pruebas el
-backend todavía no envía correos: el enlace aparece en sus registros". Sin ese aviso, el usuario esperaría un
-correo que nunca llega.
-
-**Solución recomendada:** conectar un proveedor de correo (SMTP o API transaccional) y enviar dos plantillas:
-verificación de correo y restablecimiento de contraseña, con el enlace apuntando al frontend
-(`{NEXT_PUBLIC_SITE_URL}/{locale}/verify-email?token=…` y `/reset-password?token=…`). Hace falta además una
-variable de configuración para la URL pública del frontend.
-
-**Impacto si no se cambia:** los flujos de verificación y recuperación funcionan, pero solo pueden probarse
-copiando el token de los registros del backend (es lo que se hizo en la F2 para las pruebas end-to-end).
+**Solución implementada:** SMTP configurable (host, puerto, usuario, contraseña, TLS y remitente), dos plantillas
+(verificación y recuperación) en español e inglés y Mailpit como buzón de desarrollo. Las pruebas del backend
+usan un remitente falso, así que ninguna prueba envía correos de verdad.
 
 ## 6. ¿Debe exigirse el correo verificado para comprar? — F2
 

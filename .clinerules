@@ -99,6 +99,86 @@ reales** que devuelve el backend.
 
 ---
 
+## ESTÁNDAR VISUAL: FRONTEND SOFISTICADO (exigencia del dueño, fases F6 a F9)
+
+El objetivo no es «que funcione»: es que **parezca y se sienta una tienda moderna de primera línea**, al nivel
+de lo que hoy hacen Shopify/Shein/Amazon/Mercado Libre. Estas reglas son **criterios de aceptación**, no
+sugerencias: cada pantalla se revisa contra ellas antes de cerrar la fase.
+
+### 1. Jerarquía y densidad (lo que hace que se vea «caro»)
+
+- **La imagen y el precio mandan.** Tarjetas de producto con imagen grande (1:1 o 4:5), precio protagonista y
+  como mucho dos señales secundarias (marca y reputación). Nada de ruido: si un dato no ayuda a decidir, no se
+  pinta.
+- **Una sola llamada a la acción principal por pantalla**, con jerarquía clara (primario > secundario > terciario).
+  Nunca dos botones «grandes» compitiendo.
+- **Ritmo espacial consistente**: una escala única de espaciados y radios (tokens CSS, nunca valores sueltos),
+  alineaciones a rejilla y anchos máximos definidos (`max-w-*`) para que nada se estire sin criterio.
+- **Tipografía con intención**: títulos en `font-heading`, cuerpo legible (16 px mínimo en móvil), números en
+  tabular cuando son precios o cantidades.
+
+### 2. La compra, sin fricción (patrón de los grandes)
+
+- **Carrito como panel lateral (drawer)** desde cualquier pantalla: el usuario no pierde el contexto. El
+  contador de la cabecera se actualiza al instante y el drawer muestra resumen, envío estimado y «ir a pagar».
+- **Checkout en 3 pasos visibles** (dirección → envío → pago) con indicador de progreso, **resumen pegajoso** de
+  la orden, validación **inline campo a campo**, autocompletado de dirección y posibilidad de volver atrás sin
+  perder nada.
+- **Pago claramente marcado como «modo de prueba»** (el prototipo no cobra de verdad): aviso visible, botones
+  para **aprobar o rechazar**, y el mismo trato visual de una pasarela real (tarjeta, resumen del monto, moneda
+  del vendedor).
+- **Confirmación que tranquiliza**: número de pedido, correo enviado, línea de tiempo («qué pasa ahora») y
+  entrega estimada. Nunca un «gracias» vacío.
+
+### 3. Descubrimiento: búsqueda y filtros
+
+- **Búsqueda protagonista** con autocompletado (productos y categorías), historial y sugerencias; el término
+  buscado y el conteo de resultados siempre visibles.
+- **Filtros con conteos por faceta** («Celulares (128)»), **chips de filtros activos** con «quitar», «limpiar
+  todo», en la URL (compartible, botón atrás funcional) y en **hoja inferior** en móvil.
+- **Orden y paginación** visibles (por relevancia, precio, novedad) sin recargar la página.
+
+### 4. Ficha de producto y confianza
+
+- Galería con miniaturas y **zoom**, selector de variantes con muestras (color/talla) y **stock real por
+  variante**, caja de compra **pegajosa** en escritorio.
+- **Señales reales, nunca inventadas**: reputación del vendedor, pedidos entregados, reseñas con histograma,
+  preguntas respondidas y **entrega estimada** (la del backend, que declara que es una estimación).
+- Reseñas y preguntas con estados vacíos útiles («sé el primero en preguntar»), no cajas grises.
+
+### 5. Panel del vendedor y administración (F8 y F9)
+
+- **Tablas densas** con filtros, orden, badges de estado y paginación por cursor; acciones destructivas con
+  confirmación explícita.
+- **Tablero con métricas reales** (tarjetas con variación, top productos/vendedores) y gráficas sencillas sin
+  librerías pesadas.
+- Formularios largos (producto con variantes e imágenes) con pasos, guardado parcial y aviso de cambios sin
+  guardar.
+
+### 6. Lo que se revisa en cada pantalla antes de cerrarla
+
+1. **Cuatro estados diseñados**: cargando (esqueletos con la forma final), vacío (con acción sugerida), error
+   (qué pasó y cómo resolverlo) y éxito.
+2. **Sensación de producto vivo**: micro-interacciones sutiles y rápidas (150–250 ms), estados hover/focus/active
+   en todo lo interactivo, feedback inmediato en cada acción; siempre respetando `prefers-reduced-motion`.
+3. **Móvil primero de verdad** (375 px) y **escritorio aprovechado** (1280 px): no es la misma pantalla
+   estirada, es la misma información bien colocada.
+4. **Claro y oscuro** con contraste AA en ambos; nada de «ya se verá en oscuro».
+5. **Accesibilidad y rendimiento como parte del diseño**: teclado completo con foco visible, `alt` en imágenes,
+   etiquetas en campos, axe sin errores, LCP < 2,5 s y CLS < 0,1 (imagen prioritaria y tamaños reservados).
+6. **Nada de plantilla genérica**: cada pantalla tiene una decisión de diseño propia (qué destaca, qué se
+   esconde, cómo se comporta en móvil) escrita en su nota de decisiones.
+7. **Sin patrones prohibidos**: urgencia falsa, escasez inventada, costes ocultos, casillas premarcadas ni
+   confirmaciones que avergüenzan.
+
+### 7. Cómo se demuestra
+
+- Capturas con **datos reales** (`pnpm capture`) en claro/oscuro y 375/1280 px, y la **URL exacta en el 3001**
+  al terminar cada pantalla, diciendo qué revisar.
+- Si una pantalla no cumple esta lista, **no está terminada**: se dice qué falta, no se cierra la fase.
+
+---
+
 ## CÓMO DEBES TRABAJAR CONMIGO
 
 1. **Una fase a la vez. Nunca avances sin mi aprobación.**

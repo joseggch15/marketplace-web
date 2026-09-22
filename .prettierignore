@@ -1,0 +1,12 @@
+node_modules
+.next
+out
+build
+playwright-report
+test-results
+coverage
+pnpm-lock.yaml
+openapi.json
+# Archivo generado por openapi-typescript: no se formatea a mano.
+src/lib/api/schema.d.ts
+next-env.d.ts

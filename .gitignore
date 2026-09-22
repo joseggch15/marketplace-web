@@ -32,6 +32,16 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# El archivo de ejemplo sí se versiona: sirve de plantilla para quien clone el proyecto.
+!.env.example
+
+# salidas de pruebas
+/playwright-report
+/test-results
+/coverage
+
+# Artefacto generado a partir del backend: se regenera con `pnpm api:types`.
+/openapi.json
 
 # vercel
 .vercel

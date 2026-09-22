@@ -1,0 +1,114 @@
+# Reglas del proyecto `ecommerce-web` (frontend)
+
+Frontend del marketplace multi-vendedor. El backend vive en `E:\ecommerce` (FastAPI, `http://127.0.0.1:8000`)
+y **no se modifica nunca desde este proyecto**. Si se necesita un cambio allá, se anota en
+`docs/PENDIENTES-BACKEND.md` con el motivo y se continúa.
+
+Nombres de código **en inglés**; comentarios, documentación y explicaciones **en español**.
+
+---
+
+## REGLAS TÉCNICAS NO NEGOCIABLES
+
+**Stack (no se cambia sin justificarlo y pedir permiso al dueño):**
+Next.js (App Router) + React · TypeScript en modo `strict` · Tailwind CSS + shadcn/ui ·
+TanStack Query para datos de servidor en componentes cliente · React Hook Form + Zod ·
+next-intl · tipos de la API generados con `openapi-typescript` + `openapi-fetch` ·
+pnpm + Node.js LTS · Vitest + Testing Library (componentes) y Playwright + `@axe-core/playwright` (E2E) ·
+ESLint + Prettier · despliegue en Vercel.
+
+- **Antes de usar una API de Next.js o de cualquier librería, verifica cómo funciona en la versión
+  instalada.** No asumas el comportamiento de versiones anteriores (ej.: si `cookies()` es asíncrono,
+  cómo se declara el middleware, qué props acepta un componente). Registra las versiones reales en
+  `docs/decisiones/`.
+- **Prohibido `any`** en TypeScript. Usa tipos generados, `unknown` + validación con Zod, o genéricos.
+- **Nunca escribas a mano los tipos de la API**: se generan desde `/openapi.json`.
+- **Server Components por defecto.** `"use client"` solo donde haya interactividad real.
+- **Patrón BFF: el navegador nunca ve ni guarda tokens.** El login pasa por el servidor de Next.js, que
+  guarda access y refresh token en cookies **httpOnly, Secure y SameSite=Lax**, y renueva el access token
+  automáticamente. **Prohibido** guardar tokens de sesión en `localStorage` o `sessionStorage`.
+  (Solo se permite `localStorage` para preferencias no sensibles, como el tema claro/oscuro.)
+- **Variables de entorno:** solo lo público lleva el prefijo `NEXT_PUBLIC_`. Ningún secreto llega al
+  navegador. `src/lib/env.ts` valida las variables con Zod al arrancar.
+- **Organización por funcionalidad** (`features/auth`, `features/catalog`, `features/cart`, …), con los
+  componentes compartidos en `components/ui` y los del dominio en `components/domain`.
+- **Filtros, búsqueda y paginación viven en la URL** (search params), para que toda búsqueda sea
+  compartible y el botón "atrás" funcione.
+- **Proxy de medios (`/api/media/[key]`):** solo sirve claves con **prefijos públicos permitidos**
+  (hoy `products/`; `stores/` queda reservado para logos de tienda) y con un formato de clave validado
+  por expresión regular. **Nunca** debe exponer archivos privados (documentos de verificación de
+  vendedores, facturas, comprobantes). Si una clave no coincide exactamente, responde 404.
+- **Accesibilidad (WCAG 2.2 AA):** todo se puede usar con teclado y el foco siempre es visible;
+  contraste mínimo AA; texto alternativo en las imágenes; etiquetas en todos los campos; HTML semántico.
+  Sin errores de axe en páginas nuevas.
+- **Rendimiento (Core Web Vitals en nivel "bueno"):** LCP < 2,5 s · INP < 200 ms · CLS < 0,1.
+  `next/image` en todas las imágenes con tamaños definidos y carga diferida de lo que no está a la vista.
+  No agregar librerías pesadas sin justificarlo.
+- **SEO:** páginas de producto y de categoría renderizadas en el servidor, con `metadata`, Open Graph,
+  JSON-LD (`Product`, `Offer`, `AggregateRating`, `BreadcrumbList`), `sitemap.xml`, `robots.txt`, URLs con
+  slug, `canonical` y `hreflang` por idioma.
+- **Internacionalización:** idioma y moneda se detectan por ubicación y navegador como valor inicial y el
+  usuario puede cambiarlos (si tiene sesión, se guardan en su perfil). Números, monedas y fechas con
+  `Intl` en la zona horaria del usuario. **Ningún texto visible escrito directamente en los componentes**:
+  todo va en `messages/*.json`.
+- **Componentes pequeños y reutilizables.** Tokens de diseño centralizados como variables CSS: ningún
+  color ni tamaño suelto dentro de los componentes.
+- **Pruebas:** durante el desarrollo se ejecuta solo la prueba de lo que se está cambiando. `pnpm lint`,
+  `pnpm typecheck` y `pnpm test` se ejecutan al final de cada fase.
+
+---
+
+## PRINCIPIOS DE UI/UX
+
+**Inspiración (lo mejor de cada plataforma):** de Mercado Libre, las preguntas y respuestas en la página
+de producto, la reputación del vendedor visible y el envío con fecha destacados; de Amazon, la caja de
+compra clara, la fecha estimada de entrega y un checkout corto; de Shein y AliExpress, las grillas
+visuales con mucha imagen, el selector de variantes con muestras de color y talla, y los cupones
+visibles; de eBay, las señales de confianza y la garantía de compra.
+
+**Patrones prohibidos (nunca, bajo ninguna excusa):** urgencia falsa, contadores que se reinician,
+escasez inventada, costos ocultos que aparecen al final, confirmaciones que avergüenzan ("No, prefiero
+pagar más") y casillas premarcadas. Las ofertas por tiempo limitado muestran **solo tiempos y stock
+reales** que devuelve el backend.
+
+- **Mobile-first:** primero se diseña para celular (375 px) y luego se adapta a escritorio (1280 px).
+- **La búsqueda es protagonista:** barra siempre visible, autocompletado y filtros por facetas fáciles de
+  usar en celular.
+- **Comprar con el menor número de pasos posible.** Se puede agregar al carrito sin iniciar sesión
+  (carrito de invitado con cookie httpOnly gestionada por el servidor).
+- **Cuatro estados diseñados en cada pantalla:** cargando (skeletons, no spinners genéricos), vacío (con
+  una acción sugerida), error (mensaje claro y cómo resolverlo) y éxito.
+- **Actualizaciones optimistas** en carrito y favoritos, que se revierten si el servidor falla.
+- **Transparencia de precios:** el precio convertido a la moneda del usuario lleva "≈"; en el checkout se
+  muestra con claridad el monto real que se cobrará, en la moneda del vendedor, antes de pagar.
+- **Mensajes de error traducidos** a partir del campo `code` estable que devuelve la API (formato
+  RFC 9457), nunca a partir del texto en inglés.
+- **Microinteracciones sutiles y útiles**, respetando `prefers-reduced-motion`.
+
+---
+
+## CÓMO DEBES TRABAJAR CONMIGO
+
+1. **Una fase a la vez. Nunca avances sin mi aprobación.**
+2. Antes de cada fase, muéstrame un plan corto: páginas, componentes y endpoints del backend que vas a usar.
+3. **Pídeme permiso antes de ejecutar comandos que instalen o borren cosas.**
+4. Si algo es ambiguo, pregúntame. **No inventes requisitos.**
+5. Al terminar cada pantalla, dame la **URL exacta** para verla y dime qué debo revisar (en celular
+   375 px y en escritorio 1280 px, en modo claro y oscuro).
+6. Mantén actualizados `docs/PROGRESO.md` y `docs/decisiones/`.
+7. Datos de marca: mientras el nombre no esté decidido se usa el placeholder de `src/config/brand.ts`.
+8. Dirección visual elegida: **«Mercado Vivo»** (azul de confianza), **sin el amarillo de acento** para no
+   parecerse a Mercado Libre. En la F1 se proponen 2 alternativas de acento y se valida el contraste AA.
+9. El backend corre en la terminal del dueño: **no lo inicies ni lo detengas**.
+
+---
+
+## AHORRO DE TOKENS
+
+- Lee solo los archivos necesarios para la tarea actual. No releas archivos que no han cambiado.
+- Haz cambios puntuales en lugar de reescribir archivos completos.
+- Durante el desarrollo ejecuta solo las pruebas de lo que estás cambiando. La suite completa, el lint y
+  el typecheck se ejecutan una vez al final de cada fase.
+- No repitas en tus respuestas el código que ya escribiste. Resume qué cambió.
+- Si el contexto de la tarea supera ~150k tokens, detente, actualiza `docs/PROGRESO.md` y pídeme abrir
+  una tarea nueva.

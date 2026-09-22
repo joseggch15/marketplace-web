@@ -1,0 +1,164 @@
+/**
+ * Tokens de diseño — dirección visual «Mercado Vivo».
+ *
+ * Reglas:
+ * 1. Ningún componente inventa colores, radios ni sombras: todo sale de aquí.
+ * 2. Las variables con nombres de shadcn (`--primary`, `--background`, …) son las que consumen los
+ *    componentes de `components/ui`. Los nombres `--brand-*` son añadidos propios del marketplace
+ *    (insignias de oferta, estados de éxito/aviso) que shadcn no trae.
+ * 3. Todos los valores están en HEX para que la prueba automática
+ *    `src/tests/design-system/tokens-contrast.test.ts` pueda verificar el contraste WCAG AA.
+ * 4. El acento es **turquesa**, no amarillo, para que la marca no se parezca a Mercado Libre.
+ *    TODO(F1): proponer 2 alternativas de acento y validar su contraste.
+ */
+
+:root {
+  /* ============ Primitivas: azul de confianza ============ */
+  --mv-blue-50: #eff4ff;
+  --mv-blue-100: #dce6ff;
+  --mv-blue-200: #b9cdff;
+  --mv-blue-300: #8fadff;
+  --mv-blue-400: #5b88ff;
+  --mv-blue-500: #1b6bff;
+  --mv-blue-600: #0f55d6;
+  --mv-blue-700: #0b44ac;
+  --mv-blue-800: #0a3782;
+  --mv-blue-900: #0a2c63;
+
+  /* ============ Primitivas: acento turquesa ============ */
+  --mv-teal-50: #e6fbf8;
+  --mv-teal-100: #c2f5ef;
+  --mv-teal-300: #3fd9c9;
+  --mv-teal-500: #00a99d;
+  --mv-teal-600: #00887f;
+  --mv-teal-700: #006b65;
+  --mv-teal-800: #03544f;
+
+  /* ============ Primitivas: grises ============ */
+  --mv-white: #ffffff;
+  --mv-gray-50: #f5f7fb;
+  --mv-gray-100: #edf1f7;
+  --mv-gray-200: #dee4ed;
+  --mv-gray-300: #c7d0de;
+  --mv-gray-400: #98a3b5;
+  --mv-gray-500: #6b7688;
+  --mv-gray-600: #526073;
+  --mv-gray-700: #3b4759;
+  --mv-gray-800: #26313f;
+  --mv-gray-900: #101828;
+
+  /* ============ Primitivas: oscuros (modo oscuro) ============ */
+  --mv-night-900: #0b1120;
+  --mv-night-800: #131c2b;
+  --mv-night-700: #1c2637;
+  --mv-night-600: #2a3446;
+  --mv-night-300: #9aa6b8;
+  --mv-night-100: #e8edf6;
+  --mv-night-blue: #6fa3ff;
+
+  /* ============ Primitivas: estados ============ */
+  --mv-green-50: #e7f8ee;
+  --mv-green-500: #12a150;
+  --mv-green-700: #0b6b34;
+  --mv-amber-50: #fef6e7;
+  --mv-amber-600: #b54708;
+  --mv-red-500: #d92d20;
+  --mv-red-300: #f97066;
+
+  /* ============ Semánticos (shadcn) — modo claro ============ */
+  --background: var(--mv-gray-50);
+  --foreground: var(--mv-gray-900);
+  --card: var(--mv-white);
+  --card-foreground: var(--mv-gray-900);
+  --popover: var(--mv-white);
+  --popover-foreground: var(--mv-gray-900);
+  --primary: var(--mv-blue-600);
+  --primary-foreground: var(--mv-white);
+  --secondary: var(--mv-gray-100);
+  --secondary-foreground: var(--mv-gray-900);
+  --muted: var(--mv-gray-100);
+  --muted-foreground: var(--mv-gray-600);
+  /* `--accent` es el fondo sutil de los menús (semántica de shadcn), no el turquesa de marca. */
+  --accent: var(--mv-teal-50);
+  --accent-foreground: var(--mv-teal-800);
+  --destructive: var(--mv-red-500);
+  --destructive-foreground: var(--mv-white);
+  --border: var(--mv-gray-200);
+  /* El borde de los campos es más oscuro a propósito: debe verse sin depender del foco (WCAG 1.4.11). */
+  --input: var(--mv-gray-500);
+  --ring: var(--mv-blue-500);
+
+  /* ============ Campos de formulario y controles ============ */
+  --field-background: var(--mv-white);
+  --field-placeholder: var(--mv-gray-600);
+
+  /* ============ Semánticos propios de la marca ============ */
+  --brand-accent: var(--mv-teal-500);
+  --brand-accent-surface: var(--mv-teal-50);
+  --brand-accent-text: var(--mv-teal-700);
+  --brand-success: var(--mv-green-500);
+  --brand-success-surface: var(--mv-green-50);
+  --brand-success-text: var(--mv-green-700);
+  --brand-warning: var(--mv-amber-600);
+  --brand-warning-surface: var(--mv-amber-50);
+  --brand-warning-text: var(--mv-amber-600);
+  --brand-danger-surface: #fdeceb;
+  --brand-danger-text: #a01c14;
+  --brand-info-surface: var(--mv-blue-50);
+  --brand-info-text: var(--mv-blue-800);
+  --brand-link: var(--mv-blue-600);
+  --brand-discount: var(--mv-teal-700);
+
+  /* ============ Tipografía, radios, sombras y movimiento ============ */
+  --radius: 0.75rem;
+  --shadow-card: 0 1px 2px 0 rgb(16 24 40 / 6%), 0 1px 3px 0 rgb(16 24 40 / 10%);
+  --shadow-popover: 0 12px 24px -6px rgb(16 24 40 / 12%), 0 4px 8px -4px rgb(16 24 40 / 8%);
+  --duration-fast: 120ms;
+  --duration-normal: 200ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --header-height: 3.5rem;
+}
+
+.dark {
+  --background: var(--mv-night-900);
+  --foreground: var(--mv-night-100);
+  --card: var(--mv-night-800);
+  --card-foreground: var(--mv-night-100);
+  --popover: var(--mv-night-800);
+  --popover-foreground: var(--mv-night-100);
+  --primary: var(--mv-night-blue);
+  --primary-foreground: var(--mv-night-900);
+  --secondary: var(--mv-night-700);
+  --secondary-foreground: var(--mv-night-100);
+  --muted: var(--mv-night-700);
+  --muted-foreground: var(--mv-night-300);
+  --accent: var(--mv-night-700);
+  --accent-foreground: var(--mv-night-100);
+  --destructive: var(--mv-red-300);
+  --destructive-foreground: var(--mv-night-900);
+  --border: var(--mv-night-600);
+  --input: var(--mv-night-300);
+  --ring: var(--mv-night-blue);
+
+  --field-background: var(--mv-night-800);
+  --field-placeholder: var(--mv-night-300);
+
+  --brand-accent: var(--mv-teal-300);
+  --brand-accent-surface: #06312e;
+  --brand-accent-text: var(--mv-teal-300);
+  --brand-success: var(--mv-green-500);
+  --brand-success-surface: #06281a;
+  --brand-success-text: #4ade80;
+  --brand-warning: var(--mv-amber-600);
+  --brand-warning-surface: #2a1c06;
+  --brand-warning-text: #fbbf24;
+  --brand-danger-surface: #3a1210;
+  --brand-danger-text: #ffb4ab;
+  --brand-info-surface: #10214a;
+  --brand-info-text: #b9cdff;
+  --brand-link: var(--mv-night-blue);
+  --brand-discount: var(--mv-teal-300);
+
+  --shadow-card: 0 1px 2px 0 rgb(0 0 0 / 40%), 0 1px 3px 0 rgb(0 0 0 / 30%);
+  --shadow-popover: 0 12px 24px -6px rgb(0 0 0 / 50%), 0 4px 8px -4px rgb(0 0 0 / 40%);
+}

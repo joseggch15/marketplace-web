@@ -1,0 +1,81 @@
+{
+  "Metadata": {
+    "title": "Mercado Vivo — Compra y vende en línea",
+    "description": "Marketplace multi-vendedor: encuentra productos de miles de tiendas, compara precios, revisa la reputación del vendedor y recibe en tu casa."
+  },
+  "Common": {
+    "brandHome": "Mercado Vivo: ir a la página de inicio",
+    "skipToContent": "Saltar al contenido principal",
+    "mainNavigation": "Navegación principal",
+    "searchLabel": "Buscar productos",
+    "searchPlaceholder": "Buscar productos, marcas o tiendas",
+    "searchSubmit": "Buscar",
+    "loading": "Cargando…",
+    "themeLabel": "Cambiar tema",
+    "themeLight": "Claro",
+    "themeDark": "Oscuro",
+    "themeSystem": "Igual que el sistema",
+    "languageLabel": "Cambiar idioma",
+    "languageEs": "Español",
+    "languageEn": "English",
+    "comingSoon": "Próximamente",
+    "home": "Inicio"
+  },
+  "Home": {
+    "badge": "Fase 0 · Fundamentos",
+    "heroTitle": "Compra en miles de tiendas, todo en un solo lugar",
+    "heroSubtitle": "Compara precios, revisa la reputación del vendedor y recibe en tu casa. Si algo sale mal, te acompañamos.",
+    "systemTitle": "Estado de la plataforma",
+    "systemSubtitle": "Comprobado ahora mismo contra la API real, sin datos inventados.",
+    "statusOk": "Todo funcionando",
+    "statusUnhealthy": "Funciona con problemas",
+    "statusUnreachable": "Backend no disponible",
+    "statusUnreachableDetail": "No hubo respuesta en {url}.",
+    "statusUnreachableHint": "Levanta el backend en su terminal (carpeta E:\\ecommerce): docker compose up -d y luego uv run uvicorn app.main:app --reload.",
+    "statusRetry": "Comprobar de nuevo",
+    "checksLabel": "Comprobaciones del backend",
+    "checkDatabase": "Base de datos PostgreSQL",
+    "checkRedis": "Caché Redis",
+    "checkOk": "Correcto",
+    "checkError": "Con error",
+    "roadmapTitle": "Qué sigue",
+    "roadmapItem1": "Fase 1: sistema de diseño y página /design-system",
+    "roadmapItem2": "Fase 2: cuenta, registro, verificación y direcciones",
+    "roadmapItem3": "Fase 3: catálogo, búsqueda con filtros y autocompletado",
+    "roadmapNote": "Esta portada es provisional: la Fase 0 entrega solo los fundamentos (idiomas, tema, layout y páginas de error)."
+  },
+  "Search": {
+    "title": "Búsqueda",
+    "subtitle": "Aquí vivirá la búsqueda con filtros por faceta.",
+    "comingSoonTitle": "La búsqueda llega en la Fase 3",
+    "comingSoonDescription": "Buscaste «{query}». Todavía no está lista, pero la barra de arriba ya funciona.",
+    "backHome": "Volver al inicio"
+  },
+  "NotFound": {
+    "title": "No encontramos esta página",
+    "description": "Puede que el enlace esté mal escrito o que el producto ya no exista.",
+    "searchHint": "Prueba con la búsqueda de arriba.",
+    "backHome": "Ir al inicio"
+  },
+  "Error": {
+    "title": "Algo salió mal",
+    "description": "El error quedó registrado. Puedes intentarlo otra vez.",
+    "retry": "Intentar de nuevo",
+    "backHome": "Ir al inicio"
+  },
+  "Footer": {
+    "linksLabel": "Enlaces del sitio",
+    "aboutTitle": "Sobre la plataforma",
+    "aboutText": "Marketplace multi-vendedor con pagos protegidos, envíos con seguimiento y reseñas verificadas de compradores reales.",
+    "helpTitle": "Ayuda",
+    "help": "Centro de ayuda",
+    "shipping": "Envíos y devoluciones",
+    "sellersTitle": "Vendedores",
+    "sellHere": "Vende en la plataforma",
+    "trust": "Compra protegida",
+    "legalLabel": "Legal",
+    "terms": "Términos y condiciones",
+    "privacy": "Política de privacidad",
+    "copyright": "© {year} {brand}. Todos los derechos reservados."
+  }
+}

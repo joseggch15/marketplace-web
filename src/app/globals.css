@@ -1,1 +1,101 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+/* Tokens de la marca (colores, sombras y movimiento): única fuente de verdad. */
+@import "../styles/tokens.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+    /* Tipografías: `--font-body` y `--font-display` las define next/font en el layout. */
+    --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+    --font-heading: var(--font-display), var(--font-body), ui-sans-serif, system-ui, sans-serif;
+    --color-ring: var(--ring);
+    --color-input: var(--input);
+    --color-border: var(--border);
+    --color-destructive: var(--destructive);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-accent: var(--accent);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-muted: var(--muted);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-secondary: var(--secondary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-primary: var(--primary);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-popover: var(--popover);
+    --color-card-foreground: var(--card-foreground);
+    --color-card: var(--card);
+    --color-foreground: var(--foreground);
+    --color-background: var(--background);
+    /* Tokens propios de la marca (insignias, estados, precio con descuento). */
+    --color-brand: var(--brand-accent);
+    --color-brand-surface: var(--brand-accent-surface);
+    --color-brand-text: var(--brand-accent-text);
+    --color-success: var(--brand-success);
+    --color-success-surface: var(--brand-success-surface);
+    --color-success-text: var(--brand-success-text);
+    --color-warning: var(--brand-warning);
+    --color-warning-surface: var(--brand-warning-surface);
+    --color-warning-text: var(--brand-warning-text);
+    --color-danger-surface: var(--brand-danger-surface);
+    --color-danger-text: var(--brand-danger-text);
+    --color-info-surface: var(--brand-info-surface);
+    --color-info-text: var(--brand-info-text);
+    --color-discount: var(--brand-discount);
+    --color-link: var(--brand-link);
+    --shadow-card: var(--shadow-card);
+    --shadow-popover: var(--shadow-popover);
+    --radius-sm: calc(var(--radius) * 0.6);
+    --radius-md: calc(var(--radius) * 0.8);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) * 1.4);
+    --radius-2xl: calc(var(--radius) * 1.8);
+    --radius-3xl: calc(var(--radius) * 2.2);
+    --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* Los colores de la marca (modo claro y oscuro) viven en `src/styles/tokens.css`.
+   Este archivo solo los expone como utilidades de Tailwind. */
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    }
+  body {
+    @apply bg-background text-foreground;
+    }
+  button:not(:disabled), [role="button"]:not(:disabled) {
+    cursor: pointer;
+    }
+  html {
+    @apply font-sans;
+    }
+  /* El foco siempre visible (requisito de accesibilidad): contorno sólido, nunca translúcido,
+     para que cumpla el 3:1 de contraste mínimo frente al fondo. */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: var(--radius-md);
+    }
+  ::selection {
+    background-color: var(--brand-accent-surface);
+    color: var(--brand-accent-text);
+    }
+  /* Microinteracciones sutiles, respetando siempre la preferencia del sistema. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+      }
+    }
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+      }
+    }
+}

@@ -1,0 +1,81 @@
+{
+  "Metadata": {
+    "title": "Mercado Vivo — Shop and sell online",
+    "description": "Multi-vendor marketplace: find products from thousands of stores, compare prices, check seller reputation and get it delivered to your door."
+  },
+  "Common": {
+    "brandHome": "Mercado Vivo: go to the home page",
+    "skipToContent": "Skip to main content",
+    "mainNavigation": "Main navigation",
+    "searchLabel": "Search products",
+    "searchPlaceholder": "Search products, brands or stores",
+    "searchSubmit": "Search",
+    "loading": "Loading…",
+    "themeLabel": "Change theme",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSystem": "Same as system",
+    "languageLabel": "Change language",
+    "languageEs": "Español",
+    "languageEn": "English",
+    "comingSoon": "Coming soon",
+    "home": "Home"
+  },
+  "Home": {
+    "badge": "Phase 0 · Foundations",
+    "heroTitle": "Shop thousands of stores in one place",
+    "heroSubtitle": "Compare prices, check seller reputation and get delivery to your door. If something goes wrong, we back you up.",
+    "systemTitle": "Platform status",
+    "systemSubtitle": "Checked right now against the real API, with no made-up data.",
+    "statusOk": "Everything working",
+    "statusUnhealthy": "Running with problems",
+    "statusUnreachable": "Backend unavailable",
+    "statusUnreachableDetail": "There was no response at {url}.",
+    "statusUnreachableHint": "Start the backend in its own terminal (folder E:\\ecommerce): docker compose up -d and then uv run uvicorn app.main:app --reload.",
+    "statusRetry": "Check again",
+    "checksLabel": "Backend checks",
+    "checkDatabase": "PostgreSQL database",
+    "checkRedis": "Redis cache",
+    "checkOk": "OK",
+    "checkError": "Failed",
+    "roadmapTitle": "What's next",
+    "roadmapItem1": "Phase 1: design system and /design-system page",
+    "roadmapItem2": "Phase 2: account, sign-up, verification and addresses",
+    "roadmapItem3": "Phase 3: catalog, search with filters and autocomplete",
+    "roadmapNote": "This home page is temporary: Phase 0 only delivers the foundations (languages, theme, layout and error pages)."
+  },
+  "Search": {
+    "title": "Search",
+    "subtitle": "Faceted search will live here.",
+    "comingSoonTitle": "Search arrives in Phase 3",
+    "comingSoonDescription": "You searched for “{query}”. It isn't ready yet, but the bar above already works.",
+    "backHome": "Back to home"
+  },
+  "NotFound": {
+    "title": "We couldn't find this page",
+    "description": "The link may be misspelled, or the product may no longer exist.",
+    "searchHint": "Try the search bar above.",
+    "backHome": "Go to home"
+  },
+  "Error": {
+    "title": "Something went wrong",
+    "description": "The error was logged. You can try again.",
+    "retry": "Try again",
+    "backHome": "Go to home"
+  },
+  "Footer": {
+    "linksLabel": "Site links",
+    "aboutTitle": "About the platform",
+    "aboutText": "Multi-vendor marketplace with protected payments, tracked shipping and verified reviews from real buyers.",
+    "helpTitle": "Help",
+    "help": "Help center",
+    "shipping": "Shipping and returns",
+    "sellersTitle": "Sellers",
+    "sellHere": "Sell on the platform",
+    "trust": "Buyer protection",
+    "legalLabel": "Legal",
+    "terms": "Terms and conditions",
+    "privacy": "Privacy policy",
+    "copyright": "© {year} {brand}. All rights reserved."
+  }
+}

@@ -168,10 +168,10 @@ export function CartView() {
         </Button>
 
         <div className="flex flex-col gap-1.5 border-t border-border pt-3">
-          <Button type="button" size="lg" disabled>
-            {t("summary.checkout")}
+          <Button asChild size="lg">
+            <Link href="/checkout">{t("summary.checkout")}</Link>
           </Button>
-          <p className="text-xs text-muted-foreground">{t("summary.checkoutComingSoon")}</p>
+          <p className="text-xs text-muted-foreground">{t("summary.checkoutNote")}</p>
           <Button asChild variant="link" size="sm" className="justify-start px-0">
             <Link href="/">{t("summary.continueShopping")}</Link>
           </Button>

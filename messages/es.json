@@ -488,8 +488,8 @@
       "note": "El subtotal lo calcula la tienda con el precio actual de cada producto. El monto final se confirma al pagar.",
       "clear": "Vaciar carrito",
       "checkout": "Continuar con el pago",
-      "checkoutComingSoon": "El pago llega en la siguiente entrega del proyecto: entonces este botón funcionará. Tu carrito y sus precios son reales.",
-      "continueShopping": "Seguir comprando"
+      "continueShopping": "Seguir comprando",
+      "checkoutNote": "Te llevamos al checkout: eliges dirección, revisas el resumen y pagas en modo de prueba (no se cobra dinero real)."
     },
     "errors": {
       "cart_token_required": "No pudimos identificar tu carrito. Vuelve a intentarlo, por favor.",
@@ -519,5 +519,293 @@
     "checkRedis": "Caché Redis",
     "checkOk": "Correcto",
     "checkError": "Con error"
+  },
+  "Checkout": {
+    "title": "Finalizar compra",
+    "metaDescription": "Elige la dirección de envío, revisa el resumen y paga. La tienda calcula los importes.",
+    "loading": "Cargando tu pedido…",
+    "unavailable": {
+      "title": "No pudimos preparar el checkout",
+      "description": "El servicio de pedidos no está respondiendo. Inténtalo otra vez en un momento.",
+      "retry": "Intentar de nuevo"
+    },
+    "signIn": {
+      "title": "Inicia sesión para pagar",
+      "description": "Tu carrito se guarda tal como está: vuelves, pagas y no pierdes nada.",
+      "action": "Iniciar sesión"
+    },
+    "empty": {
+      "title": "Tu carrito está vacío",
+      "description": "Agrega algún producto y vuelve para terminar la compra.",
+      "action": "Explorar el catálogo"
+    },
+    "steps": {
+      "title": "Pasos de la compra",
+      "address": "Dirección",
+      "shipping": "Envío y cupón",
+      "payment": "Pago",
+      "current": "Paso actual",
+      "completed": "Completado"
+    },
+    "address": {
+      "title": "¿Dónde lo enviamos?",
+      "subtitle": "Elige una dirección guardada o escribe una nueva.",
+      "savedTitle": "Mis direcciones",
+      "newTitle": "Otra dirección",
+      "useNew": "Usar otra dirección",
+      "useSaved": "Usar una dirección guardada",
+      "defaultBadge": "Predeterminada",
+      "save": "Guardar esta dirección en mi cuenta",
+      "saveHint": "Si la guardas, la tendrás lista la próxima vez.",
+      "empty": "Todavía no tienes direcciones guardadas. Escribe una y podrás guardarla.",
+      "fields": {
+        "recipient": "Quién recibe",
+        "phone": "Teléfono",
+        "line1": "Dirección",
+        "line2": "Detalles (apartamento, torre…)",
+        "city": "Ciudad",
+        "state": "Departamento",
+        "postalCode": "Código postal",
+        "country": "País"
+      },
+      "placeholders": {
+        "recipient": "Ana Pérez",
+        "phone": "+57 300 000 0000",
+        "line1": "Calle 1 # 2-34",
+        "city": "Bogotá"
+      },
+      "countryHint": "Dos letras (ISO), por ejemplo CO.",
+      "continue": "Continuar al envío"
+    },
+    "shipping": {
+      "title": "Envío",
+      "subtitle": "Consulta la fecha estimada que da la tienda.",
+      "standard": "Envío estándar",
+      "costLabel": "Costo de envío",
+      "noCost": "Sin costo",
+      "estimate": "Entrega estimada: {from} – {to}",
+      "source": "Es una estimación de la tienda, no una promesa de la transportadora.",
+      "unavailable": "No pudimos calcular la fecha de entrega para esta dirección.",
+      "note": "El importe final del envío lo calcula la tienda al crear el pedido.",
+      "notesLabel": "Notas para el vendedor (opcional)",
+      "notesPlaceholder": "Por ejemplo: dejar en portería",
+      "continue": "Continuar al pago",
+      "back": "Volver a la dirección"
+    },
+    "coupon": {
+      "title": "Cupón de descuento",
+      "label": "Código del cupón",
+      "placeholder": "BIENVENIDA10",
+      "apply": "Aplicar cupón",
+      "remove": "Quitar cupón",
+      "applied": "Cupón {code} aplicado",
+      "discount": "Descuento",
+      "pending": "Comprobando…",
+      "errors": {
+        "coupon_not_found": "Ese cupón no existe.",
+        "coupon_not_started": "Ese cupón todavía no está vigente.",
+        "coupon_expired": "Ese cupón caducó.",
+        "min_purchase_not_met": "Tu carrito no llega al mínimo de ese cupón.",
+        "coupon_usage_limit": "Ese cupón ya alcanzó su límite de usos.",
+        "coupon_user_limit": "Ya usaste ese cupón.",
+        "validation_error": "Revisa el código: hay algo que no encaja.",
+        "unauthorized": "Tu sesión caducó. Vuelve a iniciar sesión.",
+        "too_many_requests": "Lo intentaste varias veces. Espera un momento.",
+        "network_error": "No pudimos conectar. Revisa tu conexión.",
+        "unknown": "No pudimos comprobar el cupón. Inténtalo de nuevo."
+      }
+    },
+    "payment": {
+      "title": "Pago",
+      "testMode": "Modo de prueba",
+      "testNote": "Esta tienda no cobra dinero real. El pago se aprueba o se rechaza con los botones de abajo, igual que lo haría la pasarela.",
+      "amountLabel": "Monto a pagar",
+      "currencyNote": "Se cobra en {currency}, la moneda del vendedor.",
+      "provider": "Pasarela: {provider}",
+      "cardLabel": "Tarjeta de prueba",
+      "noCardData": "No se piden ni se guardan datos de tarjeta reales.",
+      "pay": "Pagar {amount}",
+      "preparing": "Preparando el pago…",
+      "approve": "Aprobar pago (prueba)",
+      "reject": "Rechazar pago (prueba)",
+      "confirming": "Confirmando el resultado…",
+      "back": "Volver al envío"
+    },
+    "summary": {
+      "title": "Tu pedido",
+      "items": "{count, plural, one {# producto} other {# productos}}",
+      "subtotal": "Subtotal",
+      "discount": "Descuento",
+      "shipping": "Envío",
+      "total": "Total",
+      "processing": "Actualizando…",
+      "note": "Los importes los calcula la tienda; el monto final se cobra en la moneda del vendedor.",
+      "store": "Vendido por {store}"
+    },
+    "result": {
+      "paidTitle": "¡Compra confirmada!",
+      "paidDescription": "Tu pedido {order} quedó registrado y el pago está confirmado.",
+      "failedTitle": "El pago no se completó",
+      "failedDescription": "No se cobró nada y el pedido sigue esperando el pago. Puedes intentarlo otra vez.",
+      "retry": "Intentar otra vez",
+      "seeOrder": "Ver mi pedido",
+      "continueShopping": "Seguir comprando"
+    },
+    "errors": {
+      "cart_empty": "Tu carrito está vacío: agrega algo antes de pagar.",
+      "insufficient_stock": "Alguien acaba de comprar las últimas unidades. Revisa tu carrito.",
+      "product_not_available": "Un producto de tu carrito ya no está disponible.",
+      "variant_not_found": "Una presentación de tu carrito ya no existe.",
+      "unauthorized": "Tu sesión caducó. Vuelve a iniciar sesión.",
+      "validation_error": "Revisa los datos: hay algo que no encaja.",
+      "too_many_requests": "Hiciste varios intentos seguidos. Espera un momento.",
+      "not_found": "El pedido ya no existe.",
+      "forbidden": "No puedes hacer eso con este pedido.",
+      "order_not_payable": "Este pedido ya no se puede pagar.",
+      "order_already_paid": "Este pedido ya está pagado.",
+      "simulation_not_allowed": "Esta pasarela no permite simular el pago.",
+      "internal_error": "Falló algo de nuestro lado. Inténtalo de nuevo en un momento.",
+      "network_error": "No pudimos conectar. Revisa tu conexión e inténtalo otra vez.",
+      "unknown": "No pudimos completar la compra. Inténtalo de nuevo."
+    }
+  },
+  "Orders": {
+    "title": "Mis compras",
+    "subtitle": "Aquí están tus pedidos, con su estado y lo que puedes hacer con cada uno.",
+    "metaDescription": "Revisa tus pedidos, su estado, cancela los que siguen pendientes y deja reseña de lo que recibiste.",
+    "loading": "Cargando tus pedidos…",
+    "retry": "Intentar de nuevo",
+    "empty": {
+      "title": "Todavía no has comprado nada",
+      "description": "Cuando hagas tu primer pedido, lo verás aquí con su seguimiento.",
+      "action": "Explorar el catálogo"
+    },
+    "unavailable": {
+      "title": "No pudimos cargar tus compras",
+      "description": "El servicio de pedidos no está respondiendo. Tus pedidos están a salvo: inténtalo otra vez."
+    },
+    "list": {
+      "orderNumber": "Pedido {number}",
+      "placed": "Hecho el {date}",
+      "total": "Total",
+      "items": "{count, plural, one {# producto} other {# productos}}",
+      "seeDetail": "Ver detalle",
+      "more": "Ver pedidos más antiguos"
+    },
+    "status": {
+      "pending": "Pendiente de pago",
+      "paid": "Pagado",
+      "completed": "Completado",
+      "cancelled": "Cancelado",
+      "refunded": "Reembolsado",
+      "unknown": "Estado sin traducir"
+    },
+    "paymentStatus": {
+      "pending": "Pago pendiente",
+      "paid": "Pago confirmado",
+      "failed": "Pago rechazado",
+      "refunded": "Pago reembolsado",
+      "unknown": "Estado del pago sin traducir",
+      "succeeded": "Pago confirmado (pasarela)",
+      "processing": "Pago en proceso"
+    },
+    "sellerStatus": {
+      "pending": "En espera de pago",
+      "processing": "En preparación",
+      "shipped": "Enviado",
+      "delivered": "Entregado",
+      "cancelled": "Cancelado",
+      "unknown": "Estado sin traducir"
+    },
+    "detail": {
+      "title": "Pedido {number}",
+      "placed": "Hecho el {date}",
+      "soldBy": "Vendido por {store}",
+      "unknownStore": "Tienda del vendedor",
+      "itemsTitle": "Productos",
+      "quantity": "Cantidad: {count}",
+      "lineTotal": "Subtotal",
+      "totalsTitle": "Resumen del pedido",
+      "subtotal": "Subtotal",
+      "discount": "Descuento",
+      "shipping": "Envío",
+      "total": "Total",
+      "paidIn": "Se cobra en {currency}.",
+      "shipToTitle": "Dirección de envío",
+      "notesTitle": "Notas",
+      "trackingTitle": "Seguimiento",
+      "noTracking": "El vendedor todavía no ha marcado este pedido como enviado.",
+      "carrier": "Transportadora: {carrier}",
+      "trackingNumber": "Número de guía: {number}",
+      "trackingLink": "Ver el seguimiento de la transportadora",
+      "timelineTitle": "Qué ha pasado",
+      "timeline": {
+        "created": "Pedido creado",
+        "paid": "Pago confirmado",
+        "processing": "El vendedor está preparando el pedido",
+        "shipped": "Pedido enviado",
+        "delivered": "Pedido entregado",
+        "cancelled": "Pedido cancelado",
+        "refunded": "Pedido reembolsado"
+      },
+      "pendingDate": "Pendiente de confirmar",
+      "back": "Volver a mis compras",
+      "notFound": {
+        "title": "No encontramos este pedido",
+        "description": "Puede que el enlace esté mal o que el pedido sea de otra cuenta.",
+        "action": "Ir a mis compras"
+      },
+      "unavailable": {
+        "title": "No pudimos cargar el pedido",
+        "description": "El servicio de pedidos no está respondiendo. Inténtalo otra vez en un momento."
+      }
+    },
+    "confirmation": {
+      "title": "¡Compra confirmada!",
+      "description": "Tu pedido {number} quedó registrado y el pago está confirmado.",
+      "nextTitle": "Qué pasa ahora",
+      "next1": "El vendedor prepara tu pedido y lo marca como enviado.",
+      "next2": "Cuando lo envíe, aquí verás la transportadora y el número de guía.",
+      "next3": "Cuando lo recibas, podrás dejar tu reseña del producto.",
+      "continueShopping": "Seguir comprando"
+    },
+    "cancel": {
+      "action": "Cancelar pedido",
+      "confirmTitle": "¿Cancelar el pedido {number}?",
+      "confirmDescription": "Se liberan las unidades reservadas de tu carrito. Esta acción no se puede deshacer.",
+      "confirm": "Sí, cancelar el pedido",
+      "keep": "No, dejarlo como está",
+      "pending": "Cancelando…",
+      "unavailable": "Solo se pueden cancelar los pedidos que todavía no se han pagado."
+    },
+    "review": {
+      "action": "Escribir reseña",
+      "reviewed": "Ya reseñaste este producto",
+      "title": "Tu reseña de {product}",
+      "rating": "Puntuación",
+      "ratingHint": "De 1 a 5 estrellas",
+      "ratingOption": "{value, plural, one {# estrella} other {# estrellas}}",
+      "titleField": "Título (opcional)",
+      "bodyField": "¿Cómo te fue? (opcional)",
+      "bodyPlaceholder": "Cuéntale a los demás cómo llegó y si era lo que esperabas",
+      "submit": "Publicar reseña",
+      "pending": "Publicando…",
+      "done": "¡Gracias! Tu reseña ya está publicada.",
+      "notDelivered": "Podrás reseñar este producto cuando el pedido esté entregado."
+    },
+    "errors": {
+      "order_not_found": "Ese pedido ya no existe.",
+      "purchase_required": "Solo puedes reseñar productos que compraste y recibiste.",
+      "review_exists": "Ya tienes una reseña de este producto.",
+      "invalid_status_transition": "El pedido ya cambió de estado. Actualiza la página.",
+      "not_store_owner": "Solo el vendedor del producto puede responder.",
+      "validation_error": "Revisa los datos: hay algo que no encaja.",
+      "unauthorized": "Tu sesión caducó. Vuelve a iniciar sesión.",
+      "forbidden": "No puedes hacer eso con este pedido.",
+      "too_many_requests": "Hiciste varios intentos seguidos. Espera un momento.",
+      "internal_error": "Falló algo de nuestro lado. Inténtalo de nuevo en un momento.",
+      "network_error": "No pudimos conectar. Revisa tu conexión e inténtalo otra vez.",
+      "unknown": "No pudimos completar la acción. Inténtalo de nuevo."
+    }
   }
 }

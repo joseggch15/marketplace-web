@@ -64,7 +64,7 @@ const messages = {
       note: "El subtotal lo calcula la tienda.",
       clear: "Vaciar carrito",
       checkout: "Continuar con el pago",
-      checkoutComingSoon: "El pago llega después.",
+      checkoutNote: "Pago en modo de prueba: no se cobra dinero real.",
       continueShopping: "Seguir comprando",
     },
     errors: {
@@ -140,8 +140,12 @@ describe("CartView", () => {
     // El subtotal de la línea y el del carrito son los del backend, no una multiplicación local.
     expect(screen.getAllByText(/599\.800/).length).toBeGreaterThan(0);
     expect(screen.getByRole("heading", { name: "Resumen" })).toBeVisible();
-    // El pago todavía no existe (F6): el botón está deshabilitado y explicado.
-    expect(screen.getByRole("button", { name: "Continuar con el pago" })).toBeDisabled();
+    // El checkout ya existe (F6): el botón lleva a él y el aviso explica el modo de prueba.
+    expect(screen.getByRole("link", { name: "Continuar con el pago" })).toHaveAttribute(
+      "href",
+      "/es/checkout",
+    );
+    expect(screen.getByText(/modo de prueba/i)).toBeVisible();
   });
 
   it("cambia la cantidad en el servidor con el número nuevo", async () => {

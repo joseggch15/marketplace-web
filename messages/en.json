@@ -488,8 +488,8 @@
       "note": "The subtotal is calculated by the store with the current price of each product. The final amount is confirmed at payment.",
       "clear": "Empty the cart",
       "checkout": "Continue to payment",
-      "checkoutComingSoon": "Payment arrives in the next delivery of the project: the button will work then. Your cart and its prices are real.",
-      "continueShopping": "Keep shopping"
+      "continueShopping": "Keep shopping",
+      "checkoutNote": "We take you to checkout: pick an address, review the summary and pay in test mode (no real money is charged)."
     },
     "errors": {
       "cart_token_required": "We could not identify your cart. Please try again.",
@@ -519,5 +519,293 @@
     "checkRedis": "Redis cache",
     "checkOk": "OK",
     "checkError": "Failed"
+  },
+  "Checkout": {
+    "title": "Checkout",
+    "metaDescription": "Pick a shipping address, review the summary and pay. The store calculates every amount.",
+    "loading": "Loading your order…",
+    "unavailable": {
+      "title": "We could not prepare the checkout",
+      "description": "The orders service is not responding. Please try again in a moment.",
+      "retry": "Try again"
+    },
+    "signIn": {
+      "title": "Sign in to pay",
+      "description": "Your cart stays exactly as it is: come back, pay and lose nothing.",
+      "action": "Sign in"
+    },
+    "empty": {
+      "title": "Your cart is empty",
+      "description": "Add a product and come back to finish the purchase.",
+      "action": "Browse the catalog"
+    },
+    "steps": {
+      "title": "Checkout steps",
+      "address": "Address",
+      "shipping": "Shipping and coupon",
+      "payment": "Payment",
+      "current": "Current step",
+      "completed": "Completed"
+    },
+    "address": {
+      "title": "Where should we send it?",
+      "subtitle": "Pick a saved address or type a new one.",
+      "savedTitle": "My addresses",
+      "newTitle": "Another address",
+      "useNew": "Use another address",
+      "useSaved": "Use a saved address",
+      "defaultBadge": "Default",
+      "save": "Save this address to my account",
+      "saveHint": "If you save it, it will be ready next time.",
+      "empty": "You have no saved addresses yet. Type one and you can save it.",
+      "fields": {
+        "recipient": "Recipient",
+        "phone": "Phone",
+        "line1": "Address",
+        "line2": "Details (apartment, tower…)",
+        "city": "City",
+        "state": "State or region",
+        "postalCode": "Postal code",
+        "country": "Country"
+      },
+      "placeholders": {
+        "recipient": "Ana Perez",
+        "phone": "+57 300 000 0000",
+        "line1": "1st Street # 2-34",
+        "city": "Bogotá"
+      },
+      "countryHint": "Two letters (ISO), for example CO.",
+      "continue": "Continue to shipping"
+    },
+    "shipping": {
+      "title": "Shipping",
+      "subtitle": "Check the estimated delivery the store gives you.",
+      "standard": "Standard shipping",
+      "costLabel": "Shipping cost",
+      "noCost": "No cost",
+      "estimate": "Estimated delivery: {from} – {to}",
+      "source": "It is an estimate from the store, not a promise from the carrier.",
+      "unavailable": "We could not calculate the delivery date for this address.",
+      "note": "The final shipping amount is calculated by the store when the order is created.",
+      "notesLabel": "Notes for the seller (optional)",
+      "notesPlaceholder": "For example: leave at the front desk",
+      "continue": "Continue to payment",
+      "back": "Back to address"
+    },
+    "coupon": {
+      "title": "Discount coupon",
+      "label": "Coupon code",
+      "placeholder": "WELCOME10",
+      "apply": "Apply coupon",
+      "remove": "Remove coupon",
+      "applied": "Coupon {code} applied",
+      "discount": "Discount",
+      "pending": "Checking…",
+      "errors": {
+        "coupon_not_found": "That coupon does not exist.",
+        "coupon_not_started": "That coupon is not active yet.",
+        "coupon_expired": "That coupon has expired.",
+        "min_purchase_not_met": "Your cart does not reach that coupon minimum.",
+        "coupon_usage_limit": "That coupon reached its usage limit.",
+        "coupon_user_limit": "You already used that coupon.",
+        "validation_error": "Check the code: something does not fit.",
+        "unauthorized": "Your session expired. Please sign in again.",
+        "too_many_requests": "You tried several times. Wait a moment.",
+        "network_error": "We could not connect. Check your connection.",
+        "unknown": "We could not check the coupon. Please try again."
+      }
+    },
+    "payment": {
+      "title": "Payment",
+      "testMode": "Test mode",
+      "testNote": "This store does not charge real money. The payment is approved or rejected with the buttons below, exactly like a real gateway would.",
+      "amountLabel": "Amount to pay",
+      "currencyNote": "You are charged in {currency}, the seller currency.",
+      "provider": "Gateway: {provider}",
+      "cardLabel": "Test card",
+      "noCardData": "No real card data is requested or stored.",
+      "pay": "Pay {amount}",
+      "preparing": "Preparing the payment…",
+      "approve": "Approve payment (test)",
+      "reject": "Reject payment (test)",
+      "confirming": "Confirming the result…",
+      "back": "Back to shipping"
+    },
+    "summary": {
+      "title": "Your order",
+      "items": "{count, plural, one {# item} other {# items}}",
+      "subtotal": "Subtotal",
+      "discount": "Discount",
+      "shipping": "Shipping",
+      "total": "Total",
+      "processing": "Updating…",
+      "note": "The store calculates every amount; the final charge is in the seller currency.",
+      "store": "Sold by {store}"
+    },
+    "result": {
+      "paidTitle": "Purchase confirmed!",
+      "paidDescription": "Order {order} is recorded and the payment is confirmed.",
+      "failedTitle": "The payment did not go through",
+      "failedDescription": "Nothing was charged and the order is still waiting for payment. You can try again.",
+      "retry": "Try again",
+      "seeOrder": "See my order",
+      "continueShopping": "Keep shopping"
+    },
+    "errors": {
+      "cart_empty": "Your cart is empty: add something before paying.",
+      "insufficient_stock": "Someone just bought the last units. Please review your cart.",
+      "product_not_available": "A product in your cart is no longer available.",
+      "variant_not_found": "An option in your cart no longer exists.",
+      "unauthorized": "Your session expired. Please sign in again.",
+      "validation_error": "Check the data: something does not fit.",
+      "too_many_requests": "You tried several times in a row. Wait a moment.",
+      "not_found": "The order no longer exists.",
+      "forbidden": "You cannot do that with this order.",
+      "order_not_payable": "This order can no longer be paid.",
+      "order_already_paid": "This order is already paid.",
+      "simulation_not_allowed": "This gateway does not allow simulating the payment.",
+      "internal_error": "Something failed on our side. Please try again in a moment.",
+      "network_error": "We could not connect. Check your connection and try again.",
+      "unknown": "We could not complete the purchase. Please try again."
+    }
+  },
+  "Orders": {
+    "title": "My purchases",
+    "subtitle": "All your orders, with their status and what you can do with each one.",
+    "metaDescription": "Review your orders, their status, cancel the ones still pending and review what you received.",
+    "loading": "Loading your orders…",
+    "retry": "Try again",
+    "empty": {
+      "title": "You have not bought anything yet",
+      "description": "When you place your first order you will see it here with its tracking.",
+      "action": "Browse the catalog"
+    },
+    "unavailable": {
+      "title": "We could not load your purchases",
+      "description": "The orders service is not responding. Your orders are safe: please try again."
+    },
+    "list": {
+      "orderNumber": "Order {number}",
+      "placed": "Placed on {date}",
+      "total": "Total",
+      "items": "{count, plural, one {# item} other {# items}}",
+      "seeDetail": "See details",
+      "more": "See older orders"
+    },
+    "status": {
+      "pending": "Waiting for payment",
+      "paid": "Paid",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "refunded": "Refunded",
+      "unknown": "Untranslated status"
+    },
+    "paymentStatus": {
+      "pending": "Payment pending",
+      "paid": "Payment confirmed",
+      "failed": "Payment rejected",
+      "refunded": "Payment refunded",
+      "unknown": "Untranslated payment status",
+      "succeeded": "Payment confirmed (gateway)",
+      "processing": "Payment in progress"
+    },
+    "sellerStatus": {
+      "pending": "Waiting for payment",
+      "processing": "Being prepared",
+      "shipped": "Shipped",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled",
+      "unknown": "Untranslated status"
+    },
+    "detail": {
+      "title": "Order {number}",
+      "placed": "Placed on {date}",
+      "soldBy": "Sold by {store}",
+      "unknownStore": "Seller store",
+      "itemsTitle": "Products",
+      "quantity": "Quantity: {count}",
+      "lineTotal": "Subtotal",
+      "totalsTitle": "Order summary",
+      "subtotal": "Subtotal",
+      "discount": "Discount",
+      "shipping": "Shipping",
+      "total": "Total",
+      "paidIn": "Charged in {currency}.",
+      "shipToTitle": "Shipping address",
+      "notesTitle": "Notes",
+      "trackingTitle": "Tracking",
+      "noTracking": "The seller has not marked this order as shipped yet.",
+      "carrier": "Carrier: {carrier}",
+      "trackingNumber": "Tracking number: {number}",
+      "trackingLink": "Track it with the carrier",
+      "timelineTitle": "What happened",
+      "timeline": {
+        "created": "Order created",
+        "paid": "Payment confirmed",
+        "processing": "The seller is preparing the order",
+        "shipped": "Order shipped",
+        "delivered": "Order delivered",
+        "cancelled": "Order cancelled",
+        "refunded": "Order refunded"
+      },
+      "pendingDate": "Waiting to be confirmed",
+      "back": "Back to my purchases",
+      "notFound": {
+        "title": "We could not find this order",
+        "description": "The link may be wrong, or the order belongs to another account.",
+        "action": "Go to my purchases"
+      },
+      "unavailable": {
+        "title": "We could not load the order",
+        "description": "The orders service is not responding. Please try again in a moment."
+      }
+    },
+    "confirmation": {
+      "title": "Purchase confirmed!",
+      "description": "Order {number} is recorded and the payment is confirmed.",
+      "nextTitle": "What happens now",
+      "next1": "The seller prepares your order and marks it as shipped.",
+      "next2": "When it ships, you will see the carrier and the tracking number here.",
+      "next3": "When you receive it, you will be able to review the product.",
+      "continueShopping": "Keep shopping"
+    },
+    "cancel": {
+      "action": "Cancel order",
+      "confirmTitle": "Cancel order {number}?",
+      "confirmDescription": "The reserved units are released. This cannot be undone.",
+      "confirm": "Yes, cancel the order",
+      "keep": "No, leave it as it is",
+      "pending": "Cancelling…",
+      "unavailable": "Only orders that have not been paid yet can be cancelled."
+    },
+    "review": {
+      "action": "Write a review",
+      "reviewed": "You already reviewed this product",
+      "title": "Your review of {product}",
+      "rating": "Rating",
+      "ratingHint": "From 1 to 5 stars",
+      "ratingOption": "{value, plural, one {# star} other {# stars}}",
+      "titleField": "Title (optional)",
+      "bodyField": "How did it go? (optional)",
+      "bodyPlaceholder": "Tell others how it arrived and whether it was what you expected",
+      "submit": "Publish review",
+      "pending": "Publishing…",
+      "done": "Thank you! Your review is published.",
+      "notDelivered": "You will be able to review this product once the order is delivered."
+    },
+    "errors": {
+      "order_not_found": "That order no longer exists.",
+      "purchase_required": "You can only review products you bought and received.",
+      "review_exists": "You already have a review for this product.",
+      "invalid_status_transition": "The order already changed status. Please refresh the page.",
+      "not_store_owner": "Only the seller of the product can answer.",
+      "validation_error": "Check the data: something does not fit.",
+      "unauthorized": "Your session expired. Please sign in again.",
+      "forbidden": "You cannot do that with this order.",
+      "too_many_requests": "You tried several times in a row. Wait a moment.",
+      "internal_error": "Something failed on our side. Please try again in a moment.",
+      "network_error": "We could not connect. Check your connection and try again.",
+      "unknown": "We could not complete the action. Please try again."
+    }
   }
 }

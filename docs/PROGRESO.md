@@ -23,14 +23,19 @@ está en `docs/historial/` y no hace falta leerlo para trabajar.
 | F4 · Página de producto | cerrada |
 | F5 · Carrito | cerrada |
 | **Portada real** | **hecha** (`docs/decisiones/0012-portada.md`) |
-| F6 · Checkout y pagos | en curso |
-| F7 · Mis compras | pendiente |
-| F8 · Panel del vendedor | pendiente |
-| F9 · Panel de administración | pendiente |
+| **F6 · Checkout y pagos** | **código hecho y probado a mano contra el backend** (`docs/decisiones/0013-checkout.md`); faltan las e2e y las capturas |
+| **F7 · Mis compras** | **código hecho** (lista, detalle, cancelar y reseñar); faltan e2e, capturas y los enlaces de entrada |
+| F8 · Panel del vendedor | pendiente (el plan y los endpoints exactos están en `docs/SIGUIENTE-PROMPT.md`) |
+| F9 · Panel de administración | pendiente (la API no tiene listado de usuarios ni moderación de preguntas) |
 | F10 · Preparación para publicar | pendiente (auditoría + `docs/PUBLICAR.md`) |
 
-Última verificación: `lint` 0 · `typecheck` 0 · **264 pruebas unitarias** (253 antes de la portada) · capturas y
-e2e se ejecutan al cerrar la fase.
+Verificación de esta tanda: `lint` 0 · `typecheck` 0 · **283 pruebas unitarias** (264 + 19 nuevas de pedidos). Las
+pruebas e2e y el `build` se ejecutan al cerrar F6/F7 (es lo primero de la próxima tarea).
+
+Se probó **a mano, contra el backend real y a través del BFF**, el camino completo de compra: iniciar sesión →
+carrito → `POST /api/orders` (201) → `POST /api/orders/{id}/payments` (pasarela `sandbox`) →
+`POST /api/payments/{id}/simulate` (aprobado, el pago pasa a `succeeded` y la orden a `paid`) →
+`/es/orders/{id}` (200 con seguimiento y totales) → `/es/orders` (200, el pedido aparece en la lista).
 
 ## La lista de pendientes del backend está CERRADA
 
@@ -42,7 +47,7 @@ iniciada, `sold_count`, el listado público del catálogo y el interruptor `REQU
 
 `docs/decisiones/`: 0001 versiones · 0002 paleta · 0003 BFF sin tokens · 0004 idiomas y proxy · 0005 proxy de
 medios · 0006 tipos de la API · 0007 sistema de diseño · 0008 autenticación · 0009 catálogo · 0010 producto ·
-0011 carrito · **0012 portada**.
+0011 carrito · 0012 portada · **0013 checkout y pago de prueba**.
 
 ## Entorno local (recordatorio)
 

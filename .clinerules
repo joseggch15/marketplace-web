@@ -35,6 +35,13 @@ ESLint + Prettier · despliegue en Vercel.
   APIs**. Usar `git push` de forma normal **sí** está permitido. Si algo requiere una autenticación que no
   tienes, **detente en ese punto**, anótalo en el resumen y sigue con lo demás. (Motivo: un agente que lee
   credenciales guardadas puede usarlas sin que nadie lo apruebe; ya ocurrió una vez en este proyecto.)
+- **Nunca sirvas archivos subidos por usuarios cuyo contenido no controles.** En el proxy de medios
+  (`/api/media/<clave>`) solo se aceptan tipos de una **lista exacta** — `image/jpeg`, `image/png`,
+  `image/webp`, `image/avif` e `image/gif` — normalizando antes el `Content-Type` (minúsculas, sin espacios y
+  sin parámetros como `; charset=…`). **SVG (`image/svg+xml`) queda prohibido**: es un tipo `image/`, pero puede
+  llevar JavaScript dentro y, servido desde nuestro dominio, se ejecutaría con el origen de la tienda y la
+  sesión del comprador. Las respuestas del proxy llevan además `X-Content-Type-Options: nosniff` y
+  `Content-Security-Policy: default-src 'none'` como segunda barrera. Cualquier otro tipo responde 404.
 - **Organización por funcionalidad** (`features/auth`, `features/catalog`, `features/cart`, …), con los
   componentes compartidos en `components/ui` y los del dominio en `components/domain`.
 - **Filtros, búsqueda y paginación viven en la URL** (search params), para que toda búsqueda sea

@@ -52,7 +52,12 @@ export async function GET(
     headers: {
       "content-type": contentType ?? "application/octet-stream",
       "cache-control": CACHE_CONTROL,
+      // Segunda barrera, por si algo raro pasara el filtro de tipos:
+      // - `nosniff` le prohíbe al navegador adivinar el tipo mirando el contenido;
+      // - `default-src 'none'` le prohíbe cargar o ejecutar **cualquier** recurso de este archivo (scripts,
+      //   estilos, marcos…). Con las dos juntas, servir un archivo peligroso desde el proxy no ejecutaría nada.
       "x-content-type-options": "nosniff",
+      "content-security-policy": "default-src 'none'",
     },
   });
 }

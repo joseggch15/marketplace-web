@@ -58,14 +58,41 @@ export function declaredImageExtension(key: string): string | null {
 }
 
 /**
- * ¿El tipo real del archivo es una imagen?
+ * Formatos de imagen que el proxy acepta. **Lista exacta, no «cualquier cosa que empiece por `image/`».**
  *
- * Regla del proxy: **nunca** se sirve un archivo cuyo `Content-Type` no empiece por `image/`. Es la barrera
- * que sustituye a exigir extensión en el nombre (que el backend no siempre pone) y es más fiable, porque mira
- * el tipo que el almacenamiento tiene registrado. Cualquier otra cosa responde 404.
+ * Por qué una lista: `image/svg+xml` también empieza por `image/`, y un SVG **puede llevar JavaScript dentro**.
+ * Servido desde nuestro propio dominio, ese script se ejecutaría con el origen de la tienda y podría actuar en
+ * nombre de quien tenga la sesión abierta. Es el mismo motivo por el que un marketplace no debe alojar HTML de
+ * terceros. Se dejan fuera también formatos que no usamos (bmp, tiff, heic…): cada tipo permitido es una
+ * decisión, no un descuido.
+ */
+export const ALLOWED_IMAGE_CONTENT_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/avif",
+  "image/gif",
+] as const;
+
+/** Normaliza un `Content-Type`: minúsculas, sin espacios sobrantes y sin parámetros (`; charset=…`). */
+export function normalizeContentType(contentType: string): string {
+  return contentType.split(";")[0].trim().toLowerCase();
+}
+
+/**
+ * ¿El tipo real del archivo es una imagen **de la lista blanca**?
+ *
+ * Es la barrera del proxy: sustituye a exigir extensión en el nombre (que el backend no siempre escribe) y es
+ * más fiable, porque mira el tipo registrado en el almacenamiento. `image/svg+xml` queda fuera a propósito.
  */
 export function isImageContentType(contentType: string | null | undefined): boolean {
-  return typeof contentType === "string" && contentType.trim().toLowerCase().startsWith("image/");
+  if (typeof contentType !== "string") {
+    return false;
+  }
+
+  return (ALLOWED_IMAGE_CONTENT_TYPES as readonly string[]).includes(
+    normalizeContentType(contentType),
+  );
 }
 
 /**

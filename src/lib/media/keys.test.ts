@@ -85,19 +85,35 @@ describe("isPublicMediaKey", () => {
  * válida. Es lo que impide usar el proxy de imágenes para descargar cualquier otro archivo del bucket.
  */
 describe("isImageContentType", () => {
-  it("acepta los tipos de imagen que devuelve el almacenamiento", () => {
+  it("acepta la lista exacta de formatos de imagen", () => {
+    expect(isImageContentType("image/jpeg")).toBe(true);
     expect(isImageContentType("image/png")).toBe(true);
-    expect(isImageContentType("IMAGE/JPEG; charset=binary")).toBe(true);
-    expect(isImageContentType("  image/webp  ")).toBe(true);
+    expect(isImageContentType("image/webp")).toBe(true);
     expect(isImageContentType("image/avif")).toBe(true);
+    expect(isImageContentType("image/gif")).toBe(true);
   });
 
-  it("rechaza cualquier otro tipo (la ruta responde 404)", () => {
+  it("normaliza mayúsculas, parámetros y espacios antes de comparar", () => {
+    expect(isImageContentType("IMAGE/PNG; charset=binary")).toBe(true);
+    expect(isImageContentType("image/png ")).toBe(true);
+    expect(isImageContentType("  image/WebP  ")).toBe(true);
+  });
+
+  it("rechaza SVG, que puede llevar JavaScript dentro (404)", () => {
+    // El caso importante: `image/svg+xml` empieza por `image/` pero NO es una imagen inofensiva. Servido
+    // desde nuestro dominio, un SVG con script se ejecutaría con el origen de la tienda.
+    expect(isImageContentType("image/svg+xml")).toBe(false);
+    expect(isImageContentType("IMAGE/SVG+XML")).toBe(false);
+    expect(isImageContentType("image/svg+xml; charset=utf-8")).toBe(false);
+  });
+
+  it("rechaza cualquier otro tipo y los valores vacíos (la ruta responde 404)", () => {
     expect(isImageContentType("application/pdf")).toBe(false);
     expect(isImageContentType("text/html")).toBe(false);
     expect(isImageContentType("application/json")).toBe(false);
     expect(isImageContentType("application/octet-stream")).toBe(false);
-    expect(isImageContentType("image_svg+xml")).toBe(false);
+    expect(isImageContentType("image/bmp")).toBe(false);
+    expect(isImageContentType("image/tiff")).toBe(false);
     expect(isImageContentType("")).toBe(false);
     expect(isImageContentType(null)).toBe(false);
     expect(isImageContentType(undefined)).toBe(false);

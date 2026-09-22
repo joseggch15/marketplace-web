@@ -221,6 +221,14 @@ están en `docs/capturas/`.
 **Qué revisar a mano:** en la sección del acento, los tres presets (turquesa, coral y violeta) lado a lado;
 botones y campos con el teclado (Tab) para ver el foco; 375 px y 1280 px; modo claro y oscuro.
 
+### Commits de la fase
+
+```
+da632e1  feat(f1): design system page with domain components
+b9ad5a1  docs(f1): record verified results, next-phase plan and testing setup
+011ab52  chore(f1): run e2e against the production build, add screenshots tooling and close the phase docs
+```
+
 ### Decisión pendiente del dueño del producto
 
 Elegir el acento definitivo (**turquesa**, **coral** o **violeta**). Cambiarlo es una sola línea en

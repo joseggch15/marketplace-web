@@ -110,14 +110,11 @@ archivos en el commit) y ni `.env.local` ni `openapi.json` entraron en él.
 
 ---
 
-## Fase 1 · Sistema de diseño — **planificada, NO iniciada**
+## Fase 1 · Sistema de diseño — **completada**
 
-**Motivo por el que no se inició:** el dueño del producto puso una condición explícita («solo si el contexto
-de la tarea está por debajo de 100k tokens»). Esta sesión ya supera ese umbral (ha incluido la construcción
-completa de la F0 y varias salidas muy grandes de terminal y de HTML), así que se detuvo aquí para no
-construir la F1 con menos calidad. **Todo está listo para ejecutarla en una tarea nueva**, sin trabajo perdido.
+Se construyó siguiendo el plan aprobado en la sesión anterior, sin cambios de alcance.
 
-### Plan listo para ejecutar
+### Qué se entregó
 
 **Página `/design-system`** (dentro de `[locale]`, con `noindex` en la metadata: es una página interna de
 trabajo, no debe indexarse).
@@ -155,7 +152,117 @@ end‑to‑end de `/design-system` con axe en claro y oscuro, a 375 px y 1280 px
 commit `feat(f1): design system page with domain components` (la página usa datos de ejemplo porque es un
 catálogo interno; en pantallas reales los componentes se alimentan del backend).
 
-## Fases 2 a 10 — pendientes
+### Componentes creados (9, en `src/components/domain/`)
 
-Autenticación y cuenta · catálogo y búsqueda · página de producto · carrito · checkout y pagos ·
-mis compras · panel del vendedor · panel de administración · pulido y despliegue.
+`Price`, `RatingStars`, `DealBadge`, `ProductCard`, `VariantSelector`, `QuantityStepper`, `ImageGallery`,
+`CheckoutSteps` y `OrderTimeline`, cada uno con sus estados y con esqueletos de carga. También se añadieron
+ayudantes de formato con `Intl` (`src/lib/format/money.ts` y `date.ts`) y los tokens de acento.
+
+### Verificación (definición de «terminado»)
+
+| Comprobación | Resultado |
+|---|---|
+| `pnpm lint` | ✅ sin errores (`lint_exit=0`) |
+| `pnpm typecheck` | ✅ sin errores (`typecheck_exit=0`) |
+| `pnpm test` | ✅ **102 pruebas** en 9 archivos (`test_exit=0`); incluye 56 de contraste AA con los tres acentos |
+| `pnpm test:e2e` | ✅ **46 pruebas en verde** con la caché de compilación borrada (`e2e_exit=0`) |
+| `pnpm build` | ✅ compilación de producción sin errores (`build_exit=0`) |
+| Accesibilidad (axe) | ✅ sin infracciones WCAG 2.2 AA en `/design-system` (es/en, claro/oscuro, 375 px y 1280 px) |
+| `noindex` | ✅ verificado por prueba automática, fuera del sitemap y bloqueada en `robots.txt` |
+
+### Ajuste de la infraestructura de pruebas
+
+Las pruebas end-to-end fallaban **de forma intermitente** al visitar por primera vez una página recién
+creada: en desarrollo, Next.js compila cada ruta la primera vez que se pide, y con varios trabajadores de
+Playwright visitando a la vez la misma página, alguno recibía un fragmento de JavaScript incompleto
+(`SyntaxError: Unexpected end of JSON input`) y la prueba fallaba sin que hubiera nada mal en el producto
+(se comprobó pidiendo la página directamente al servidor: devuelve 200 y el `h1` correcto). Se añadió
+`e2e/global-setup.ts`, que **visita todas las rutas una vez y en orden con un navegador real** antes de lanzar
+las pruebas en paralelo, y el tiempo de espera de las aserciones subió a 15 s (`playwright.config.ts`). En la
+compilación de producción este problema no existe.
+
+### Defectos reales que encontraron las pruebas y se corrigieron
+
+1. **El turquesa base no llegaba a 3:1** sobre el fondo claro (2,73:1) y se usa en elementos gráficos
+   (estrellas, bordes activos): se oscureció de `#00a99d` a `#009a8f`.
+2. **El verde con texto blanco del paso completado** solo daba 3,37:1: se añadieron
+   `--brand-success-strong` / `--brand-success-on-strong` (6,63:1 en claro y 10,97:1 en oscuro).
+3. **La insignia y el botón destructivos de shadcn** no cumplían AA (4,15:1): ahora usan los tokens de
+   peligro validados (`bg-danger-surface text-danger-text`, 6,88:1).
+4. **Un mensaje de traducción contenía `<html>`**: next-intl lo interpretaba como etiqueta de texto
+   enriquecido (`INVALID_MESSAGE: UNCLOSED_TAG`) y **rompía toda la página**. Se reescribió el texto. Lección
+   anotada: en los mensajes no se deben usar `<` ni `>` sin escapar.
+5. **Mi propia prueba de «nombre accesible» era incorrecta**: no reconocía el nombre que un elemento de tipo
+   opción recibe de su `<label for>`. Ahora comprueba los cuatro mecanismos reales (`aria-label`,
+   `aria-labelledby`, texto visible y `label` asociado).
+
+### URLs para revisar
+
+| URL | Qué mirar |
+|---|---|
+| http://localhost:3000/es/design-system | Toda la página: tokens, tipografía, acento, botones, campos, insignias, estados y componentes |
+| http://localhost:3000/en/design-system | Lo mismo en inglés |
+| Secciones de la misma página | `#colors`, `#typography`, `#accent`, `#buttons`, `#fields`, `#badges`, `#feedback`, `#domain` |
+
+**Qué revisar a mano:** en la sección del acento, los tres presets (turquesa, coral y violeta) lado a lado;
+botones y campos con el teclado (Tab) para ver el foco; 375 px y 1280 px; modo claro y oscuro.
+
+### Decisión pendiente del dueño del producto
+
+Elegir el acento definitivo (**turquesa**, **coral** o **violeta**). Cambiarlo es una sola línea en
+`src/app/[locale]/layout.tsx` (`data-accent="..."`); el contraste de los tres ya está validado.
+
+## Fase 2 · Autenticación y cuenta — planificada (no iniciada)
+
+### Objetivo
+
+Registro, inicio de sesión, verificación de email, recuperación de contraseña, perfil, direcciones y
+preferencias (idioma y moneda). **La sesión vive siempre en cookies httpOnly gestionadas por el servidor de
+Next.js** (patrón BFF): el navegador nunca ve ni guarda un token.
+
+### Endpoints del backend que se usarán
+
+Los definitivos salen del cliente generado (`pnpm api:types`). Los grupos implicados son:
+
+- `POST /api/v1/auth/register`, `/auth/login`, `/auth/refresh`, `/auth/logout` (el refresh rota el token; el
+  access caduca a los 15 minutos y el refresh a los 7 días).
+- `POST /api/v1/auth/verify-email` y las solicitudes de verificación y de recuperación de contraseña.
+- `GET` y `PATCH /api/v1/users/me` (perfil, idioma y moneda preferidos).
+- `GET`, `POST`, `PATCH` y `DELETE /api/v1/users/me/addresses` (direcciones de envío).
+
+### Páginas nuevas (bajo `[locale]`)
+
+| Ruta | Contenido |
+|---|---|
+| `/login` y `/register` | Formularios con validación y errores traducidos por `code` |
+| `/forgot-password` y `/reset-password` | Solicitud y cambio de contraseña |
+| `/verify-email` | Confirmación del correo (llega con `?token=`) |
+| `/account` | Perfil, idioma y moneda preferidos |
+| `/account/addresses` | Lista y formulario de direcciones (con actualizaciones optimistas) |
+
+### Rutas BFF (servidor) en `src/app/api/auth/`
+
+`register`, `login`, `logout`, `refresh` y `session`. Fijan y borran las cookies **httpOnly, Secure y
+SameSite=Lax**, y **nunca** devuelven tokens al navegador. Un guardia para `/account/**` redirige a `/login`
+cuando no hay sesión válida, y el `refresh` se renueva de forma transparente antes de caducar.
+
+### Piezas a construir
+
+- `features/auth`: esquemas Zod compartidos entre cliente y servidor, formularios con React Hook Form y
+  hooks de TanStack Query (`useSession`, `useLogin`, `useLogout`, `useAddresses`).
+- Mensajes de error por el campo `code` estable de la API (RFC 9457): `invalid_credentials`,
+  `email_already_registered`, `invalid_refresh_token`…
+- Enlaces reales en el encabezado (cuenta) y en el pie; el estado de sesión se resuelve en el servidor para
+  no mostrar/ocultar cosas después de cargar.
+
+### Criterio de «terminado»
+
+`pnpm lint`, `pnpm typecheck`, `pnpm test` y `pnpm test:e2e` en verde; axe sin infracciones en las páginas
+nuevas; formularios usables con teclado y con mensajes claros; commit
+`feat(f2): authentication, account and addresses with BFF session cookies`.
+
+## Fases 3 a 10 — pendientes
+
+Catálogo y búsqueda con filtros por faceta (F3) · página de producto con variantes, preguntas y reseñas (F4) ·
+carrito (F5) · checkout y pagos en sandbox (F6) · mis compras, seguimiento y devoluciones (F7) · panel del
+vendedor (F8) · panel de administración (F9) · pulido, rendimiento, SEO y despliegue (F10).

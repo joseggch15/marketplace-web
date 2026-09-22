@@ -22,7 +22,7 @@ const TOKENS_CSS = readFileSync(path.resolve(process.cwd(), "src/styles/tokens.c
 
 /** Extrae las declaraciones de un bloque (`:root { ... }` o `.dark { ... }`). */
 function parseDeclarations(selector: string): Record<string, string> {
-  const blockPattern = new RegExp(`${selector}\\s*\\{([\\s\\S]*?)\\n\\}`);
+  const blockPattern = new RegExp(`${selector}[^{]*\\{([\\s\\S]*?)\\n\\}`);
   const block = TOKENS_CSS.match(blockPattern)?.[1];
 
   if (block === undefined) {
@@ -44,6 +44,15 @@ function parseDeclarations(selector: string): Record<string, string> {
 
 const ROOT_TOKENS = parseDeclarations(":root");
 const DARK_TOKENS = parseDeclarations("\\.dark");
+
+/**
+ * Presets de acento (`data-accent` en `<html>`). Se validan los tres, en sus dos modos, para que elegir
+ * acento sea una decisión estética y **nunca** rompa el contraste.
+ */
+const CORAL_LIGHT = parseDeclarations('\\[data-accent="coral"\\]');
+const VIOLET_LIGHT = parseDeclarations('\\[data-accent="violeta"\\]');
+const CORAL_DARK = { ...DARK_TOKENS, ...parseDeclarations('\\.dark\\[data-accent="coral"\\]') };
+const VIOLET_DARK = { ...DARK_TOKENS, ...parseDeclarations('\\.dark\\[data-accent="violeta"\\]') };
 
 /** Resuelve `var(--otro)` de forma recursiva (los tokens oscuros heredan de los claros). */
 function resolveToken(
@@ -94,6 +103,12 @@ const CASES: ContrastCase[] = [
   { foreground: "--brand-warning-text", background: "--brand-warning-surface", requirement: "text" },
   { foreground: "--brand-danger-text", background: "--brand-danger-surface", requirement: "text" },
   { foreground: "--brand-info-text", background: "--brand-info-surface", requirement: "text" },
+  // Verde relleno con texto encima (pasos completados del checkout)
+  {
+    foreground: "--brand-success-on-strong",
+    background: "--brand-success-strong",
+    requirement: "text",
+  },
   // Límites de controles y elementos gráficos (WCAG 1.4.11)
   { foreground: "--input", background: "--field-background", requirement: "ui" },
   { foreground: "--ring", background: "--background", requirement: "ui" },
@@ -106,6 +121,42 @@ describe.each([
   { theme: "oscuro", tokens: DARK_TOKENS },
 ])("contraste de tokens en modo $theme", ({ tokens }) => {
   it.each(CASES)(
+    "$foreground sobre $background cumple $requirement",
+    ({ foreground, background, requirement }) => {
+      const foregroundColor = resolveToken(foreground, tokens);
+      const backgroundColor = resolveToken(background, tokens);
+      const ratio = contrastRatio(foregroundColor, backgroundColor);
+
+      expect(
+        ratio,
+        `${foreground} (${foregroundColor}) sobre ${background} (${backgroundColor}) = ${formatContrastRatio(ratio)}, mínimo ${minimumRatio(requirement)}:1`,
+      ).toBeGreaterThanOrEqual(minimumRatio(requirement));
+    },
+  );
+});
+
+/**
+ * Los tres presets de acento, en modo claro y oscuro.
+ *
+ * - `--brand-accent-text` sobre `--brand-accent-surface` es texto (4,5:1): insignias, chip de descuento.
+ * - `--brand-accent` sobre `--background` es un elemento gráfico (3:1): estrellas de la calificación,
+ *   bordes de elementos activos.
+ */
+const ACCENT_CASES: ContrastCase[] = [
+  { foreground: "--brand-accent-text", background: "--brand-accent-surface", requirement: "text" },
+  { foreground: "--brand-accent-text", background: "--card", requirement: "text" },
+  { foreground: "--brand-accent", background: "--background", requirement: "ui" },
+];
+
+describe.each([
+  { theme: "acento turquesa (claro)", tokens: ROOT_TOKENS },
+  { theme: "acento turquesa (oscuro)", tokens: DARK_TOKENS },
+  { theme: "acento coral (claro)", tokens: CORAL_LIGHT },
+  { theme: "acento coral (oscuro)", tokens: CORAL_DARK },
+  { theme: "acento violeta (claro)", tokens: VIOLET_LIGHT },
+  { theme: "acento violeta (oscuro)", tokens: VIOLET_DARK },
+])("contraste con $theme", ({ tokens }) => {
+  it.each(ACCENT_CASES)(
     "$foreground sobre $background cumple $requirement",
     ({ foreground, background, requirement }) => {
       const foregroundColor = resolveToken(foreground, tokens);

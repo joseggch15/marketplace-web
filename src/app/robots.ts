@@ -15,7 +15,16 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/", "/*/cart", "/*/checkout", "/*/account", "/*/seller", "/*/admin"],
+        disallow: [
+          "/api/",
+          "/*/cart",
+          "/*/checkout",
+          "/*/account",
+          "/*/seller",
+          "/*/admin",
+          // Página interna de trabajo del equipo (además lleva `robots: noindex`).
+          "/*/design-system",
+        ],
       },
     ],
     sitemap: `${env.NEXT_PUBLIC_SITE_URL}/sitemap.xml`,

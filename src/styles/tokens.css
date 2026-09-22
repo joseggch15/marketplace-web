@@ -25,14 +25,30 @@
   --mv-blue-800: #0a3782;
   --mv-blue-900: #0a2c63;
 
-  /* ============ Primitivas: acento turquesa ============ */
+  /* ============ Primitivas: acento turquesa (elección por defecto) ============ */
   --mv-teal-50: #e6fbf8;
   --mv-teal-100: #c2f5ef;
   --mv-teal-300: #3fd9c9;
-  --mv-teal-500: #00a99d;
+  /* Nota: este tono se oscureció de #00a99d a #009a8f porque el original se quedaba en 2,73:1 sobre el
+     fondo claro y los elementos gráficos (estrellas, bordes activos) necesitan un mínimo de 3:1. */
+  --mv-teal-500: #009a8f;
   --mv-teal-600: #00887f;
   --mv-teal-700: #006b65;
   --mv-teal-800: #03544f;
+
+  /* ============ Primitivas: acento coral (alternativa para elegir en la F1) ============ */
+  --mv-coral-50: #fff1ed;
+  --mv-coral-300: #ff9b85;
+  --mv-coral-500: #f2532f;
+  --mv-coral-700: #a83009;
+  --mv-coral-900: #3a1108;
+
+  /* ============ Primitivas: acento violeta (alternativa para elegir en la F1) ============ */
+  --mv-violet-50: #f4f0ff;
+  --mv-violet-300: #b9a6ff;
+  --mv-violet-500: #6d4aff;
+  --mv-violet-700: #4526c0;
+  --mv-violet-900: #191038;
 
   /* ============ Primitivas: grises ============ */
   --mv-white: #ffffff;
@@ -93,12 +109,22 @@
   --field-placeholder: var(--mv-gray-600);
 
   /* ============ Semánticos propios de la marca ============ */
+  /* ==========================================================================
+     ACENTO DE MARCA — 👈 ÚNICO SITIO DONDE SE ELIGE.
+     El acento por defecto es el turquesa (`--brand-accent*` de abajo; el atributo `data-accent` del
+     `<html>` lo sobrescribe). Alternativas disponibles: ver los bloques `[data-accent="coral"]` y
+     `[data-accent="violeta"]` al final del archivo, con su contraste ya validado por la prueba
+     automática `src/lib/color/tokens-contrast.test.ts`.
+     ========================================================================== */
   --brand-accent: var(--mv-teal-500);
   --brand-accent-surface: var(--mv-teal-50);
   --brand-accent-text: var(--mv-teal-700);
   --brand-success: var(--mv-green-500);
   --brand-success-surface: var(--mv-green-50);
   --brand-success-text: var(--mv-green-700);
+  /* Verde «fuerte»: fondo relleno (p. ej. el paso completado del checkout) con texto legible encima. */
+  --brand-success-strong: var(--mv-green-700);
+  --brand-success-on-strong: var(--mv-white);
   --brand-warning: var(--mv-amber-600);
   --brand-warning-surface: var(--mv-amber-50);
   --brand-warning-text: var(--mv-amber-600);
@@ -149,6 +175,8 @@
   --brand-success: var(--mv-green-500);
   --brand-success-surface: #06281a;
   --brand-success-text: #4ade80;
+  --brand-success-strong: #4ade80;
+  --brand-success-on-strong: var(--mv-night-900);
   --brand-warning: var(--mv-amber-600);
   --brand-warning-surface: #2a1c06;
   --brand-warning-text: #fbbf24;
@@ -162,3 +190,51 @@
   --shadow-card: 0 1px 2px 0 rgb(0 0 0 / 40%), 0 1px 3px 0 rgb(0 0 0 / 30%);
   --shadow-popover: 0 12px 24px -6px rgb(0 0 0 / 50%), 0 4px 8px -4px rgb(0 0 0 / 40%);
 }
+
+/* ============================================================================
+   PRESETS DE ACENTO (alternativas al turquesa por defecto)
+   ----------------------------------------------------------------------------
+   Para cambiar el acento de **todo el sitio** basta con el atributo `data-accent`
+   en el <html> (una sola línea, ver `src/app/[locale]/layout.tsx`):
+
+       <html data-accent="coral">     ó     <html data-accent="violeta">
+
+   La página `/design-system` muestra los tres lado a lado sin cambiar el sitio.
+   Los tres presets están validados por la prueba automática de contraste AA
+   (`src/lib/color/tokens-contrast.test.ts`).
+   ========================================================================== */
+
+/* --- Coral, modo claro --- */
+[data-accent="coral"] {
+  --brand-accent: var(--mv-coral-500);
+  --brand-accent-surface: var(--mv-coral-50);
+  --brand-accent-text: var(--mv-coral-700);
+  --brand-discount: var(--mv-coral-700);
+}
+
+/* --- Violeta, modo claro --- */
+[data-accent="violeta"] {
+  --brand-accent: var(--mv-violet-500);
+  --brand-accent-surface: var(--mv-violet-50);
+  --brand-accent-text: var(--mv-violet-700);
+  --brand-discount: var(--mv-violet-700);
+}
+
+/* --- Coral, modo oscuro (funciona en el <html> y en cualquier contenedor dentro de una página oscura) --- */
+.dark[data-accent="coral"],
+.dark [data-accent="coral"] {
+  --brand-accent: var(--mv-coral-300);
+  --brand-accent-surface: var(--mv-coral-900);
+  --brand-accent-text: var(--mv-coral-300);
+  --brand-discount: var(--mv-coral-300);
+}
+
+/* --- Violeta, modo oscuro (igual que el coral) --- */
+.dark[data-accent="violeta"],
+.dark [data-accent="violeta"] {
+  --brand-accent: var(--mv-violet-300);
+  --brand-accent-surface: var(--mv-violet-900);
+  --brand-accent-text: var(--mv-violet-300);
+  --brand-discount: var(--mv-violet-300);
+}
+

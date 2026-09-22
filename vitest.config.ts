@@ -12,9 +12,26 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   plugins: [react()],
   resolve: {
-    alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url)),
-    },
+    alias: [
+      // Dobles de prueba: el router y las imágenes de Next.js no existen en jsdom.
+      {
+        find: /^next\/navigation$/,
+        replacement: fileURLToPath(
+          new URL("./src/tests/mocks/next-navigation.tsx", import.meta.url),
+        ),
+      },
+      {
+        find: /^next\/link$/,
+        replacement: fileURLToPath(
+          new URL("./src/tests/mocks/next-navigation.tsx", import.meta.url),
+        ),
+      },
+      {
+        find: /^next\/image$/,
+        replacement: fileURLToPath(new URL("./src/tests/mocks/next-image.tsx", import.meta.url)),
+      },
+      { find: "@", replacement: fileURLToPath(new URL("./src", import.meta.url)) },
+    ],
   },
   test: {
     environment: "jsdom",
@@ -22,5 +39,13 @@ export default defineConfig({
     include: ["src/**/*.test.{ts,tsx}"],
     exclude: ["node_modules/**", ".next/**", "e2e/**"],
     restoreMocks: true,
+    // `next-intl` debe procesarse con Vite (en vez de externalizarse) para que el alias de
+    // `next/navigation` se aplique: sin esto, el router de Next.js no existe en jsdom y las pruebas de los
+    // componentes que usan enlaces (tarjeta de producto) no cargan.
+    server: {
+      deps: {
+        inline: ["next-intl"],
+      },
+    },
   },
 });

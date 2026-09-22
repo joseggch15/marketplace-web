@@ -35,6 +35,8 @@
     --color-success: var(--brand-success);
     --color-success-surface: var(--brand-success-surface);
     --color-success-text: var(--brand-success-text);
+    --color-success-strong: var(--brand-success-strong);
+    --color-success-on-strong: var(--brand-success-on-strong);
     --color-warning: var(--brand-warning);
     --color-warning-surface: var(--brand-warning-surface);
     --color-warning-text: var(--brand-warning-text);

@@ -103,6 +103,52 @@ reales** que devuelve el backend.
 
 ---
 
+## REGLAS DE TERMINAL
+
+La terminal del editor se bloquea con comandos largos y eso hace perder tiempo y tokens. Estas reglas son
+obligatorias para cualquier tarea:
+
+- **Ningún comando largo de una sola línea.** Si hacen falta más de dos comandos, se escribe un script
+  `.ps1` en `%TEMP%` y se ejecuta así:
+  `powershell -NoProfile -ExecutionPolicy Bypass -File <ruta del script>`.
+- **Redirige siempre la salida a un archivo** de `%TEMP%` y lee solo las **últimas 30 líneas** o solo las
+  líneas de error:
+  `... 2>&1 | Out-File -Encoding utf8 "$env:TEMP\algo.txt"` y luego
+  `Select-String -Path "$env:TEMP\algo.txt" -Pattern 'error|failed|exit='`.
+  Nunca leer un archivo completo si puede ser enorme (HTML renderizado, barras de progreso).
+- **Cuidado con PowerShell 5.1:** `Set-Content -Encoding utf8` **añade BOM** y rompe `JSON.parse`
+  (ya pasó una vez con `package.json`). Para reescribir un archivo usa:
+  `[System.IO.File]::WriteAllText($ruta, $texto, (New-Object System.Text.UTF8Encoding($false)))`.
+- **`curl.exe -s <url>` devuelve un array de líneas**, así que `-match` **filtra líneas** en vez de devolver
+  un booleano. Para comprobar contenido, guarda el HTML en un archivo y aplica `-match` sobre una cadena
+  leída con `[System.IO.File]::ReadAllText($ruta)`.
+- **Procesos en segundo plano:** `Start-Process` con `-WindowStyle Hidden` y salida redirigida a archivos de
+  `%TEMP%` (`-RedirectStandardOutput`, `-RedirectStandardError`).
+- **Detener lo que escucha en un puerto:**
+  `Get-NetTCPConnection -LocalPort <puerto> -State Listen | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force }`.
+- Después de cada tanda de comandos, **comprobar los códigos de salida** (`$LASTEXITCODE`) y anotarlos en el
+  archivo de resultados: es la única forma fiable de saber si algo falló de verdad.
+
+### Esperar procesos largos (obligatorio)
+
+En esta terminal Cline no detecta cuándo termina un proceso largo que no imprime nada: devuelve el control de
+inmediato y se corre el riesgo de leer el mismo archivo una y otra vez sin que haya pasado tiempo (bucle).
+
+1. **Todo script largo debe escribir como última línea de su archivo de salida:** `FIN exit=<código>`.
+2. Existe un script único `%TEMP%\esperar.ps1` con los parámetros `-Archivo` e `-Intento`. Revisa el archivo
+   cada 10 segundos, imprime `esperando <segundos>s (intento <n>)` en cada revisión (para que la terminal no
+   quede en silencio), termina cuando encuentra `FIN` o cuando pasan 8 minutos, e imprime solo las últimas
+   15 líneas del archivo. Se invoca así:
+   `powershell -NoProfile -ExecutionPolicy Bypass -File %TEMP%\esperar.ps1 -Archivo "$env:TEMP\algo.txt" -Intento 1`
+3. **Sube `-Intento` en cada llamada** (1, 2, 3…) para que ninguna llamada sea idéntica a la anterior.
+   Máximo **6 intentos** por proceso.
+4. **Nunca leas dos veces seguidas el mismo archivo.** Si un intento termina sin `FIN`, haz el siguiente
+   intento con `esperar.ps1` en lugar de leer el archivo directamente.
+5. Si tras 6 intentos no hay `FIN`, comprueba si el proceso sigue vivo. Si está colgado, deténlo, anótalo en
+   `docs/PROGRESO.md` y sigue con el siguiente paso.
+
+---
+
 ## AHORRO DE TOKENS
 
 - Lee solo los archivos necesarios para la tarea actual. No releas archivos que no han cambiado.

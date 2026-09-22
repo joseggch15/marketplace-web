@@ -12,7 +12,9 @@ const badgeVariants = cva(
         secondary:
           "bg-secondary text-secondary-foreground [a]:hover:bg-secondary/80",
         destructive:
-          "bg-destructive/10 text-destructive focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:focus-visible:ring-destructive/40 [a]:hover:bg-destructive/20",
+          // Igual que en el botón: se usan los tokens de peligro validados (contraste AA comprobado por
+          // `src/lib/color/tokens-contrast.test.ts`).
+          "bg-danger-surface text-danger-text focus-visible:ring-danger-text/20 [a]:hover:bg-danger-surface/70",
         outline:
           "border-border text-foreground [a]:hover:bg-muted [a]:hover:text-muted-foreground",
         ghost:

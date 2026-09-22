@@ -18,6 +18,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     routing.locales.map((locale) => [locale, `${baseUrl}/${locale}`]),
   );
 
+  // Nota: `/design-system` es una página interna de trabajo y **no** se incluye aquí a propósito
+  // (además lleva `robots: noindex` en su metadata).
   return routing.locales.map((locale) => ({
     url: `${baseUrl}/${locale}`,
     lastModified: new Date(),

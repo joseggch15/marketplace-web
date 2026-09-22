@@ -174,14 +174,26 @@ ayudantes de formato con `Intl` (`src/lib/format/money.ts` y `date.ts`) y los to
 
 ### Ajuste de la infraestructura de pruebas
 
-Las pruebas end-to-end fallaban **de forma intermitente** al visitar por primera vez una página recién
-creada: en desarrollo, Next.js compila cada ruta la primera vez que se pide, y con varios trabajadores de
-Playwright visitando a la vez la misma página, alguno recibía un fragmento de JavaScript incompleto
-(`SyntaxError: Unexpected end of JSON input`) y la prueba fallaba sin que hubiera nada mal en el producto
-(se comprobó pidiendo la página directamente al servidor: devuelve 200 y el `h1` correcto). Se añadió
-`e2e/global-setup.ts`, que **visita todas las rutas una vez y en orden con un navegador real** antes de lanzar
-las pruebas en paralelo, y el tiempo de espera de las aserciones subió a 15 s (`playwright.config.ts`). En la
-compilación de producción este problema no existe.
+Las pruebas end-to-end fallaban **de forma intermitente** al visitar por primera vez una página recién creada:
+en desarrollo, Next.js compila cada página y cada fragmento de JavaScript la primera vez que se piden, y con
+varios trabajadores en paralelo alguno recibía un fragmento incompleto
+(`SyntaxError: Unexpected end of JSON input`) sin que hubiera nada mal en el producto (se comprobó pidiendo la
+página directamente al servidor: devuelve 200 y el `h1` correcto).
+
+Se resolvió **en la raíz**: las pruebas end-to-end ahora se ejecutan **contra la compilación de producción**
+(`command: "pnpm build && pnpm start"` en `playwright.config.ts`), donde el HTML y el JavaScript ya están
+compilados y esa carrera no puede ocurrir. Ventajas añadidas: se miden tiempos reales de producción (la suite
+completa tardó **49,6 s** frente a 1 min 54 s con el servidor de desarrollo) y `reuseExistingServer`
+reaprovecha el servidor si ya está levantado. En el código quedó escrito el motivo, para que nadie lo revierta
+sin entender por qué.
+
+### Capturas para la revisión visual
+
+`node scripts/capture-screenshots.mjs` (atajo `pnpm capture`) recorre las rutas indicadas en modo claro y
+oscuro, a 375 px y 1280 px, y las guarda en la carpeta que se le indique. Fija el tema con `emulateMedia` **y**
+con `localStorage.theme` (la clave que usa `next-themes`) para que la captura no dependa del sistema operativo
+de la máquina, y usa `reducedMotion: "reduce"` para no capturar una animación a medias. Las capturas de la F1
+están en `docs/capturas/`.
 
 ### Defectos reales que encontraron las pruebas y se corrigieron
 

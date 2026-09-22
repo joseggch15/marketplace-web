@@ -7,20 +7,19 @@ const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:3000";
  *
  * - Se ejecutan en dos tamaños que exige el proyecto: escritorio (1280 px) y móvil (375 px equivalente).
  * - La accesibilidad se audita con `@axe-core/playwright` en cada página nueva.
- * - Si el servidor de desarrollo no está levantado, Playwright lo arranca solo (y lo reutiliza si ya está).
+ * - **Se ejecutan contra la compilación de producción** (`pnpm build` + `pnpm start`). Antes se usaba el
+ *   servidor de desarrollo, pero allí Next.js compila cada página y cada fragmento la primera vez que se
+ *   piden: con varios trabajadores en paralelo alguno recibía un fragmento incompleto
+ *   («Unexpected end of JSON input») y la prueba fallaba por un problema del servidor de desarrollo, no del
+ *   producto. En producción el HTML y el JavaScript ya están compilados, así que esto no puede ocurrir y
+ *   además medimos los tiempos reales.
  */
 export default defineConfig({
   testDir: "./e2e",
-  // Precompila las rutas visitándolas una vez antes de lanzar las pruebas en paralelo.
-  globalSetup: "./e2e/global-setup.ts",
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI ? [["github"], ["list"]] : [["list"]],
-  // Las aserciones esperan 15 s (y no los 5 s por defecto) porque en desarrollo el servidor de Next.js
-  // compila la página en la primera visita, y con varios trabajadores en paralelo eso puede tardar.
-  // No afecta a la validez de las pruebas: en producción el tiempo de espera real es mucho menor.
-  expect: { timeout: 15_000 },
   use: {
     baseURL,
     trace: "on-first-retry",
@@ -39,9 +38,12 @@ export default defineConfig({
   webServer: process.env.PLAYWRIGHT_BASE_URL
     ? undefined
     : {
-        command: "pnpm dev",
+        // Se prueban contra la compilación de producción: sin compilación por demanda no hay fragmentos
+        // incompletos ni esperas artificiales. `reuseExistingServer` evita recompilar si ya hay un servidor
+        // de producción levantado en el puerto (útil mientras se trabaja en una fase).
+        command: "pnpm build && pnpm start",
         url: baseURL,
         reuseExistingServer: !process.env.CI,
-        timeout: 120_000,
+        timeout: 300_000,
       },
 });

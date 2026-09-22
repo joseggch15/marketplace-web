@@ -50,7 +50,7 @@ F0 (base del proyecto) y F1 (sistema de diseño) están terminadas, verificadas 
 | `pnpm lint` | 0 |
 | `pnpm typecheck` | 0 |
 | `pnpm test` | todo en verde (9 archivos) |
-| `pnpm test:e2e` | **46 pruebas en verde** (con la caché de compilación borrada) |
+| `pnpm test:e2e` | **46 pruebas en verde** contra la compilación de producción (`pnpm build && pnpm start`) |
 | `pnpm build` | 0 |
 
 La página `/[locale]/design-system` (con `noindex`, fuera del sitemap y bloqueada en `robots.txt`) muestra los

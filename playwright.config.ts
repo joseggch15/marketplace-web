@@ -16,7 +16,18 @@ const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:3000";
  */
 export default defineConfig({
   testDir: "./e2e",
-  fullyParallel: true,
+  /**
+   * **Un solo trabajador, en serie, a propósito.**
+   *
+   * Las pruebas del carrito, del checkout y de «mis compras» usan la **misma cuenta de demostración**, y su
+   * carrito y sus pedidos viven en el servidor: si dos pruebas corren a la vez, una vacía el carrito de la otra
+   * (el backend lo vacía al crear el pedido) y la segunda recibe `cart_empty`. Pasó de verdad: la mitad de la
+   * tanda fallaba por una carrera entre pruebas, no por el producto. Además, el backend limita los intentos de
+   * entrada a 5 por minuto y por IP. La suite es pequeña (segundos por prueba): la determinación vale más que
+   * esos segundos.
+   */
+  fullyParallel: false,
+  workers: 1,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI ? [["github"], ["list"]] : [["list"]],

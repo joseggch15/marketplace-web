@@ -40,6 +40,9 @@ yarn-error.log*
 /test-results
 /coverage
 
+# Copia reutilizable de la sesión de demostración de las pruebas e2e (se regenera sola).
+/e2e/.auth
+
 # Artefacto generado a partir del backend: se regenera con `pnpm api:types`.
 /openapi.json
 

@@ -11,6 +11,11 @@
  *   node scripts/capture-screenshots.mjs --out=docs/capturas/f5 --route=/es/cart \
  *     --cart-variant=<uuid de la variante> --cart-quantity=2
  *
+ * Las pantallas que exigen sesión (checkout y «mis compras», F6 y F7) se fotografían con `--session=demo`, que
+ * entra con la cuenta de demostración que crea `scripts/seed-demo.mjs` por la ruta BFF del propio frontend: las
+ * cookies httpOnly quedan en el contexto del navegador y las capturas salen como las vería un comprador con
+ * sesión. No se leen credenciales de ningún sitio: es la cuenta de demostración del repositorio.
+ *
  * Notas de implementación:
  * - El tema se fija con `emulateMedia` **y** con `localStorage.theme`, que es la clave que usa `next-themes`.
  *   Así la captura no depende del sistema operativo de la máquina que las tome.
@@ -31,7 +36,14 @@ const VIEWPORTS = [
 
 /** Lee `--clave=valor` repetible de la línea de comandos. */
 function parseArgs(argv) {
-  const values = { routes: [], out: null, baseUrl: null, cartVariant: null, cartQuantity: 1 };
+  const values = {
+    routes: [],
+    out: null,
+    baseUrl: null,
+    cartVariant: null,
+    cartQuantity: 1,
+    session: null,
+  };
   for (const arg of argv) {
     const match = /^--([a-zA-Z-]+)=(.*)$/.exec(arg);
     if (!match) continue;
@@ -41,8 +53,43 @@ function parseArgs(argv) {
     else if (key === "base-url") values.baseUrl = value;
     else if (key === "cart-variant") values.cartVariant = value;
     else if (key === "cart-quantity") values.cartQuantity = Number.parseInt(value, 10) || 1;
+    else if (key === "session") values.session = value;
   }
   return values;
+}
+
+/** Cuenta de demostración que crea `scripts/seed-demo.mjs` (la misma que usan las pruebas e2e). */
+const DEMO_EMAIL = process.env.PLAYWRIGHT_DEMO_EMAIL ?? "vendedor@tienda-demo.com";
+const DEMO_PASSWORD = process.env.PLAYWRIGHT_DEMO_PASSWORD ?? "demo-marketplace-2026";
+
+/**
+ * Cookies de la sesión de demostración, obtenidas **una sola vez** por corrida.
+ *
+ * El backend limita los intentos de entrada a 5 por minuto y por IP, y cada captura usa un contexto nuevo: si se
+ * entrara en cada uno, la quinta captura recibiría 429. Aquí se entra una vez (en un contexto aparte) y las
+ * cookies se copian a cada contexto.
+ */
+let demoCookies = null;
+
+async function demoSessionCookies(browser, baseUrl) {
+  const context = await browser.newContext({ baseURL: baseUrl, locale: "es-CO" });
+
+  try {
+    const response = await context.request.post("/api/auth/login", {
+      data: { email: DEMO_EMAIL, password: DEMO_PASSWORD },
+    });
+
+    if (!response.ok()) {
+      throw new Error(
+        `No se pudo iniciar sesión como ${DEMO_EMAIL} (${response.status()}). ` +
+          "¿Está el backend encendido y sembrado con `node scripts/seed-demo.mjs`?",
+      );
+    }
+
+    return (await context.storageState()).cookies;
+  } finally {
+    await context.close();
+  }
 }
 
 /** Nombre de archivo legible: `/es/p/abc` -> `es-p-abc`, `/es` -> `es-inicio`. */
@@ -97,6 +144,12 @@ for (const route of routes) {
           await context.request.post(`${baseUrl}/api/cart/items`, {
             data: { variant_id: args.cartVariant, quantity: args.cartQuantity },
           });
+        }
+
+        // Sesión de demostración (opcional): el checkout y «mis compras» exigen haber entrado.
+        if (args.session === "demo") {
+          demoCookies ??= await demoSessionCookies(browser, baseUrl);
+          await context.addCookies(demoCookies);
         }
 
         await page.goto(route, { waitUntil: "load" });

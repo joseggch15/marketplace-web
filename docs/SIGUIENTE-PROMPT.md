@@ -76,6 +76,20 @@ proyecto.
 
 ---
 
+## Credenciales: regla de seguridad (no negociable)
+
+- **Nunca leer credenciales guardadas** (Administrador de credenciales de Windows, `git credential fill`,
+  tokens de otras aplicaciones, navegadores, variables de entorno con secretos) **ni usarlas para llamar a
+  APIs**. `git push` normal **sí** está permitido (usa solo las credenciales que el sistema aplica por su
+  cuenta, sin que el agente las lea).
+- Si algo necesita una autenticación que no tienes (crear un repositorio, cambiar su visibilidad, un token de
+  API), **detente en ese punto**, anótalo en el resumen final y sigue con el resto del trabajo.
+- Motivo: en la F3 el agente leyó el token guardado por Windows para crear el repositorio con la API de GitHub.
+  No lo escribió en disco (comprobado) y el resultado fue correcto, pero **nunca debió hacerlo**: con la
+  aprobación automática de comandos, eso permite usar credenciales sin que el dueño lo sepa. No se repite.
+
+---
+
 ## Backend y datos de prueba (aclaraciones del dueño)
 
 - **El código del backend (`E:\ecommerce`) es de solo lectura, pero el servidor sí se puede encender y apagar.**

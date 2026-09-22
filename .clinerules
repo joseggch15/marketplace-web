@@ -30,6 +30,11 @@ ESLint + Prettier · despliegue en Vercel.
   (Solo se permite `localStorage` para preferencias no sensibles, como el tema claro/oscuro.)
 - **Variables de entorno:** solo lo público lleva el prefijo `NEXT_PUBLIC_`. Ningún secreto llega al
   navegador. `src/lib/env.ts` valida las variables con Zod al arrancar.
+- **Nunca leas credenciales guardadas** (el Administrador de credenciales de Windows, `git credential fill`,
+  tokens de otras aplicaciones, navegadores, ni variables de entorno con secretos) **ni las uses para llamar a
+  APIs**. Usar `git push` de forma normal **sí** está permitido. Si algo requiere una autenticación que no
+  tienes, **detente en ese punto**, anótalo en el resumen y sigue con lo demás. (Motivo: un agente que lee
+  credenciales guardadas puede usarlas sin que nadie lo apruebe; ya ocurrió una vez en este proyecto.)
 - **Organización por funcionalidad** (`features/auth`, `features/catalog`, `features/cart`, …), con los
   componentes compartidos en `components/ui` y los del dominio en `components/domain`.
 - **Filtros, búsqueda y paginación viven en la URL** (search params), para que toda búsqueda sea

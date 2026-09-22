@@ -51,6 +51,10 @@ Si una funcionalidad **no** está en esta lista, se anota en `docs/IDEAS.md` y *
 
 ## Estado: F0–F5 cerradas · portada hecha · F6 y F7 con el código hecho
 
+**Backend al día para la F8 y la F9 (22/09/2026):** las tres lagunas que las bloqueaban están cerradas —stock de las
+variantes por su vendedor, listado de usuarios y moderación de preguntas—; el detalle está en los apartados 16, 17 y
+18 de `docs/PENDIENTES-BACKEND.md`. **Antes de la F8/F9, regenera los tipos con `pnpm api:types`.**
+
 Verificado: `lint` 0 · `typecheck` 0 · **283 pruebas unitarias** (264 de la portada + 19 de pedidos). Falta el
 `build`, las e2e y las capturas de F6/F7 (es lo primero de la próxima tanda).
 
@@ -79,6 +83,7 @@ totales) → `/es/orders` (200, el pedido aparece). Guion de aquella sesión: `%
 | Mis productos | `GET /api/v1/catalog/products` | Devuelve **los de mi tienda** (exige tienda aprobada) |
 | Crear producto | `POST /api/v1/catalog/products` | `title`, `description`, `brand`, `category_id`, `variants[]` (`sku`, `price`, `compare_at_price`, `stock`, `attribute_values[]`) |
 | Editar producto | `PATCH /api/v1/catalog/products/{id}` | **Solo** `title`, `description`, `brand` |
+| **Cambiar stock de una variante** | `PATCH /api/v1/catalog/products/{id}/variants/{variant_id}/stock` con `{"stock": 12}` | **Valor absoluto** (no un incremento). Devuelve el `ProductOut` completo, con `stock` y `total_available` ya actualizados. Solo el dueño de la tienda (`403 forbidden` con otro vendedor, `403 seller_required` sin tienda, `401` sin sesión). Por debajo de lo reservado por órdenes en curso: **409 `insufficient_stock`**; stock negativo: 422. El stock ya **no** va en solo lectura |
 | Estado | `POST /api/v1/catalog/products/{id}/publish` · `/pause` · `/close` | |
 | Imágenes | `POST /api/v1/catalog/images/upload-url` → `PUT` a MinIO → `POST /api/v1/catalog/products/{id}/images` (`object_key`, `alt`, `position`) · `DELETE …/images/{image_id}` | Subir **desde el servidor** (ruta BFF) para no depender del CORS de MinIO; validar el tipo contra la lista blanca (`image/jpeg`, `image/png`, `image/webp`, `image/avif`, `image/gif`) y **rechazar SVG** |
 | Ventas | `GET /api/v1/seller/orders` (`limit`, `cursor`) | `SellerOrderListOut`: `subtotal`, `commission_amount`, `payout_amount`, `status`; **sin líneas** |
@@ -89,9 +94,11 @@ totales) → `/es/orders` (200, el pedido aparece). Guion de aquella sesión: `%
 servidor), pedidos (número de sub-órdenes) y productos. La API **no da totales**: se pagina por cursor con un tope
 (p. ej. 3 páginas de 100) y la interfaz **dice sobre cuántos pedidos** está calculando.
 
-**Laguna real (anotar en `docs/PENDIENTES-BACKEND.md`)**: el vendedor **no puede cambiar el stock** después de
-crear la variante (`/inventory/items/{id}/adjust` es solo admin y `ProductUpdate` no acepta variantes): el stock
-se fija al crear el producto y la pantalla lo muestra **en solo lectura**, explicando por qué.
+**Stock editable (laguna cerrada el 22/09/2026)**: el vendedor ya puede cambiar el stock de sus variantes con
+`PATCH /catalog/products/{id}/variants/{variant_id}/stock` (`{"stock": 12}`, valor absoluto): la pantalla ofrece un
+campo numérico por variante y refresca el producto con la respuesta. Antes de esta tanda el único endpoint de stock
+era de administración (`/inventory/items/{id}/adjust`) y `ProductUpdate` no aceptaba variantes, así que había que
+mostrarlo en solo lectura. Detalle: apartado 16 de `docs/PENDIENTES-BACKEND.md` y decisión 0024 del backend.
 
 ### 3. F9 · Panel de administración
 
@@ -101,13 +108,18 @@ se fija al crear el producto y la pantalla lo muestra **en solo lectura**, expli
 | Aprobar / rechazar | `POST /api/v1/sellers/{id}/approve` · `/reject` |
 | Suspender / reactivar | `POST /api/v1/admin/stores/{id}/suspend` · `/restore` |
 | Ocultar / publicar reseña | `POST /api/v1/admin/reviews/{id}/hide` · `/publish` |
+| **Usuarios** | `GET /api/v1/admin/users?q=&role=customer|admin&cursor=&limit=` → `AdminUserListOut`: `id`, `email`, `role`, `email_verified`, `full_name`, `store_id`, `store_name`, `store_status`, `created_at` |
+| **Preguntas (moderar)** | `GET /api/v1/admin/questions?published=&cursor=&limit=` → `AdminQuestionListOut`: `body`, `product_title`, `answer_count`, `is_published` · `POST /api/v1/admin/questions/{id}/hide` · `/publish` |
 | Métricas | `GET /api/v1/admin/metrics` (GMV, comisión, órdenes por estado, top vendedores y contadores) |
 | Auditoría | `GET /api/v1/admin/actions?limit=` |
 | Reseñas de un producto | `GET /api/v1/products/{id}/reviews` (público): para moderar hay que **buscar el producto** antes |
 
-**Lagunas reales (anotarlas en `docs/PENDIENTES-BACKEND.md`)**: no existe un listado de usuarios (solo contadores
-en las métricas) y **no hay moderación de preguntas** (solo el vendedor puede responder). Se construye lo que sí se
-puede —aprobar tiendas, moderar reseñas, métricas y auditoría— y se deja constancia.
+**Usuarios y preguntas (lagunas cerradas el 22/09/2026)**: la pantalla «ver usuarios» ya se puede construir —búsqueda
+por correo (`q`, contiene), filtro por rol y paginación por cursor— y **nunca** recibe hashes ni tokens. No hay rol
+«vendedor»: es un `customer` con tienda, así que `store_id`/`store_name`/`store_status` (`null` si no vende) son los
+que permiten distinguirlo. La moderación de preguntas copia los verbos de la de reseñas (`hide` y `publish`, **no**
+`restore`), incluye las ocultas para poder recuperarlas y el vendedor deja de poder responder una pregunta oculta.
+Detalle: apartados 17 y 18 de `docs/PENDIENTES-BACKEND.md` y decisión 0024 del backend.
 
 ### 4. F10 · Preparación para publicar (documentación y auditoría)
 

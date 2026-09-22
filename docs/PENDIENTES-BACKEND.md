@@ -7,6 +7,17 @@
 > real. Los apartados 1, 4, 6, 13 y 15 se cerraron en la última tanda del backend; el detalle histórico de cada
 > apartado se conserva más abajo, tal como se escribió.
 
+> ## ✅ Lagunas de la F8 y la F9 **resueltas** (22/09/2026)
+>
+> Tres huecos que bloqueaban el panel del vendedor (F8) y el de administración (F9) están cerrados en el
+> backend **solo con endpoints nuevos** (sin cambiar ningún contrato existente y sin migración): el vendedor
+> ya puede cambiar el stock de sus variantes, la administración ya tiene listado de usuarios con búsqueda y
+> filtro, y las preguntas ya se pueden moderar igual que las reseñas. Detalle del backend:
+> `E:\ecommerce\docs\decisiones\0024-lagunas-f8-f9.md`. Apartados **16**, **17** y **18** de este documento.
+>
+> Regenera los tipos con `pnpm api:types` y aparecerán `VariantStockUpdate`, `AdminUserOut`,
+> `AdminUserListOut`, `AdminQuestionOut` y `AdminQuestionListOut`.
+
 ## Estado final de la lista
 
 | # | Apartado | Estado |
@@ -26,6 +37,30 @@
 | 13 | Listado del catálogo para el sitemap | **resuelto**: `GET /catalog/products/public` por cursor |
 | 14 | Avisos de stock y de cambio de precio en el carrito | **resuelto** |
 | 15 | El registro no devuelve tokens | **resuelto**: el registro devuelve usuario **y** tokens |
+| 16 | El vendedor no podía cambiar el stock de sus variantes | **resuelto**: `PATCH /catalog/products/{id}/variants/{id}/stock` |
+| 17 | No había listado de usuarios para la administración | **resuelto**: `GET /admin/users?q=&role=&cursor=&limit=` |
+| 18 | No había moderación de preguntas | **resuelto**: `GET /admin/questions` · `POST /admin/questions/{id}/hide` · `/publish` |
+
+### Lagunas de la F8 y la F9 (22/09/2026) — lo que ya se puede construir
+
+| Necesidad | Endpoint |
+|---|---|
+| Cambiar el stock de una variante propia | `PATCH /api/v1/catalog/products/{product_id}/variants/{variant_id}/stock` con `{"stock": 12}` (**valor absoluto**) → devuelve el `ProductOut` completo, con `stock` y `total_available` ya actualizados |
+| Ver usuarios (buscar y filtrar) | `GET /api/v1/admin/users?q=&role=customer|admin&cursor=&limit=` → `AdminUserListOut` (`id`, `email`, `role`, `email_verified`, `full_name`, `store_id`, `store_name`, `store_status`, `created_at`); **nunca** hashes ni tokens |
+| Moderar preguntas | `GET /api/v1/admin/questions?published=&cursor=&limit=` (`product_title`, `answer_count`, `is_published`) · `POST /api/v1/admin/questions/{id}/hide` · `POST /api/v1/admin/questions/{id}/publish` |
+
+Notas de uso para el frontend:
+
+- El **stock es absoluto** (`{"stock": 12}` = «tengo 12 unidades»), no un incremento. Si el valor no cambia,
+  el backend no escribe movimiento de inventario. Si intentas bajarlo por debajo de lo ya reservado por
+  órdenes en curso, responde **409 `insufficient_stock`** (y `stock` de 0 o negativo, 422).
+- Autorización: solo el **dueño de la tienda del producto** (`403 forbidden` si es de otro vendedor y
+  `403 seller_required` si quien llama no tiene tienda aprobada; sin sesión, `401`).
+- En `/admin/users`, **no hay rol «vendedor»**: es un usuario `customer` que tiene tienda (`store_id` y
+  `store_name` vienen rellenos; si no tiene tienda, los tres campos de tienda son `null`).
+- Los verbos de la moderación de preguntas son los **mismos que los de las reseñas**: `hide` y `publish`
+  (no `restore`). Ocultar una pregunta la saca del listado público del producto, con sus respuestas dentro,
+  y el vendedor ya no puede responderla; `publish` la devuelve tal cual estaba.
 
 ### Última tanda (22/09/2026) — lo que el frontend ya puede usar
 
@@ -357,4 +392,64 @@ fusiona «al registrarse» como pide el producto, y no hay forma de hacerlo desd
 **Solución recomendada:** que `register` devuelva `TokenPair` (o acepte un parámetro para iniciar sesión al
 crear la cuenta). El día que lo haga, `mergeGuestCartIfSignedIn()` empieza a funcionar en el registro **sin
 cambiar una línea del frontend**.
+
+
+## 16. El vendedor no podía cambiar el stock de sus variantes — F8
+
+> **Resuelto (22/09/2026, decisión 0024 del backend):** `PATCH /api/v1/catalog/products/{product_id}/variants/{variant_id}/stock`
+> con `{"stock": 12}` (**valor absoluto**, no un incremento) devuelve el `ProductOut` completo, con el `stock` y el
+> `total_available` ya actualizados. El servidor calcula el delta, lo aplica con `SELECT ... FOR UPDATE` y lo anota
+> en el ledger de inventario (`reason = "seller_update"`). Solo el dueño de la tienda del producto: otro vendedor
+> recibe **403 `forbidden`**, un comprador **403 `seller_required`** y sin sesión **401**. Por debajo de lo reservado
+> por órdenes en curso, **409 `insufficient_stock`**. La pantalla del panel ya puede dejar de mostrar el stock en
+> solo lectura.
+
+**Qué pasaba hoy:** el stock solo se fijaba al crear el producto (`POST /catalog/products` con `variants[].stock`).
+Después, ni `PATCH /catalog/products/{id}` (que solo acepta `title`, `description` y `brand`) ni ningún endpoint del
+catálogo lo tocaban: `/inventory/items/{variant_id}/adjust` existe, pero es **solo de administración**.
+
+**Por qué importa:** un vendedor que no puede reponer ni corregir unidades tiene un panel de mentira: la primera
+venta lo deja con el stock que creó para siempre. Es la operación más frecuente de la tienda.
+
+**Solución recomendada (ya implementada):** un endpoint del catálogo del vendedor que fije el stock de una variante
+propia, devolviendo el producto entero para refrescar la tarjeta de una vez.
+
+## 17. No había listado de usuarios para la administración — F9
+
+> **Resuelto (22/09/2026, decisión 0024 del backend):** `GET /api/v1/admin/users?q=&role=&cursor=&limit=`
+> (solo administradores) devuelve `AdminUserListOut` paginado por cursor, con `id`, `email`, `role`,
+> `email_verified`, `full_name`, `created_at` y, si la cuenta tiene tienda, `store_id`, `store_name` y
+> `store_status`. `q` busca por correo (contiene) y `role` filtra por `customer` o `admin`. **Nunca** devuelve
+> hashes de contraseña ni tokens: el repositorio ni siquiera lee esas columnas. Las cuentas borradas
+> lógicamente no aparecen.
+
+**Qué pasaba hoy:** la administración solo tenía contadores (`GET /admin/metrics` con `users`, `stores`,
+`products`): no había forma de ver **qué** usuarios existen, ni de buscarlos por correo, ni de distinguir quién
+vende (un usuario con tienda) de quién no.
+
+**Por qué importa:** la pantalla «ver usuarios» de la F9 no se podía construir con un número. Y como no hay rol
+«vendedor», el dato de la tienda es el que permite saber quién vende sin abrir cada tienda.
+
+**Solución recomendada (ya implementada):** listado paginado por cursor (el mismo patrón que los demás listados
+grandes), con búsqueda por correo, filtro por rol y los datos de tienda.
+
+## 18. No había moderación de preguntas — F9
+
+> **Resuelto (22/09/2026, decisión 0024 del backend):** `GET /api/v1/admin/questions?published=&cursor=&limit=`
+> (solo administradores, incluye las ocultas, con `product_title` y `answer_count`),
+> `POST /api/v1/admin/questions/{id}/hide` y `POST /api/v1/admin/questions/{id}/publish`, con la misma respuesta y
+> la misma auditoría (`question.hide` / `question.publish` en `admin_actions`) que la moderación de reseñas.
+> Ocultar una pregunta la saca del listado público del producto —con sus respuestas dentro— y el vendedor ya no
+> puede responderla; `publish` la devuelve tal cual estaba. Los verbos son **`hide` y `publish`**, igual que en
+> las reseñas (no `restore`).
+
+**Qué pasaba hoy:** el administrador podía ocultar productos, suspender tiendas y moderar reseñas, pero con las
+preguntas no tenía nada: solo el vendedor podía responderlas. Una pregunta con insultos o datos personales no se
+podía retirar de la ficha del producto.
+
+**Por qué importa:** las preguntas las escribe **cualquier** usuario (no hace falta haber comprado, a diferencia
+de las reseñas) y se ven en la ficha del producto: es el sitio con más probabilidad de necesitar moderación.
+
+**Solución recomendada (ya implementada):** el mismo trío de endpoints que las reseñas —listar, ocultar y
+republicar— para no tener dos maneras distintas de moderar lo mismo.
 

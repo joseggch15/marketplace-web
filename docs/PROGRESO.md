@@ -140,8 +140,10 @@ trabajo, no debe indexarse).
 la forma final, no spinner) y error (mensaje claro con la causa traducida).
 
 **4. Acento de marca:** se mantiene el turquesa como valor por defecto y, en `/design-system`, se muestran
-**2 alternativas lado a lado** (coral y violeta) para que el dueño elija. El acento vive en un solo bloque de
-`src/styles/tokens.css` (`--brand-accent*`), así que cambiarlo es editar tres líneas.
+**las 3 opciones lado a lado** (turquesa, coral y violeta) para que el dueño elija. El acento vive en un solo
+bloque de `src/styles/tokens.css` (`--brand-accent*`) y se selecciona con el atributo `data-accent` en
+`src/app/[locale]/layout.tsx`, así que cambiarlo es editar una línea. El contraste AA de los tres presets está
+cubierto por pruebas automáticas.
 
 **5. Traducciones:** claves nuevas en `messages/es.json` y `messages/en.json` (ningún texto suelto).
 
@@ -149,8 +151,8 @@ la forma final, no spinner) y error (mensaje claro con la causa traducida).
 end‑to‑end de `/design-system` con axe en claro y oscuro, a 375 px y 1280 px.
 
 **7. Documentación y commit:** `docs/decisiones/0007-sistema-de-diseno.md`, actualización de este archivo y
-commit `feat(f1): design system page with domain components` (la página usa datos de ejemplo porque es un
-catálogo interno; en pantallas reales los componentes se alimentan del backend).
+commit **`da632e1`** · `feat(f1): design system page with domain components` (la página usa datos de ejemplo
+porque es un catálogo interno; en pantallas reales los componentes se alimentan del backend).
 
 ### Componentes creados (9, en `src/components/domain/`)
 

@@ -258,7 +258,8 @@
       "haveAccount": "¿Ya tienes cuenta?",
       "forgot": "Olvidé mi contraseña",
       "account": "Mi cuenta",
-      "addresses": "Mis direcciones"
+      "addresses": "Mis direcciones",
+      "orders": "Mis compras"
     },
     "validation": {
       "required": "Este campo es obligatorio.",

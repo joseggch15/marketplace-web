@@ -93,14 +93,18 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   const [messages, t] = await Promise.all([getMessages(), getTranslations("Common")]);
 
   // Al navegador solo se le envían los mensajes que necesita un componente cliente: los de error, los de la
-  // cuenta (F2), los del catálogo y la ficha de producto (F3 y F4) y los del carrito (F5). El resto de los
-  // textos se resuelven en el servidor y viajan como props (menos JavaScript).
+  // cuenta (F2), los del catálogo y la ficha de producto (F3 y F4), los del carrito (F5) y los del checkout y
+  // «mis compras» (F6 y F7). El resto de los textos se resuelven en el servidor y viajan como props (menos
+  // JavaScript). **Si aquí falta un espacio que use un componente cliente, la página falla con
+  // `MISSING_MESSAGE`**: el checkout se pintaba mal por eso hasta que lo detectaron las pruebas e2e.
   const clientMessages = {
     Error: messages.Error ?? {},
     Auth: messages.Auth ?? {},
     Catalog: messages.Catalog ?? {},
     Product: messages.Product ?? {},
     Cart: messages.Cart ?? {},
+    Checkout: messages.Checkout ?? {},
+    Orders: messages.Orders ?? {},
   };
 
   return (

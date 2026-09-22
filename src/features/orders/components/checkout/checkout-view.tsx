@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { CheckboxField, TextAreaField, TextField } from "@/features/auth/components/fields";
 import { useAddresses } from "@/features/auth/hooks";
 import { useCart, useCartPending } from "@/features/cart/hooks";
+import type { Cart } from "@/features/cart/types";
 import { Link, useRouter } from "@/i18n/navigation";
 import { formatDate } from "@/lib/format/date";
 import { formatMoney } from "@/lib/format/money";
@@ -76,6 +77,15 @@ export function CheckoutView() {
   const [couponError, setCouponError] = useState<string | null>(null);
   const [order, setOrder] = useState<Order | null>(null);
   const [payment, setPayment] = useState<Payment | null>(null);
+  /**
+   * Copia del carrito **en el momento de crear el pedido**.
+   *
+   * El backend vacía el carrito al crear el pedido, así que sin esta copia el carrito del servidor se queda a cero
+   * justo cuando el comprador tiene que aprobar o rechazar el pago: la pantalla colapsaba al estado «tu carrito
+   * está vacío», el resumen se quedaba sin productos y el pago era imposible de terminar desde la interfaz. Lo
+   * detectaron las pruebas end-to-end (la prueba a mano anterior había usado la API directamente).
+   */
+  const [placedCart, setPlacedCart] = useState<Cart | null>(null);
   const [failure, setFailure] = useState<string | null>(null);
   const [paying, setPaying] = useState(false);
   /** Claves de idempotencia del intento en curso (se generan una vez y se reutilizan al reintentar). */
@@ -97,15 +107,27 @@ export function CheckoutView() {
   const country = (useNewAddress ? watchedCountry : (selectedAddress?.country ?? ""))
     .trim()
     .toUpperCase();
-  const firstProductId = cart?.items[0]?.product_id ?? null;
+  /** Carrito con el que se pinta el checkout: el del servidor, o el que había al crear el pedido. */
+  const viewCart = placedCart ?? cart;
+  const firstProductId = viewCart?.items[0]?.product_id ?? null;
   const {
     estimate,
     loading: estimateLoading,
     failed: estimateFailed,
   } = useShippingEstimate(step >= 1 ? firstProductId : null, country);
 
+  /**
+   * ¿Los datos de la dirección salen del formulario?
+   *
+   * Sí cuando el comprador pidió escribir una dirección nueva **o cuando su cuenta no tiene ninguna guardada**
+   * (en ese caso el formulario es la única opción que se pinta). Antes solo se miraba la casilla, así que para
+   * una cuenta sin direcciones el formulario se rellenaba pero **sus valores se ignoraban** y el pedido se
+   * enviaba con la dirección vacía: el backend lo rechazaba con 422. Lo detectaron las pruebas end-to-end.
+   */
+  const usingNewAddressForm = useNewAddress || addresses.length === 0;
+
   /** Dirección elegida, ya en la forma que espera la API (`ShippingAddressIn`). */
-  const addressValues: AddressFormValues = useNewAddress
+  const addressValues: AddressFormValues = usingNewAddressForm
     ? form.getValues()
     : selectedAddress === null
       ? EMPTY_ADDRESS_FORM
@@ -168,7 +190,7 @@ export function CheckoutView() {
           },
           coupon_code: coupon?.code ?? null,
           notes: notes.trim().length > 0 ? notes : null,
-          save_address: useNewAddress && saveAddress,
+          save_address: usingNewAddressForm && saveAddress,
         },
         idempotencyKey: key,
       });
@@ -179,6 +201,7 @@ export function CheckoutView() {
       }
 
       setOrder(created.data.order);
+      setPlacedCart(cart);
 
       const payKey = paymentKey ?? newIdempotencyKey();
       setPaymentKey(payKey);
@@ -251,7 +274,7 @@ export function CheckoutView() {
     );
   }
 
-  if (cart === null || cart.items.length === 0) {
+  if (viewCart === null || viewCart.items.length === 0) {
     return (
       <div className="mx-auto flex w-full max-w-3xl flex-col items-start gap-3 px-4 py-10">
         <h1 className="font-heading text-2xl font-bold">{t("empty.title")}</h1>
@@ -269,7 +292,7 @@ export function CheckoutView() {
     { id: "payment", label: t("steps.payment") },
   ];
   /** Importe que se cobrará: el total real del pedido, o el total del cupón sobre el carrito. */
-  const chargeTotal = order?.total ?? coupon?.total ?? cart.subtotal;
+  const chargeTotal = order?.total ?? coupon?.total ?? viewCart.subtotal;
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-8">
@@ -356,7 +379,7 @@ export function CheckoutView() {
                 <p className="text-sm text-muted-foreground">{t("address.empty")}</p>
               )}
 
-              {useNewAddress || addresses.length === 0 ? (
+              {usingNewAddressForm ? (
                 <form
                   noValidate
                   className="flex flex-col gap-4"
@@ -582,22 +605,26 @@ export function CheckoutView() {
                   <dd className="font-heading text-lg font-semibold tabular-nums">
                     <Price
                       amount={chargeTotal}
-                      currency={cart.currency}
+                      currency={viewCart.currency}
                       locale={locale}
                       unavailableLabel="-"
                       size="lg"
                     />
                   </dd>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  {t("payment.currencyNote", { currency: cart.currency })}
-                </p>
-                {payment === null ? null : (
-                  <p className="text-xs text-muted-foreground">
-                    {t("payment.provider", { provider: payment.provider })}
-                  </p>
-                )}
               </dl>
+
+              {/*
+                Las notas van **fuera** de la lista de definiciones: un `<dl>` solo admite `dt`, `dd`, `div` y
+                elementos de script como hijos directos, y un párrafo suelto dentro es un error de estructura
+                (`definition-list` en axe) que las pruebas de accesibilidad detectaron.
+              */}
+              <div className="flex flex-col gap-1 text-xs text-muted-foreground">
+                <p>{t("payment.currencyNote", { currency: viewCart.currency })}</p>
+                {payment === null ? null : (
+                  <p>{t("payment.provider", { provider: payment.provider })}</p>
+                )}
+              </div>
 
               <div className="flex flex-col gap-1 rounded-lg border border-dashed border-border p-3 text-sm">
                 <p className="font-medium">{t("payment.cardLabel")}</p>
@@ -623,7 +650,7 @@ export function CheckoutView() {
                       </>
                     ) : (
                       t("payment.pay", {
-                        amount: formatMoney(chargeTotal, cart.currency, locale) ?? chargeTotal,
+                        amount: formatMoney(chargeTotal, viewCart.currency, locale) ?? chargeTotal,
                       })
                     )}
                   </Button>
@@ -680,7 +707,7 @@ export function CheckoutView() {
         </div>
 
         <CheckoutSummaryPanel
-          cart={cart}
+          cart={viewCart}
           coupon={coupon}
           shippingTotal={order?.shipping_total ?? null}
           total={order?.total ?? coupon?.total ?? null}

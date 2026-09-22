@@ -57,6 +57,9 @@ export default async function AccountLayout({ children, params }: AccountLayoutP
           >
             {t("links.addresses")}
           </Link>
+          <Link href="/orders" className="text-primary underline-offset-4 hover:underline">
+            {t("links.orders")}
+          </Link>
         </nav>
         {children}
       </div>

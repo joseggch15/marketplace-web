@@ -258,7 +258,8 @@
       "haveAccount": "Already have an account?",
       "forgot": "I forgot my password",
       "account": "My account",
-      "addresses": "My addresses"
+      "addresses": "My addresses",
+      "orders": "My purchases"
     },
     "validation": {
       "required": "This field is required.",

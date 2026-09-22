@@ -1,47 +1,67 @@
 # Pendientes del backend
 
-Cosas que el backend (`E:\ecommerce`) debería cambiar o exponer para que el frontend quede como se
-espera. El backend ya **no** es de solo lectura para el frontend: hay una tarea dedicada que los resuelve y
-deja aquí el estado.
+> ## ✅ Lista **CERRADA** el 22 de septiembre de 2026
+>
+> No queda ningún pendiente abierto: de los 15 apartados, **12 están resueltos**, **2 quedan descartados por
+> decisión del dueño** (1 y 4) y el 2 (pagos reales) **salió de la lista** porque el prototipo no cobra dinero
+> real. Los apartados 1, 4, 6, 13 y 15 se cerraron en la última tanda del backend; el detalle histórico de cada
+> apartado se conserva más abajo, tal como se escribió.
 
-## Estado de la lista (22 de septiembre de 2026)
+## Estado final de la lista
 
 | # | Apartado | Estado |
 |---|---|---|
-| 1 | URLs de imágenes | **parcial** (las claves ya llevan el punto; sigue sin haber campo `url`) |
+| 1 | URLs de imágenes | **descartado** para el prototipo: el proxy `/api/media/[key]` del frontend ya resuelve las imágenes y el campo `url` no se añade |
 | 2 | Pagos reales | **fuera de la lista** por decisión del dueño: el prototipo no cobra dinero real (decisión 0020 del backend); la pasarela de prueba es la que se usa |
 | 3 | Conteos de facetas | **resuelto** |
-| 4 | Catálogo público de códigos de error | solo si sobra contexto |
+| 4 | Catálogo público de códigos de error | **descartado** para el prototipo: los `code` estables se leen del código y no se publica un catálogo aparte |
 | 5 | Correos (SMTP + Mailpit + plantillas es/en) | **resuelto** |
-| 6 | ¿Exigir correo verificado para comprar? | pendiente (decisión del dueño) |
-| 7 | Reputación y tienda en los resultados de búsqueda | **resuelto** |
+| 6 | ¿Exigir correo verificado para comprar? | **resuelto**: interruptor `REQUIRE_VERIFIED_EMAIL`, **apagado por defecto** |
+| 7 | Reputación y tienda en los resultados de búsqueda | **resuelto** (y ahora también `sold_count`) |
 | 8 | Claves de imagen sin punto | **resuelto** |
 | 9 | Producto por slug | **resuelto** |
 | 10 | Stock y atributos en las variantes | **resuelto** |
 | 11 | Tienda pública y envío estimado | **resuelto** |
 | 12 | Paginación de las preguntas | **resuelto** |
-| 13 | Listado del catálogo para el sitemap | solo si sobra contexto |
+| 13 | Listado del catálogo para el sitemap | **resuelto**: `GET /catalog/products/public` por cursor |
 | 14 | Avisos de stock y de cambio de precio en el carrito | **resuelto** |
-| 15 | El registro no devuelve tokens | pendiente |
+| 15 | El registro no devuelve tokens | **resuelto**: el registro devuelve usuario **y** tokens |
 
-> Tras regenerar los tipos (`pnpm api:types`) el frontend ya puede usar: `VariantOut.stock`, `VariantOut.available`,
-> `VariantOut.attribute_values[]`, `ProductOut.total_available`, `GET /stores/{store_id}` y
-> `GET /catalog/products/{product_id}/shipping`. **La F6 ya no está bloqueada**: se hace con la pasarela de
-> prueba (ver `docs/SIGUIENTE-PROMPT.md`).
+### Última tanda (22/09/2026) — lo que el frontend ya puede usar
 
-> **Resueltos el 22/09/2026 (segunda tanda): apartados 3, 7, 9, 12 y 14.**
-> - **`/catalog/search`** devuelve además `facets` (`categories` con `category_id`+`name`+`count`, `brands` con
->   `count` y `price.min`/`price.max` reales: **no hay tramos predefinidos**) y, en cada item, `rating_average`,
->   `review_count`, `store_name`.
-> - **`GET /catalog/products/by-slug/{slug}`** (público): la URL bonita para compartir.
-> - **`GET /products/{id}/questions?cursor=…`**: acepta cursor y devuelve un `next_cursor` real.
-> - **Carrito**: cada línea trae `available`, `added_unit_price`, `price_changed`, `thumbnail` y
->   `attribute_values[]`, y `POST/PATCH /cart/items` responde **409 `insufficient_stock`** si la cantidad supera
->   lo disponible. `price_changed` solo es `true` cuando hay precio de referencia (líneas antiguas sin él no
->   avisan de nada).
-> - Detalle de las decisiones: `0022-facetas-carrito-y-producto-por-slug.md` del backend.
+Regenera los tipos (`pnpm api:types`) y tendrás:
+
+- **`RegisterOut`**: `POST /api/v1/auth/register` responde `{ user, access_token, refresh_token, token_type }`.
+  El registro **deja la sesión iniciada**, así que se pueden guardar las cookies de sesión y fusionar el carrito
+  de invitado en el mismo paso (`mergeGuestCartIfSignedIn()` empieza a funcionar en el registro sin cambiar líneas).
+- **`sold_count`** (unidades vendidas en órdenes **pagadas**) en `ProductSearchItem` y en `ProductOut`: la insignia
+  «más vendido» ya tiene un dato real. Un reembolso lo baja (no es un contador que se quede pegado).
+- **`GET /api/v1/catalog/products/public?q=&cursor=&limit=`** (público): listado del catálogo **publicado** con
+  `id`, `slug`, `title` y `updated_at` (`lastmod` del sitemap), del más reciente al más antiguo. `limit` hasta 500
+  (100 por defecto) y `next_cursor` para recorrer el catálogo entero y trocear el `sitemap.xml`.
+- **`REQUIRE_VERIFIED_EMAIL`** (interruptor del backend, **apagado por defecto**): apagado, no bloquea nada —el
+  correo de verificación se sigue enviando y el usuario puede verificar si quiere, pero vender y publicar no lo
+  exigen. Si algún día se enciende, los endpoints de vender y publicar responden **403 con `code`
+  `email_not_verified`**, que el frontend debe traducir ofreciendo «reenviar el correo» (no un error genérico).
+  La tienda se puede probar y enseñar sin abrir Mailpit.
+
+Detalle de las decisiones del backend: `docs/decisiones/0023-cierre-lista-frontend.md` (y `0020`, `0021`, `0022`
+para lo anterior).
+
+> Otros datos que ya estaban disponibles desde la segunda tanda: `facets` en `/catalog/search`
+> (`categories`, `brands` y `price.min`/`price.max` **reales**, sin tramos inventados), `rating_average`,
+> `review_count` y `store_name` en cada item, `GET /catalog/products/by-slug/{slug}`,
+> `GET /products/{id}/questions?cursor=…`, `VariantOut.stock|available|attribute_values[]`,
+> `ProductOut.total_available`, `GET /stores/{store_id}` y `GET /catalog/products/{id}/shipping`
+> (`source="configured_default"`: presentarla como aproximada). **La F6 ya no está bloqueada**: se hace con la
+> pasarela de prueba (ver `docs/SIGUIENTE-PROMPT.md`).
+
 
 ## 1. URLs de imágenes (imágenes de producto y logos de tienda) — F0
+
+> **Descartado para el prototipo (22/09/2026, decisión 0023 del backend):** el proxy `/api/media/[key]` del
+> frontend ya resuelve las imágenes y funciona, así que el backend **no** añade ningún campo `url` (ni endpoint de
+> medios ni política pública del bucket). Si el proyecto pasa a ser real, se retoma empezando por aquí.
 
 **Qué pasa hoy:** la API devuelve solo `object_key` (por ejemplo `products/9c1f...e4.jpg`) en
 `ProductImageOut` y en el `thumbnail` de los resultados de búsqueda (`ProductSearchItem`). El bucket de
@@ -102,6 +122,9 @@ precio) para los filtros aplicados, o un endpoint aparte `GET /catalog/search/fa
 
 ## 4. Catálogo público de códigos de error — F0/F2
 
+> **Descartado para el prototipo (22/09/2026, decisión 0023 del backend):** no se publica ningún catálogo de
+> `code`. El frontend sigue traduciendo por `code` y usa su mensaje genérico para los desconocidos.
+
 **Qué pasa hoy:** los errores llegan en formato RFC 9457 con un campo `code` estable
 (`email_already_registered`, `insufficient_stock`, `invalid_credentials`, `coupon_expired`, …), pero no
 existe un listado publicado de todos los valores posibles.
@@ -139,6 +162,14 @@ usan un remitente falso, así que ninguna prueba envía correos de verdad.
 
 ## 6. ¿Debe exigirse el correo verificado para comprar? — F2
 
+> **Resuelto (22/09/2026, decisión 0023 del backend): hay un interruptor, `REQUIRE_VERIFIED_EMAIL`, apagado por
+> defecto.** Con el interruptor apagado **nada queda bloqueado**: el correo de verificación se sigue enviando y se
+> puede canjear, pero no hace falta para nada (es lo que permite probar y enseñar la tienda sin abrir Mailpit).
+> Al encenderlo, se exige el correo verificado para **vender** (crear la tienda y gestionar productos) y para
+> **publicar preguntas y reseñas**; el rechazo es **403 `email_not_verified`**. El login **nunca** se bloquea y
+> comprar tampoco: bloquear el login dejaría al usuario sin poder ni verificar su correo desde la interfaz.
+> El frontend debe traducir ese `code` ofreciendo «reenviar el correo».
+
 **Qué pasa hoy:** `POST /auth/login` no comprueba `email_verified_at`, así que una cuenta sin verificar puede
 iniciar sesión (y por tanto comprar).
 
@@ -152,6 +183,10 @@ login (o el checkout) con un código estable (`email_not_verified`) para que el 
 se pedirá antes de comprar, pero hoy nadie lo bloquea realmente.
 
 ## 7. Datos de reputación y tienda en los resultados de búsqueda — F3
+
+> **Resuelto (22/09/2026, decisiones 0022 y 0023 del backend):** `ProductSearchItem` trae `rating_average`,
+> `review_count`, `store_name` y **`sold_count`** (unidades de órdenes **pagadas**; un reembolso lo baja), y
+> `/catalog/search` añade `facets` con conteos reales (`categories`, `brands` y `price.min`/`price.max`).
 
 **Qué pasa hoy:** `SearchResponse.items` devuelve `ProductSearchItem`, que solo trae `id, title, slug, brand,
 category_id, min_price` y `thumbnail` (esta última como `object_key`, no como URL).
@@ -268,6 +303,11 @@ primera página (20). Las reseñas sí se paginan, así que el comportamiento es
 
 ## 13. Falta un listado público del catálogo completo (para el sitemap) — F4
 
+> **Resuelto (22/09/2026, decisión 0023 del backend):** `GET /api/v1/catalog/products/public?q=&cursor=&limit=`
+> (público). Devuelve `id`, `slug`, `title` y `updated_at` de los productos **activos**, del más reciente al más
+> antiguo (`updated_at` es el `lastmod` del sitemap), con `limit` de hasta 500 (100 por defecto) y `next_cursor`.
+> Con `q` se puede trocear el mapa por partes.
+
 **Qué pasa hoy:** el único listado público de productos es `GET /catalog/search`, con `limit` máximo de 100 y
 paginación por cursor.
 
@@ -300,6 +340,11 @@ servidor**, y no se pinta ningún aviso de stock ni de cambio de precio. Los imp
 lo disponible. Con eso la interfaz podrá marcar la línea y ofrecer «ajustar a lo disponible» sin inventar nada.
 
 ## 15. El registro no devuelve tokens, así que no se puede fusionar el carrito ahí — F5
+
+> **Resuelto (22/09/2026, decisión 0023 del backend):** `POST /api/v1/auth/register` responde ahora
+> `RegisterOut` = `{ user, access_token, refresh_token, token_type }`, los mismos tokens que el login **más** el
+> usuario creado (para el BFF, que necesita el perfil para su cookie de sesión, sin una petición extra). El
+> registro deja la sesión iniciada, así que `mergeGuestCartIfSignedIn()` ya se puede llamar ahí de verdad.
 
 **Qué pasa hoy:** `POST /api/v1/auth/register` responde `UserOut` (201) **sin** par de tokens. El frontend llama
 a la fusión del carrito también al registrarse (la llamada está puesta en `src/app/api/auth/register/route.ts`),

@@ -385,10 +385,11 @@ dentro) y el formulario lleva su propio `aria-label` para poder distinguirlo del
 
 ### Capturas
 
-`docs/capturas/f3/`. **Aviso:** se generaron con el backend detenido (lo arranca el dueño), así que la página
-de resultados muestra su aviso de "catálogo no disponible" y las categorías responden 404. Las capturas sirven
-para revisar los filtros, el estado vacío y la página de error; las de datos reales habrá que rehacerlas con el
-backend levantado.
+`docs/capturas/f3/` (16 imágenes: búsqueda general, búsqueda con texto, con filtros y página de categoría, en
+claro y oscuro y a 375 px y 1280 px). **Regeneradas con el backend encendido y el catálogo de demostración
+sembrado** (`scripts/seed-demo.mjs`: 12 productos con variantes, precios e imágenes), así que muestran la tienda
+real con fotos. La primera tanda se había hecho sin backend y solo servía para revisar el estado vacío y el
+aviso de "catálogo no disponible".
 
 ## Fases 4 a 10 — pendientes
 

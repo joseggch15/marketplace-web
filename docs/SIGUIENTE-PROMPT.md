@@ -53,6 +53,21 @@ proyecto.
 
 ---
 
+## Copias de seguridad en GitHub (obligatorio)
+
+- **Después de cada commit de cierre de fase, ejecuta `git push`.** Así las copias de GitHub se actualizan
+  solas al terminar cada fase, sin depender de que alguien se acuerde.
+- **Antes de subir, comprueba que no hay secretos en git:**
+  `git ls-files | Select-String '(^|/)\.env'` debe devolver **solo** `.env.example` (los `.env` y `.env.local`
+  están ignorados y no deben subirse nunca).
+- Repositorios: **`joseggch15/marketplace-web`** (frontend, privado, rama `master`) y
+  **`joseggch15/ecommerceBackend`** (backend, rama `main`; ya tiene remoto `origin`, **no** crear otro).
+  Ambos deben ser **privados**.
+- Comprobación rápida de que todo está subido:
+  `git rev-list --count '@{u}..HEAD'` debe devolver `0`.
+
+---
+
 ## Estado actual
 
 | Fase | Estado | Comprobaciones |

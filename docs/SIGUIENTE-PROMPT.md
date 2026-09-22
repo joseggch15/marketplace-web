@@ -75,6 +75,7 @@ proyecto.
 | F0 · Fundamentos | **cerrada** | lint 0 · typecheck 0 · pruebas en verde |
 | F1 · Sistema de diseño | **cerrada** | lint 0 · typecheck 0 · 102 unitarias · 46 e2e · build 0 |
 | F2 · Cuenta y sesión | **cerrada** | lint 0 · typecheck 0 · **131 unitarias** · **76 e2e** (producción) · build 0 |
+| F3 · Catálogo y búsqueda | **cerrada** | lint 0 · typecheck 0 · **147 unitarias** · **92 e2e** (producción) · axe limpio |
 
 **Commits de referencia (rama `master`):**
 
@@ -108,7 +109,31 @@ Ningún `.env` real está en git (solo `.env.example`); `.env.local` y `.env` es
 
 ---
 
-## Siguiente tarea: F3 · Catálogo y búsqueda
+## F3 · Catálogo y búsqueda — cerrada
+
+Se implementó y se verificó (147 unitarias · 92 e2e · axe limpio). Lo más útil para lo que viene es la
+referencia de contratos de abajo, ya extraída.
+
+## Siguiente tarea: F4 · Página de producto
+
+Objetivo: página de producto **indexable** con galería, variantes, precio, preguntas y reseñas, y datos
+estructurados JSON-LD (`Product`, `Offer`, `AggregateRating`, `BreadcrumbList`), en español e inglés.
+
+- Endpoints: `GET /api/v1/catalog/products/{product_id}` (devuelve `ProductOut` con `variants` e `images`),
+  `GET /api/v1/products/{product_id}/reviews`, `GET /api/v1/products/{product_id}/questions` y
+  `POST /api/v1/products/{product_id}/questions` (**requiere sesión**: reutiliza el patrón BFF de la F2; el
+  rate limiting del backend puede responder `too_many_requests`, que ya está traducido).
+- **Ojo con el identificador:** el endpoint de producto es por **id**, pero la ruta pública es `/p/<slug>` (la
+  F3 ya enlaza ahí y hoy se ve la página 404). Comprueba en `schema.d.ts` si existe búsqueda por slug; si no la
+  hay, resuélvelo con `GET /catalog/search?q=<slug>` o anótalo en `docs/PENDIENTES-BACKEND.md` antes de
+  inventar nada.
+- Reutilizar de la F1 (ya probados y accesibles): `ImageGallery`, `VariantSelector`, `QuantityStepper`, `Price`,
+  `RatingStars` y `DealBadge`; los esqueletos de carga ya existen.
+- Precios: **nunca** float. `Price` ya acepta `amount: number | string` y `compareAt`.
+- Degradar sin backend (patrón `{ ok: true, data } | { ok: false, reason }`) y probar con e2e sin backend:
+  carga, accesibilidad con axe (claro y oscuro) y JSON-LD presente.
+- La reseña y la pregunta se envían con sesión: usa `useSession()` de la F2 para decidir si se muestra el
+  formulario o un enlace a `/login?next=…`.
 
 ### Contratos reales del catálogo (ya extraídos, no hay que volver a buscarlos)
 

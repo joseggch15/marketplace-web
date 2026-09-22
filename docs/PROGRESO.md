@@ -344,7 +344,53 @@ nuevas; formularios usables con teclado y con mensajes claros; commit
 `docs/capturas/f2/`: entrar, crear cuenta, recuperar contraseña, restablecer contraseña y verificar correo, en
 claro y oscuro y a 375 px y 1280 px (`pnpm capture`).
 
-## Fases 3 a 10 — pendientes
+## Fase 3 · Catálogo y búsqueda — **completada**
+
+### Qué se entregó
+
+| Ruta | Qué hace |
+|---|---|
+| `/search` | Resultados con filtros (texto, categoría, marca, rango de precio y orden), todo en la URL; `noindex` |
+| `/c/<slug>` | Categoría con contenido propio: título, descripción, `canonical` y `hreflang` (indexable) |
+
+**Piezas nuevas:** `src/features/catalog/` (`params.ts` con los filtros de la URL, `api.ts` server-only,
+`selectors.ts` para el árbol de categorías, `components/product-grid.tsx` y
+`components/search-filters.tsx`), `src/lib/media/url.ts` (`mediaUrl()`) y la decisión
+`docs/decisiones/0009-catalogo-y-busqueda.md`.
+
+**Reutilizado sin tocar:** `ProductCard`, `Price` y `Skeleton` de la F1, y el proxy de medios de la F0.
+
+**Lo que se decidió no pintar (por honestidad):** los resultados de búsqueda no traen reputación ni tienda, así
+que **no** se muestran estrellas (sería inventar valoraciones) ni «vendido por». Está pedido en el apartado 7
+de `docs/PENDIENTES-BACKEND.md`, junto con la moneda por producto (hoy se usa la moneda por defecto, COP) y el
+filtro por categoría exacta (el backend todavía no incluye subcategorías).
+
+### Verificación (definición de «terminado»)
+
+| Comprobación | Resultado |
+|---|---|
+| `pnpm lint` | ✅ sin errores |
+| `pnpm typecheck` | ✅ sin errores |
+| `pnpm test` | ✅ **147 pruebas** en 13 archivos (16 nuevas de la F3) |
+| `pnpm test:e2e` | ✅ **92 pruebas en verde** contra la compilación de producción (16 nuevas) |
+| Accesibilidad (axe) | ✅ sin infracciones en `/search` (es/en, claro y oscuro) |
+| SEO | ✅ `/search` con `noindex` y `/c/<slug>` con `canonical`, `hreflang` y `index` |
+
+### Defecto real que encontró la revisión y se corrigió
+
+**Dos botones con el mismo nombre accesible en la misma pantalla:** el filtro tenía un botón de lupa con
+`aria-label="Buscar"` y otro botón "Buscar" debajo (además del de la cabecera). Para quien usa un lector de
+pantalla son tres botones indistinguibles. Se dejó **un solo** botón de envío en el formulario (con la lupa
+dentro) y el formulario lleva su propio `aria-label` para poder distinguirlo del buscador de la cabecera.
+
+### Capturas
+
+`docs/capturas/f3/`. **Aviso:** se generaron con el backend detenido (lo arranca el dueño), así que la página
+de resultados muestra su aviso de "catálogo no disponible" y las categorías responden 404. Las capturas sirven
+para revisar los filtros, el estado vacío y la página de error; las de datos reales habrá que rehacerlas con el
+backend levantado.
+
+## Fases 4 a 10 — pendientes
 
 Catálogo y búsqueda con filtros por faceta (F3) · página de producto con variantes, preguntas y reseñas (F4) ·
 carrito (F5) · checkout y pagos en sandbox (F6) · mis compras, seguimiento y devoluciones (F7) · panel del

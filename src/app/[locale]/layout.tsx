@@ -94,7 +94,11 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
 
   // Al navegador solo se le envían los mensajes que necesita un componente cliente: los de error y los de
   // la cuenta (F2). El resto de los textos se resuelven en el servidor y viajan como props (menos JavaScript).
-  const clientMessages = { Error: messages.Error ?? {}, Auth: messages.Auth ?? {} };
+  const clientMessages = {
+    Error: messages.Error ?? {},
+    Auth: messages.Auth ?? {},
+    Catalog: messages.Catalog ?? {},
+  };
 
   return (
     <html

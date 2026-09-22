@@ -288,5 +288,47 @@
       "newAddressTitle": "New address",
       "editAddressTitle": "Edit address"
     }
+  },
+  "Catalog": {
+    "title": "Catalog",
+    "subtitle": "Filter by category, brand and price. The filters live in the address bar, so you can share the search.",
+    "resultsFor": "Results for “{query}”",
+    "moreResults": "See more results",
+    "categorySubtitle": "Products in this category, with the same filters as the search.",
+    "categoryDescription": "Shop {name}: compare prices across stores, check the seller's reputation and get it delivered.",
+    "card": {
+      "noImage": "No image",
+      "priceUnavailable": "Price unavailable"
+    },
+    "empty": {
+      "title": "We found no products",
+      "description": "Try other words or remove a filter."
+    },
+    "unavailable": {
+      "title": "The catalog is not available",
+      "description": "We could not reach the product service. Please try again in a few minutes.",
+      "action": "Back to home"
+    },
+    "filters": {
+      "title": "Catalog filters",
+      "query": "What are you looking for",
+      "queryPlaceholder": "E.g. sneakers, headphones…",
+      "submit": "Search",
+      "clear": "Clear filters",
+      "category": "Category",
+      "anyCategory": "All categories",
+      "brand": "Brand",
+      "brandPlaceholder": "E.g. Nike",
+      "minPrice": "Minimum price",
+      "maxPrice": "Maximum price",
+      "sort": "Sort by",
+      "rangeError": "The minimum price cannot be higher than the maximum price."
+    },
+    "sort": {
+      "relevance": "Most relevant",
+      "newest": "Newest",
+      "price_asc": "Price: low to high",
+      "price_desc": "Price: high to low"
+    }
   }
 }

@@ -288,5 +288,47 @@
       "newAddressTitle": "Nueva dirección",
       "editAddressTitle": "Editar dirección"
     }
+  },
+  "Catalog": {
+    "title": "Catálogo",
+    "subtitle": "Filtra por categoría, marca y precio. Los filtros quedan en la dirección, así que puedes compartir la búsqueda.",
+    "resultsFor": "Resultados para «{query}»",
+    "moreResults": "Ver más resultados",
+    "categorySubtitle": "Productos de esta categoría, con los mismos filtros de la búsqueda.",
+    "categoryDescription": "Compra {name}: compara precios de varias tiendas, revisa la reputación del vendedor y recibe en tu casa.",
+    "card": {
+      "noImage": "Sin imagen",
+      "priceUnavailable": "Precio no disponible"
+    },
+    "empty": {
+      "title": "No encontramos productos",
+      "description": "Prueba con otras palabras o quita algún filtro."
+    },
+    "unavailable": {
+      "title": "El catálogo no está disponible",
+      "description": "No pudimos conectar con el servicio de productos. Inténtalo de nuevo en unos minutos.",
+      "action": "Volver al inicio"
+    },
+    "filters": {
+      "title": "Filtros del catálogo",
+      "query": "Qué buscas",
+      "queryPlaceholder": "Ej.: zapatillas, audífonos…",
+      "submit": "Buscar",
+      "clear": "Quitar filtros",
+      "category": "Categoría",
+      "anyCategory": "Todas las categorías",
+      "brand": "Marca",
+      "brandPlaceholder": "Ej.: Nike",
+      "minPrice": "Precio mínimo",
+      "maxPrice": "Precio máximo",
+      "sort": "Ordenar por",
+      "rangeError": "El precio mínimo no puede ser mayor que el precio máximo."
+    },
+    "sort": {
+      "relevance": "Más relevantes",
+      "newest": "Más recientes",
+      "price_asc": "Precio: de menor a mayor",
+      "price_desc": "Precio: de mayor a menor"
+    }
   }
 }

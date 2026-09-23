@@ -5,14 +5,14 @@ nada y no se ha gastado dinero. Los pasos que requieren cuentas o pagos los hace
 
 ## Qué hay que publicar
 
-| Pieza           | Qué es                                                        | Necesita                                                |
-| --------------- | ------------------------------------------------------------- | ------------------------------------------------------- |
-| **Frontend**    | Next.js 16 (App Router) + React, en `E:\ecommerce-web`        | Node.js 20+ y acceso al backend por red                 |
-| **Backend**     | FastAPI (monolito modular) en `E:\ecommerce`, contenedor Docker | 1 vCPU / 512 MB–1 GB, y las tres dependencias de abajo |
-| **PostgreSQL**  | Base de datos (datos de negocio)                              | Versión 16, con extensiones estándar                    |
-| **Redis**       | Carrito, reservas y limitadores de frecuencia                 | 25 MB sobran para empezar                               |
-| **S3 / MinIO**  | Imágenes de productos (el backend devuelve claves, no URLs)   | Un bucket privado público por proxy                     |
-| **SMTP**        | Correos de verificación y avisos de pedido                    | Un proveedor transaccional                              |
+| Pieza          | Qué es                                                          | Necesita                                               |
+| -------------- | --------------------------------------------------------------- | ------------------------------------------------------ |
+| **Frontend**   | Next.js 16 (App Router) + React, en `E:\ecommerce-web`          | Node.js 20+ y acceso al backend por red                |
+| **Backend**    | FastAPI (monolito modular) en `E:\ecommerce`, contenedor Docker | 1 vCPU / 512 MB–1 GB, y las tres dependencias de abajo |
+| **PostgreSQL** | Base de datos (datos de negocio)                                | Versión 16, con extensiones estándar                   |
+| **Redis**      | Carrito, reservas y limitadores de frecuencia                   | 25 MB sobran para empezar                              |
+| **S3 / MinIO** | Imágenes de productos (el backend devuelve claves, no URLs)     | Un bucket privado público por proxy                    |
+| **SMTP**       | Correos de verificación y avisos de pedido                      | Un proveedor transaccional                             |
 
 El frontend es **BFF**: el navegador solo habla con Next.js, que guarda los tokens en cookies httpOnly y llama al
 backend. Es decir, el servidor de Next.js tiene que poder alcanzar la URL pública del backend.
@@ -22,16 +22,16 @@ backend. Es decir, el servidor de Next.js tiene que poder alcanzar la URL públi
 Precios de referencia para un **prototipo con poco tráfico**. Los planes gratuitos cambian y algunos no permiten
 uso comercial: hay que leerlos antes de elegir.
 
-| Servicio                              | Opción gratuita                                        | Opción recomendada para empezar      | Costo aprox./mes |
-| ------------------------------------- | ------------------------------------------------------ | ------------------------------------ | ---------------- |
-| Frontend (Vercel)                     | Hobby (solo uso personal/no comercial)                 | Pro (20 USD por usuario)             | 0–20 USD         |
-| Backend (Render / Railway / Fly.io)   | Render Free (se duerme; sirve para demos)              | Render Starter o Fly `shared-cpu-1x` | 0–7 USD          |
-| PostgreSQL (Neon / Supabase / Render) | Neon Free (0.5 GB) o Supabase Free                     | Neon Launch (0.5–10 USD)             | 0–10 USD         |
-| Redis (Upstash)                       | Free (10 000 comandos/día)                             | Pay-as-you-go                        | 0–5 USD          |
-| Imágenes (Cloudflare R2)              | 10 GB gratis y sin costo de salida                     | R2 (0,015 USD/GB)                    | 0–1 USD          |
-| Correo (Resend / Brevo)               | 3 000 correos/mes                                      | Resend Pro o Brevo Starter           | 0–20 USD         |
-| Dominio                               | —                                                      | `.com` con Cloudflare Registrar      | 10–15 USD/año    |
-| **Total de arranque**                 | **0 USD** (con las limitaciones de los planes gratuitos) | **Vercel Pro + backend + base + correo** | **≈ 35–60 USD** |
+| Servicio                              | Opción gratuita                                          | Opción recomendada para empezar          | Costo aprox./mes |
+| ------------------------------------- | -------------------------------------------------------- | ---------------------------------------- | ---------------- |
+| Frontend (Vercel)                     | Hobby (solo uso personal/no comercial)                   | Pro (20 USD por usuario)                 | 0–20 USD         |
+| Backend (Render / Railway / Fly.io)   | Render Free (se duerme; sirve para demos)                | Render Starter o Fly `shared-cpu-1x`     | 0–7 USD          |
+| PostgreSQL (Neon / Supabase / Render) | Neon Free (0.5 GB) o Supabase Free                       | Neon Launch (0.5–10 USD)                 | 0–10 USD         |
+| Redis (Upstash)                       | Free (10 000 comandos/día)                               | Pay-as-you-go                            | 0–5 USD          |
+| Imágenes (Cloudflare R2)              | 10 GB gratis y sin costo de salida                       | R2 (0,015 USD/GB)                        | 0–1 USD          |
+| Correo (Resend / Brevo)               | 3 000 correos/mes                                        | Resend Pro o Brevo Starter               | 0–20 USD         |
+| Dominio                               | —                                                        | `.com` con Cloudflare Registrar          | 10–15 USD/año    |
+| **Total de arranque**                 | **0 USD** (con las limitaciones de los planes gratuitos) | **Vercel Pro + backend + base + correo** | **≈ 35–60 USD**  |
 
 Alternativa de bajo costo: un **VPS** (por ejemplo Hetzner CX22, ≈ 5 USD/mes) con Docker Compose para backend,
 PostgreSQL, Redis y MinIO, y el frontend en Vercel. Es más barato y más trabajo de mantenimiento (copias de
@@ -78,7 +78,7 @@ Ninguna de estas cuentas requiere tarjeta si se empieza por los planes gratuitos
    - `DEFAULT_CURRENCY=COP`, `REQUIRE_VERIFIED_EMAIL=true`.
 
 4. Comando de arranque: el `Dockerfile` ya lo trae; si el proveedor pide uno, `alembic upgrade head && uvicorn
-   app.main:app --host 0.0.0.0 --port $PORT`.
+app.main:app --host 0.0.0.0 --port $PORT`.
 5. Comprobar `https://<backend>/api/v1/health` (tiene que responder `ok` con `database` y `redis`).
 
 ### 3. Frontend (Vercel)

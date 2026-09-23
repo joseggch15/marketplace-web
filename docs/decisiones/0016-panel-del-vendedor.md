@@ -17,7 +17,7 @@
    funciones para la **vista previa** («se van a crear 2 variantes: E2EBOLSO-ROJO-1, …»), pero no es quien manda.
 3. **El stock es el total del almacén, no un incremento.** Un campo numérico por variante (`PATCH …/stock`), con
    el aviso de que el backend nunca baja por debajo de lo reservado por pedidos en curso (`409
-   insufficient_stock`). Se enseña también lo reservado (`stock - available`), que es lo que explica el límite.
+insufficient_stock`). Se enseña también lo reservado (`stock - available`), que es lo que explica el límite.
 4. **El precio se muestra en solo lectura en la edición.** `ProductUpdate` solo admite título, descripción y
    marca: cambiar el precio exigiría crear otra variante. Antes de ofrecer un campo que el servidor ignora, se
    dice por qué.

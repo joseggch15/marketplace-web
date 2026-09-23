@@ -88,7 +88,6 @@ export async function signInAsAdmin(page: Page): Promise<void> {
   test.skip(body.user?.role !== "admin", MISSING_ADMIN);
 }
 
-
 export const MISSING_ENVIRONMENT = [
   "Estas pruebas necesitan el backend encendido y los datos de demostración.",
   "Levántalo en E:\\ecommerce (docker compose up -d y uv run uvicorn app.main:app) y ejecuta",

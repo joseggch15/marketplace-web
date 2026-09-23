@@ -26,7 +26,10 @@ import {
  */
 test.describe("recorrido completo", () => {
   test("registrarse, comprar, vender y administrar", async ({ page, request }, testInfo) => {
-    test.skip(testInfo.project.name !== "escritorio-chromium", "El recorrido se comprueba una vez.");
+    test.skip(
+      testInfo.project.name !== "escritorio-chromium",
+      "El recorrido se comprueba una vez.",
+    );
 
     // 1. Registro: una cuenta nueva de verdad, con la sesión ya iniciada al terminar.
     const email = `comprador-${Date.now()}@tienda-demo.com`;

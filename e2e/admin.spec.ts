@@ -1,11 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 
-import {
-  expectNoA11yViolations,
-  findDemoProduct,
-  LOCALE,
-  signInAsAdmin,
-} from "./support/demo";
+import { expectNoA11yViolations, findDemoProduct, LOCALE, signInAsAdmin } from "./support/demo";
 
 /**
  * Pruebas end-to-end de la Fase 9 (panel de administración).
@@ -67,14 +62,23 @@ test.describe("panel de administración", () => {
     await expect(page.getByText(body)).toBeVisible();
 
     // Ocultar: la acción destructiva pide confirmación y el motivo es opcional.
-    await page.getByRole("button", { name: /^ocultar$/i }).first().click();
-    await page.getByRole("button", { name: /sí, ocultar/i }).first().click();
+    await page
+      .getByRole("button", { name: /^ocultar$/i })
+      .first()
+      .click();
+    await page
+      .getByRole("button", { name: /sí, ocultar/i })
+      .first()
+      .click();
     await expectRefresh(page, /hecho\. la lista se ha actualizado/i);
 
     // Con el filtro de ocultas aparece, y desde ahí se vuelve a publicar.
     await page.goto(`/${LOCALE}/admin/questions?published=false`);
     await expect(page.getByText(body)).toBeVisible();
-    await page.getByRole("button", { name: /^publicar$/i }).first().click();
+    await page
+      .getByRole("button", { name: /^publicar$/i })
+      .first()
+      .click();
     await expectRefresh(page, /hecho\. la lista se ha actualizado/i);
 
     // Publicada otra vez: deja de estar en el filtro de ocultas.

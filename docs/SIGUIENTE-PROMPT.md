@@ -33,5 +33,5 @@ probado de punta a punta y **`docs/PUBLICAR.md`** con hosting, costos y pasos.
 2. Datos de demostración: `node scripts/seed-demo.mjs` (crea la vendedora `vendedor@tienda-demo.com`, la
    administradora `admin@tienda-demo.com`, las categorías con atributos y el catálogo).
 3. Frontend: `pnpm dev -p 3001` para la vista del dueño. Las pruebas usan el **3000** con `pnpm build && pnpm
-   start`.
+start`.
 4. Suite completa: `pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm test:e2e`.

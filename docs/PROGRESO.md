@@ -14,20 +14,20 @@ está en `docs/historial/` y no hace falta leerlo para trabajar.
 
 ## Estado actual
 
-| Fase                            | Estado                                                                                            |
-| ------------------------------- | ------------------------------------------------------------------------------------------------- |
-| F0 · Fundamentos                | cerrada                                                                                           |
-| F1 · Sistema de diseño          | cerrada                                                                                           |
-| F2 · Cuenta y sesión            | cerrada                                                                                           |
-| F3 · Catálogo y búsqueda        | cerrada                                                                                           |
-| F4 · Página de producto         | cerrada                                                                                           |
-| F5 · Carrito                    | cerrada                                                                                           |
-| **Portada real**                | **hecha** (`docs/decisiones/0012-portada.md`)                                                     |
-| **F6 · Checkout y pagos**       | **cerrada**: e2e, `axe` y capturas (`docs/decisiones/0015-e2e-de-la-compra.md`)                   |
-| **F7 · Mis compras**            | **cerrada**: e2e, `axe`, capturas y enlace de entrada desde `/account`                            |
-| F8 · Panel del vendedor         | **cerrada**: rutas BFF, pantallas, e2e, `axe` y capturas (`docs/decisiones/0016-panel-del-vendedor.md`) |
+| Fase                            | Estado                                                                                                                                        |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| F0 · Fundamentos                | cerrada                                                                                                                                       |
+| F1 · Sistema de diseño          | cerrada                                                                                                                                       |
+| F2 · Cuenta y sesión            | cerrada                                                                                                                                       |
+| F3 · Catálogo y búsqueda        | cerrada                                                                                                                                       |
+| F4 · Página de producto         | cerrada                                                                                                                                       |
+| F5 · Carrito                    | cerrada                                                                                                                                       |
+| **Portada real**                | **hecha** (`docs/decisiones/0012-portada.md`)                                                                                                 |
+| **F6 · Checkout y pagos**       | **cerrada**: e2e, `axe` y capturas (`docs/decisiones/0015-e2e-de-la-compra.md`)                                                               |
+| **F7 · Mis compras**            | **cerrada**: e2e, `axe`, capturas y enlace de entrada desde `/account`                                                                        |
+| F8 · Panel del vendedor         | **cerrada**: rutas BFF, pantallas, e2e, `axe` y capturas (`docs/decisiones/0016-panel-del-vendedor.md`)                                       |
 | F9 · Panel de administración    | **cerrada**: cola de tiendas, moderación de reseñas y preguntas, usuarios, e2e y capturas (`docs/decisiones/0017-panel-de-administracion.md`) |
-| F10 · Preparación para publicar | **en curso**: recorrido completo en e2e y `docs/PUBLICAR.md` (auditoría y capturas hechas) |
+| F10 · Preparación para publicar | **en curso**: recorrido completo en e2e y `docs/PUBLICAR.md` (auditoría y capturas hechas)                                                    |
 
 Verificación de esta tanda: `format:check` 0 · `lint` 0 (con 1 aviso previo de react-hook-form) · `typecheck` 0 ·
 **323 pruebas unitarias** · `build` 0 · **e2e: 135 pasan, 3 omitidas, 0 fallan** (escritorio y móvil).
@@ -42,7 +42,6 @@ Verificación de esta tanda: `format:check` 0 · `lint` 0 (con 1 aviso previo de
   formulario del vendedor no tendría de dónde sacar variantes. Faltaban y lo detectó la e2e.
 - Las e2e del panel de administración se **omiten** si la cuenta de administración no existe (`signInAsAdmin`), con
   un mensaje que dice cómo crearla.
-
 
 ## Las e2e encontraron tres fallos reales de la F6 (ya arreglados)
 

@@ -11,10 +11,11 @@
  *   node scripts/capture-screenshots.mjs --out=docs/capturas/f5 --route=/es/cart \
  *     --cart-variant=<uuid de la variante> --cart-quantity=2
  *
- * Las pantallas que exigen sesión (checkout y «mis compras», F6 y F7) se fotografían con `--session=demo`, que
- * entra con la cuenta de demostración que crea `scripts/seed-demo.mjs` por la ruta BFF del propio frontend: las
- * cookies httpOnly quedan en el contexto del navegador y las capturas salen como las vería un comprador con
- * sesión. No se leen credenciales de ningún sitio: es la cuenta de demostración del repositorio.
+ * Las pantallas que exigen sesión (checkout y «mis compras», F6 y F7; el panel del vendedor, F8; el de
+ * administración, F9) se fotografían con `--session=demo` (vendedora) o `--session=admin`, que entran con las
+ * cuentas de demostración que crea `scripts/seed-demo.mjs` por la ruta BFF del propio frontend: las cookies
+ * httpOnly quedan en el contexto del navegador y las capturas salen como las vería un usuario con sesión. No se
+ * leen credenciales de ningún sitio: son las cuentas de demostración del repositorio.
  *
  * Notas de implementación:
  * - El tema se fija con `emulateMedia` **y** con `localStorage.theme`, que es la clave que usa `next-themes`.
@@ -62,31 +63,52 @@ function parseArgs(argv) {
 const DEMO_EMAIL = process.env.PLAYWRIGHT_DEMO_EMAIL ?? "vendedor@tienda-demo.com";
 const DEMO_PASSWORD = process.env.PLAYWRIGHT_DEMO_PASSWORD ?? "demo-marketplace-2026";
 
+/** Cuenta de administración: también la crea `scripts/seed-demo.mjs` (registro + ascenso de rol). */
+const ADMIN_EMAIL = process.env.PLAYWRIGHT_ADMIN_EMAIL ?? "admin@tienda-demo.com";
+const ADMIN_PASSWORD = process.env.PLAYWRIGHT_ADMIN_PASSWORD ?? DEMO_PASSWORD;
+
+/** Credenciales de la sesión pedida con `--session=demo|admin`. */
+function sessionCredentials(name) {
+  if (name === "admin") {
+    return { email: ADMIN_EMAIL, password: ADMIN_PASSWORD };
+  }
+
+  return { email: DEMO_EMAIL, password: DEMO_PASSWORD };
+}
+
 /**
- * Cookies de la sesión de demostración, obtenidas **una sola vez** por corrida.
+ * Cookies de la sesión pedida, obtenidas **una sola vez** por corrida.
  *
  * El backend limita los intentos de entrada a 5 por minuto y por IP, y cada captura usa un contexto nuevo: si se
  * entrara en cada uno, la quinta captura recibiría 429. Aquí se entra una vez (en un contexto aparte) y las
  * cookies se copian a cada contexto.
  */
-let demoCookies = null;
+const sessionCookieCache = new Map();
 
-async function demoSessionCookies(browser, baseUrl) {
+async function sessionCookies(browser, baseUrl, name) {
+  if (sessionCookieCache.has(name)) {
+    return sessionCookieCache.get(name);
+  }
+
+  const credentials = sessionCredentials(name);
   const context = await browser.newContext({ baseURL: baseUrl, locale: "es-CO" });
 
   try {
     const response = await context.request.post("/api/auth/login", {
-      data: { email: DEMO_EMAIL, password: DEMO_PASSWORD },
+      data: { email: credentials.email, password: credentials.password },
     });
 
     if (!response.ok()) {
       throw new Error(
-        `No se pudo iniciar sesión como ${DEMO_EMAIL} (${response.status()}). ` +
+        `No se pudo iniciar sesión como ${credentials.email} (${response.status()}). ` +
           "¿Está el backend encendido y sembrado con `node scripts/seed-demo.mjs`?",
       );
     }
 
-    return (await context.storageState()).cookies;
+    const cookies = (await context.storageState()).cookies;
+    sessionCookieCache.set(name, cookies);
+
+    return cookies;
   } finally {
     await context.close();
   }
@@ -146,10 +168,10 @@ for (const route of routes) {
           });
         }
 
-        // Sesión de demostración (opcional): el checkout y «mis compras» exigen haber entrado.
-        if (args.session === "demo") {
-          demoCookies ??= await demoSessionCookies(browser, baseUrl);
-          await context.addCookies(demoCookies);
+        // Sesión (opcional): el checkout, «mis compras» y el panel del vendedor exigen haber entrado.
+        // `--session=admin` sirve para las pantallas del panel de administración.
+        if (args.session !== null) {
+          await context.addCookies(await sessionCookies(browser, baseUrl, args.session));
         }
 
         await page.goto(route, { waitUntil: "load" });

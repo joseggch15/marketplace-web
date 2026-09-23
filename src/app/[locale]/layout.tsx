@@ -105,6 +105,8 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
     Cart: messages.Cart ?? {},
     Checkout: messages.Checkout ?? {},
     Orders: messages.Orders ?? {},
+    Seller: messages.Seller ?? {},
+    Admin: messages.Admin ?? {},
   };
 
   return (

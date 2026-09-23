@@ -25,12 +25,24 @@ está en `docs/historial/` y no hace falta leerlo para trabajar.
 | **Portada real**                | **hecha** (`docs/decisiones/0012-portada.md`)                                                     |
 | **F6 · Checkout y pagos**       | **cerrada**: e2e, `axe` y capturas (`docs/decisiones/0015-e2e-de-la-compra.md`)                   |
 | **F7 · Mis compras**            | **cerrada**: e2e, `axe`, capturas y enlace de entrada desde `/account`                            |
-| F8 · Panel del vendedor         | **en curso**: base de lógica y validación hecha (35 pruebas nuevas); faltan rutas BFF y pantallas |
-| F9 · Panel de administración    | pendiente (la API ya tiene listado de usuarios y moderación de preguntas)                         |
-| F10 · Preparación para publicar | pendiente (auditoría + `docs/PUBLICAR.md`)                                                        |
+| F8 · Panel del vendedor         | **cerrada**: rutas BFF, pantallas, e2e, `axe` y capturas (`docs/decisiones/0016-panel-del-vendedor.md`) |
+| F9 · Panel de administración    | **cerrada**: cola de tiendas, moderación de reseñas y preguntas, usuarios, e2e y capturas (`docs/decisiones/0017-panel-de-administracion.md`) |
+| F10 · Preparación para publicar | **en curso**: recorrido completo en e2e y `docs/PUBLICAR.md` (auditoría y capturas hechas) |
 
 Verificación de esta tanda: `format:check` 0 · `lint` 0 (con 1 aviso previo de react-hook-form) · `typecheck` 0 ·
-**318 pruebas unitarias** · `build` 0 · **e2e de la compra: 7 pasan, 1 omitida, 0 fallan** (escritorio y móvil).
+**323 pruebas unitarias** · `build` 0 · **e2e: 130 pasan, 2 omitidas, 0 fallan** (escritorio y móvil).
+
+## Cuentas y datos de desarrollo
+
+- **Vendedora**: `vendedor@tienda-demo.com` / `demo-marketplace-2026` (la crea `node scripts/seed-demo.mjs`).
+- **Administración**: `admin@tienda-demo.com` / la misma contraseña. La semilla la registra y la asciende con el
+  mecanismo oficial del backend (`uv run python -m app.scripts.promote_admin <correo>`), porque el rol no se puede
+  cambiar desde la API.
+- La semilla **también crea los atributos** (`Color`, `Talla`) y los asigna a las categorías: sin ellos el
+  formulario del vendedor no tendría de dónde sacar variantes. Faltaban y lo detectó la e2e.
+- Las e2e del panel de administración se **omiten** si la cuenta de administración no existe (`signInAsAdmin`), con
+  un mensaje que dice cómo crearla.
+
 
 ## Las e2e encontraron tres fallos reales de la F6 (ya arreglados)
 
@@ -57,7 +69,7 @@ necesitan la F8 y la F9 (stock de las variantes por su vendedor, directorio de u
 `docs/decisiones/`: 0001 versiones · 0002 paleta · 0003 BFF sin tokens · 0004 idiomas y proxy · 0005 proxy de
 medios · 0006 tipos de la API · 0007 sistema de diseño · 0008 autenticación · 0009 catálogo · 0010 producto ·
 0011 carrito · 0012 portada · 0013 checkout y pago de prueba · **0014 formato con Prettier** · **0015 e2e de la
-compra**.
+compra** · **0016 panel del vendedor** · **0017 panel de administración**.
 
 ## Entorno local (recordatorio)
 

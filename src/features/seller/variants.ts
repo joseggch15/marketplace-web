@@ -1,3 +1,5 @@
+import { compareAmounts, toMinorUnits } from "@/lib/format/money";
+
 import type { NewVariant, ProductVariant, SellerProduct } from "./types";
 
 /**
@@ -149,6 +151,42 @@ export function variantLabel(variant: ProductVariant): string {
 /** Unidades disponibles de un producto: lo que se puede vender sin contar lo reservado por pedidos en curso. */
 export function totalAvailable(product: SellerProduct): number {
   return (product.variants ?? []).reduce((total, variant) => total + variant.available, 0);
+}
+
+/**
+ * Precio de la variante **más barata**, tal como llega del backend.
+ *
+ * La lista de productos necesita un precio por producto y la API solo da precios por variante; se compara con
+ * céntimos exactos (`compareAmounts`, que usa `BigInt`) y no con `number`, porque dos precios casi iguales
+ * pueden ordenarse mal en coma flotante. Un precio que no se puede interpretar **no entra en la comparación**
+ * (no se adivina): si ninguna variante tiene un precio legible se devuelve el primero que llegó, y la interfaz
+ * enseña «sin precio» en lugar de un número inventado.
+ */
+export function cheapestPrice(product: SellerProduct): string | null {
+  let best: string | null = null;
+  let fallback: string | null = null;
+
+  for (const variant of product.variants ?? []) {
+    if (fallback === null) {
+      fallback = variant.price;
+    }
+
+    if (best === null) {
+      if (toMinorUnits(variant.price) !== null) {
+        best = variant.price;
+      }
+
+      continue;
+    }
+
+    const order = compareAmounts(variant.price, best);
+
+    if (order !== null && order < 0) {
+      best = variant.price;
+    }
+  }
+
+  return best ?? fallback;
 }
 
 /** ¿El producto se puede publicar? La API solo deja publicar los que están en borrador. */

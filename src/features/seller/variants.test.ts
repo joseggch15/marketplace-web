@@ -6,6 +6,7 @@ import {
   canClose,
   canPause,
   canPublish,
+  cheapestPrice,
   countCombinations,
   parseValues,
   skuFor,
@@ -155,6 +156,62 @@ describe("variantLabel", () => {
 
   it("usa el SKU cuando la variante no tiene atributos", () => {
     expect(variantLabel(variant({ attribute_values: [], sku: "UNICA-1" }))).toBe("UNICA-1");
+  });
+});
+
+describe("cheapestPrice", () => {
+  it("devuelve el precio de la variante más barata, sin tocar el formato que manda la API", () => {
+    expect(
+      cheapestPrice(
+        product({
+          variants: [
+            variant({ id: "v1", price: "105000.00" }),
+            variant({ id: "v2", price: "89900.00" }),
+            variant({ id: "v3", price: "99000.50" }),
+          ],
+        }),
+      ),
+    ).toBe("89900.00");
+  });
+
+  it("compara con céntimos exactos y no con decimales de coma flotante", () => {
+    expect(
+      cheapestPrice(
+        product({
+          variants: [variant({ id: "v1", price: "0.10" }), variant({ id: "v2", price: "0.07" })],
+        }),
+      ),
+    ).toBe("0.07");
+  });
+
+  it("devuelve null cuando el producto no tiene variantes", () => {
+    expect(cheapestPrice(product({ variants: [] }))).toBeNull();
+  });
+
+  it("prefiere un precio legible y no uno que no se puede interpretar", () => {
+    expect(
+      cheapestPrice(
+        product({
+          variants: [
+            variant({ id: "v1", price: "no es un precio" }),
+            variant({ id: "v2", price: "12000.00" }),
+          ],
+        }),
+      ),
+    ).toBe("12000.00");
+  });
+
+  it("si ningún precio es legible devuelve el primero (la interfaz dirá «sin precio»)", () => {
+    expect(
+      cheapestPrice(
+        product({
+          variants: [
+            variant({ id: "v1", price: "raro" }),
+            variant({ id: "v2", price: "raro también" }),
+          ],
+        }),
+      ),
+    ).toBe("raro");
   });
 });
 

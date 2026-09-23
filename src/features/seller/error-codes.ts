@@ -28,6 +28,10 @@ export const SELLER_ERROR_CODES = [
   "attribute_not_assigned",
   "insufficient_stock",
   "inventory_not_found",
+  // Imágenes: los tres códigos que añade el BFF al subir (tipo no admitido, archivo enorme o almacenamiento caído)
+  "unsupported_image_type",
+  "image_too_large",
+  "upload_failed",
   // Pedidos y envíos
   "seller_order_not_found",
   "invalid_status_transition",

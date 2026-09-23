@@ -40,6 +40,7 @@ export default async function AccountLayout({ children, params }: AccountLayoutP
 
   if (user === null) {
     redirect({ href: "/login?next=/account", locale });
+    return null;
   }
 
   const t = await getTranslations("Auth");
@@ -60,6 +61,14 @@ export default async function AccountLayout({ children, params }: AccountLayoutP
           <Link href="/orders" className="text-primary underline-offset-4 hover:underline">
             {t("links.orders")}
           </Link>
+          <Link href="/seller" className="text-primary underline-offset-4 hover:underline">
+            {t("links.seller")}
+          </Link>
+          {user.role === "admin" ? (
+            <Link href="/admin" className="text-primary underline-offset-4 hover:underline">
+              {t("links.admin")}
+            </Link>
+          ) : null}
         </nav>
         {children}
       </div>

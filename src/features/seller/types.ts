@@ -12,21 +12,30 @@ import type { components } from "@/lib/api/schema";
 export type SellerStore = components["schemas"]["StoreOut"];
 export type StoreStatus = components["schemas"]["StoreStatus"];
 export type NewStore = components["schemas"]["StoreCreate"];
+export type StoreChanges = components["schemas"]["StoreUpdate"];
 
 export type SellerProduct = components["schemas"]["ProductOut"];
 export type ProductVariant = components["schemas"]["VariantOut"];
 export type ProductImage = components["schemas"]["ProductImageOut"];
 export type ProductStatus = components["schemas"]["ProductStatus"];
 export type NewVariant = components["schemas"]["VariantIn"];
+export type NewProduct = components["schemas"]["ProductCreate"];
+export type ProductChanges = components["schemas"]["ProductUpdate"];
 
 export type Category = components["schemas"]["CategoryOut"];
 export type CategoryAttribute = components["schemas"]["CategoryAttributeOut"];
 
+export type UploadUrl = components["schemas"]["UploadUrlOut"];
+
 export type SellerOrder = components["schemas"]["SellerOrderSummaryOut"];
 export type SellerOrderPage = components["schemas"]["SellerOrderListOut"];
+/** Sub-orden completa (la devuelve cambiar el estado de la venta): lleva las líneas. */
+export type SellerSale = components["schemas"]["SellerOrderOut"];
 export type SellerOrderStatus = components["schemas"]["SellerOrderStatus"];
 export type Shipment = components["schemas"]["ShipmentOut"];
 export type NewShipment = components["schemas"]["ShipmentCreate"];
+export type ShipmentChanges = components["schemas"]["ShipmentUpdate"];
+export type ShipmentStatus = components["schemas"]["ShipmentStatus"];
 
 /**
  * Estados a los que el vendedor puede mover una venta desde el panel.

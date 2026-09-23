@@ -22,6 +22,11 @@ export type BffRequestOptions = {
   /** Ruta del BFF, siempre relativa al propio dominio (p. ej. `/api/auth/login`). */
   path: string;
   body?: unknown;
+  /**
+   * Alternativa a `body` para subir archivos: el navegador manda `FormData` y el servidor lo reenvía por partes.
+   * No se pone la cabecera `content-type` a mano: la pone el navegador con el `boundary` correcto.
+   */
+  formData?: FormData;
 };
 
 /** Hace una petición a una ruta BFF y normaliza el resultado (nunca lanza excepciones). */
@@ -29,12 +34,14 @@ export async function callBff<T>({
   method,
   path,
   body,
+  formData,
 }: BffRequestOptions): Promise<ClientResult<T>> {
   try {
     const response = await fetch(path, {
       method,
       headers: body === undefined ? undefined : { "content-type": "application/json" },
-      body: body === undefined ? undefined : JSON.stringify(body),
+      body:
+        formData !== undefined ? formData : body === undefined ? undefined : JSON.stringify(body),
       credentials: "same-origin",
       cache: "no-store",
     });

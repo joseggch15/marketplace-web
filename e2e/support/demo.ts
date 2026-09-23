@@ -53,6 +53,42 @@ export async function expectNoA11yViolations(page: Page, label: string): Promise
 export const DEMO_EMAIL = process.env.PLAYWRIGHT_DEMO_EMAIL ?? "vendedor@tienda-demo.com";
 export const DEMO_PASSWORD = process.env.PLAYWRIGHT_DEMO_PASSWORD ?? "demo-marketplace-2026";
 
+/**
+ * Cuenta de administración de demostración.
+ *
+ * La crea y la asciende el mismo `scripts/seed-demo.mjs` con el mecanismo del backend
+ * (`uv run python -m app.scripts.promote_admin <email>`), porque el rol no se puede cambiar desde la API.
+ */
+export const ADMIN_EMAIL = process.env.PLAYWRIGHT_ADMIN_EMAIL ?? "admin@tienda-demo.com";
+export const ADMIN_PASSWORD = process.env.PLAYWRIGHT_ADMIN_PASSWORD ?? "demo-marketplace-2026";
+
+export const MISSING_ADMIN = [
+  "Estas pruebas necesitan la cuenta de administración de demostración.",
+  "Créala con `node scripts/seed-demo.mjs` (registra la cuenta y la asciende a administrador) y asegúrate de",
+  "que el backend está encendido.",
+].join(" ");
+
+/**
+ * Entra con la cuenta de **administración** y omite la prueba si no existe o no tiene ese rol.
+ *
+ * Es una decisión del proyecto: las pruebas del panel de administración no pueden inventarse un administrador
+ * (el rol no se puede cambiar por la API), así que si la cuenta no está en el entorno la prueba se **omite**
+ * diciendo cómo crearla, en lugar de fallar por una condición del entorno.
+ */
+export async function signInAsAdmin(page: Page): Promise<void> {
+  const response = await page.request.post("/api/auth/login", {
+    data: { email: ADMIN_EMAIL, password: ADMIN_PASSWORD },
+  });
+
+  test.skip(!response.ok(), MISSING_ADMIN);
+
+  const session = await page.request.get("/api/auth/session");
+  const body = (await session.json()) as { user?: { role?: string } | null };
+
+  test.skip(body.user?.role !== "admin", MISSING_ADMIN);
+}
+
+
 export const MISSING_ENVIRONMENT = [
   "Estas pruebas necesitan el backend encendido y los datos de demostración.",
   "Levántalo en E:\\ecommerce (docker compose up -d y uv run uvicorn app.main:app) y ejecuta",

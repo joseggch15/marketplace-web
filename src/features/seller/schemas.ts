@@ -27,6 +27,31 @@ export type SellerValidationKey =
   | "noVariants"
   | "tooManyVariants";
 
+const VALIDATION_KEYS: readonly SellerValidationKey[] = [
+  "required",
+  "tooShort",
+  "tooLong",
+  "invalid",
+  "min",
+  "max",
+  "money",
+  "url",
+  "noVariants",
+  "tooManyVariants",
+];
+
+/**
+ * Convierte el mensaje que devuelve Zod en una clave de traducción **verificada**.
+ *
+ * Zod devuelve el texto tal cual se escribió en el esquema (una clave), así que aquí se comprueba que sea
+ * conocida; si no lo es, el campo muestra su mensaje genérico en lugar de un texto raro.
+ */
+export function asSellerValidationKey(message?: string): SellerValidationKey | undefined {
+  return message !== undefined && VALIDATION_KEYS.includes(message as SellerValidationKey)
+    ? (message as SellerValidationKey)
+    : undefined;
+}
+
 /** Tope de variantes por producto: de sobra para el prototipo. */
 const MAX_VARIANTS = 100;
 
@@ -80,20 +105,33 @@ const attributeValuesSchema = z.object({
 });
 
 /**
+ * Campos «planos» de un producto: los que valida el formulario campo a campo.
+ *
+ * Existe separado del esquema completo porque las **variantes** no las escribe el vendedor: nacen del producto
+ * cartesiano de los valores de los atributos (que sí se validan aparte, con las funciones ya probadas de
+ * `variants.ts`). Así el formulario puede avisar de un precio mal escrito sin exigir antes los atributos.
+ */
+export const productFieldsSchema = z.object({
+  title: trimmed(200).min(3, "tooShort"),
+  description: optionalText(2000),
+  brand: optionalText(120),
+  categoryId: z.uuid("invalid"),
+  skuPrefix: trimmed(24),
+  price: moneySchema,
+  stock: stockSchema,
+});
+
+export type ProductFieldsInput = z.input<typeof productFieldsSchema>;
+export type ProductFieldsData = z.output<typeof productFieldsSchema>;
+
+/**
  * Crear un producto con sus variantes (`POST /catalog/products`).
  *
  * El número de variantes no se escribe: sale del **producto cartesiano** de los valores, así que se comprueba aquí
  * que haya al menos una (sin variantes el producto no se puede comprar) y que no sean demasiadas.
  */
-export const productFormSchema = z
-  .object({
-    title: trimmed(200).min(3, "tooShort"),
-    description: optionalText(2000),
-    brand: optionalText(120),
-    categoryId: z.uuid("invalid"),
-    skuPrefix: trimmed(24),
-    price: moneySchema,
-    stock: stockSchema,
+export const productFormSchema = productFieldsSchema
+  .extend({
     attributes: z.array(attributeValuesSchema).max(10, "max"),
   })
   .superRefine((values, ctx) => {

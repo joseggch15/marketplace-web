@@ -264,6 +264,111 @@ async function ensureCategories(adminToken, sellerToken) {
   return ids;
 }
 /**
+ * Atributos de demo: son los que permiten que un producto tenga **variantes** (color, talla…).
+ *
+ * Sin esto el vendedor no puede crear un producto con presentaciones: el formulario del panel pide valores de
+ * los atributos de la categoría y, si la categoría no tiene ninguno, no hay de dónde sacar variantes.
+ */
+const ATTRIBUTES = [
+  { name: "Color", type: "text", categories: ["clothes", "home", "sports"] },
+  { name: "Talla", type: "text", categories: ["clothes", "sports"] },
+];
+
+/**
+ * Crea los atributos y los asigna a las categorías indicadas (idempotente: si ya están, no hace nada).
+ *
+ * Se comprueba antes qué atributos tiene cada categoría en lugar de interpretar los códigos de error a ciegas:
+ * la API responde 201 al asignar y aquí se quiere distinguir «ya estaba» de «falló».
+ */
+async function ensureAttributes(adminToken, sellerToken, categoryIds) {
+  const { data: existentes } = await api("GET", "/api/v1/catalog/attributes");
+  const porNombre = new Map((existentes ?? []).map((atributo) => [atributo.name, atributo]));
+
+  for (const atributo of ATTRIBUTES) {
+    let definido = porNombre.get(atributo.name);
+
+    if (definido === undefined) {
+      let { status, data } = await api("POST", "/api/v1/catalog/attributes", {
+        token: adminToken,
+        body: { name: atributo.name, type: atributo.type },
+      });
+
+      // Igual que con las categorías: si el backend lo reserva al vendedor, se intenta con su token.
+      if (status === 403) {
+        ({ status, data } = await api("POST", "/api/v1/catalog/attributes", {
+          token: sellerToken,
+          body: { name: atributo.name, type: atributo.type },
+        }));
+      }
+
+      if (status !== 201) {
+        throw new Error(
+          `No se pudo crear el atributo ${atributo.name}: HTTP ${status} ${JSON.stringify(data)}`,
+        );
+      }
+
+      console.log(`  + atributo creado: ${atributo.name}`);
+      definido = data;
+      summary.creados += 1;
+    } else {
+      console.log(`  = atributo ya existía: ${atributo.name}`);
+      summary.reutilizados += 1;
+    }
+
+    for (const key of atributo.categories) {
+      const categoryId = categoryIds[key];
+
+      if (categoryId === undefined) {
+        continue;
+      }
+
+      const { data: asignados } = await api(
+        "GET",
+        `/api/v1/catalog/categories/${categoryId}/attributes`,
+      );
+      const yaAsignado = (asignados ?? []).some(
+        (asignado) => asignado.attribute_id === definido.id,
+      );
+
+      if (yaAsignado) {
+        console.log(`  = ${atributo.name} ya estaba en la categoría ${key}`);
+        summary.reutilizados += 1;
+        continue;
+      }
+
+      let { status, data } = await api(
+        "POST",
+        `/api/v1/catalog/categories/${categoryId}/attributes`,
+        {
+          token: adminToken,
+          body: { attribute_id: definido.id, is_required: false },
+        },
+      );
+
+      if (status === 403) {
+        ({ status, data } = await api(
+          "POST",
+          `/api/v1/catalog/categories/${categoryId}/attributes`,
+          {
+            token: sellerToken,
+            body: { attribute_id: definido.id, is_required: false },
+          },
+        ));
+      }
+
+      if (status !== 201) {
+        throw new Error(
+          `No se pudo asignar ${atributo.name} a ${key}: HTTP ${status} ${JSON.stringify(data)}`,
+        );
+      }
+
+      console.log(`  + ${atributo.name} asignado a la categoría ${key}`);
+      summary.creados += 1;
+    }
+  }
+}
+
+/**
  * Catálogo de demo: 12 productos, con variantes, precios en COP (texto, nunca float), descuentos en algunos y
  * stock variado. Los colores son solo para que cada imagen generada se distinga a simple vista.
  */
@@ -489,6 +594,9 @@ async function main() {
 
   console.log("Categorías:");
   const categories = await ensureCategories(adminToken, sellerToken);
+
+  console.log("Atributos (para que un producto pueda tener variantes):");
+  await ensureAttributes(adminToken, sellerToken, categories);
 
   const { data: actuales } = await api("GET", "/api/v1/catalog/products", { token: sellerToken });
   const titulos = new Set((actuales ?? []).map((producto) => producto.title));

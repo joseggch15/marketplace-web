@@ -30,7 +30,7 @@ está en `docs/historial/` y no hace falta leerlo para trabajar.
 | F10 · Preparación para publicar | **en curso**: recorrido completo en e2e y `docs/PUBLICAR.md` (auditoría y capturas hechas) |
 
 Verificación de esta tanda: `format:check` 0 · `lint` 0 (con 1 aviso previo de react-hook-form) · `typecheck` 0 ·
-**323 pruebas unitarias** · `build` 0 · **e2e: 130 pasan, 2 omitidas, 0 fallan** (escritorio y móvil).
+**323 pruebas unitarias** · `build` 0 · **e2e: 135 pasan, 3 omitidas, 0 fallan** (escritorio y móvil).
 
 ## Cuentas y datos de desarrollo
 
